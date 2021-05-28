@@ -1,5 +1,6 @@
 # This file is automatically written.  Do not modify.
 proc gen_USERPARAMETER_MCLK_ratio_VALUE {resolution } {expr $resolution == 24 ? 384 : 256}
 proc gen_USERPARAMETER_MCLK_freq_VALUE {sample_rate MCLK_ratio } {expr $sample_rate * $MCLK_ratio}
+proc gen_USERPARAMETER_width_VALUE {resolution is_stereo } {expr $resolution * (1 + ($is_stereo == true))}
 proc gen_USERPARAMETER_BCLK_freq_VALUE {sample_rate resolution } {expr $sample_rate * $resolution * 2}
 proc gen_USERPARAMETER_MCLK_divided_by_BCLK_VALUE {MCLK_freq BCLK_freq } {expr $MCLK_freq / $BCLK_freq}

@@ -84,6 +84,22 @@ proc validate_PARAM_VALUE.MCLK_ratio { PARAM_VALUE.MCLK_ratio } {
 	return true
 }
 
+proc update_PARAM_VALUE.width { PARAM_VALUE.width PARAM_VALUE.resolution PARAM_VALUE.is_stereo } {
+	# Procedure called to update width when any of the dependent parameters in the arguments change
+	
+	set width ${PARAM_VALUE.width}
+	set resolution ${PARAM_VALUE.resolution}
+	set is_stereo ${PARAM_VALUE.is_stereo}
+	set values(resolution) [get_property value $resolution]
+	set values(is_stereo) [get_property value $is_stereo]
+	set_property value [gen_USERPARAMETER_width_VALUE $values(resolution) $values(is_stereo)] $width
+}
+
+proc validate_PARAM_VALUE.width { PARAM_VALUE.width } {
+	# Procedure called to validate width
+	return true
+}
+
 proc update_PARAM_VALUE.is_stereo { PARAM_VALUE.is_stereo } {
 	# Procedure called to update is_stereo when any of the dependent parameters in the arguments change
 }
@@ -108,15 +124,6 @@ proc update_PARAM_VALUE.sample_rate { PARAM_VALUE.sample_rate } {
 
 proc validate_PARAM_VALUE.sample_rate { PARAM_VALUE.sample_rate } {
 	# Procedure called to validate sample_rate
-	return true
-}
-
-proc update_PARAM_VALUE.width { PARAM_VALUE.width } {
-	# Procedure called to update width when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.width { PARAM_VALUE.width } {
-	# Procedure called to validate width
 	return true
 }
 
