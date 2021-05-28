@@ -1,0 +1,2 @@
+# This file is automatically written.  Do not modify.
+proc gen_USERPARAMETER_MCLK_freq_VALUE {sample_rate MCLK_ratio } {expr $sample_rate * $MCLK_ratio}

@@ -11,12 +11,20 @@
 module PmodAMP3 #
 (
 	parameter sample_rate = 44100,
-	parameter MCLK_rate = 384,
+	parameter MCLK_ratio = 384,
+	parameter resolution = 8,
+	parameter is_stereo = 0,
+	parameter MCLK_freq = sample_rate * MCLK_ratio,
 
-	localparam MCLK_freq = sample_rate * MCLK_rate,
 	localparam __unused = 0
 )
 (
+	output EX_LRCLK,
+	output EX_SDATA,
+	output EX_BCLK,
+	output EX_MCLE,
+	input [resolution * (1 + is_stereo) - 1 : 0] SAMPLE, // 输入的单次采样。如果是双声道，低位是左声道，高位是右声道。
+	input EN,
 	input RESET_L,
 	input CLK, // 频率为 100 MHz 的全局时钟。
 	input MCLK // 频率为 MCLK_freq 的时钟（默认应为 16.9344 MHz）。
