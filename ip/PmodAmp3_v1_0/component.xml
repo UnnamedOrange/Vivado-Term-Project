@@ -52,7 +52,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e506be83</spirit:value>
+            <spirit:value>b040012c</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -68,7 +68,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e506be83</spirit:value>
+            <spirit:value>b040012c</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -82,7 +82,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>165160a2</spirit:value>
+            <spirit:value>2f59410a</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -96,7 +96,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>084ef744</spirit:value>
+            <spirit:value>220d889f</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -142,7 +142,7 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
-        <spirit:name>EX_MCLE</spirit:name>
+        <spirit:name>EX_MCLK</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:wireTypeDefs>
@@ -159,7 +159,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.resolution&apos;)) * (1 + spirit:decode(id(&apos;MODELPARAM_VALUE.is_stereo&apos;)))) - 1)">7</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.width&apos;)) - 1)">7</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -210,19 +210,6 @@
           </spirit:wireTypeDefs>
         </spirit:wire>
       </spirit:port>
-      <spirit:port>
-        <spirit:name>MCLK</spirit:name>
-        <spirit:wire>
-          <spirit:direction>in</spirit:direction>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic</spirit:typeName>
-              <spirit:viewNameRef>xilinx_anylanguagesynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_anylanguagebehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
     </spirit:ports>
     <spirit:modelParameters>
       <spirit:modelParameter xsi:type="spirit:nameValueTypeType" spirit:dataType="integer">
@@ -243,21 +230,31 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>MCLK_ratio</spirit:name>
         <spirit:displayName>Mclk Ratio</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.MCLK_ratio">384</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.MCLK_ratio" spirit:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.resolution&apos;)) = 24) ? 384 : 256)">256</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>MCLK_freq</spirit:name>
         <spirit:displayName>Mclk Freq</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.MCLK_freq" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.sample_rate&apos;)) * spirit:decode(id(&apos;MODELPARAM_VALUE.MCLK_ratio&apos;)))">16934400</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.MCLK_freq" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.sample_rate&apos;)) * spirit:decode(id(&apos;MODELPARAM_VALUE.MCLK_ratio&apos;)))">11289600</spirit:value>
+      </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>width</spirit:name>
+        <spirit:displayName>Width</spirit:displayName>
+        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.width" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.resolution&apos;)) * (1 + spirit:decode(id(&apos;MODELPARAM_VALUE.is_stereo&apos;))))">8</spirit:value>
+      </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>BCLK_freq</spirit:name>
+        <spirit:displayName>Bclk Freq</spirit:displayName>
+        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.BCLK_freq" spirit:dependency="((spirit:decode(id(&apos;MODELPARAM_VALUE.sample_rate&apos;)) * spirit:decode(id(&apos;MODELPARAM_VALUE.resolution&apos;))) * 2)">705600</spirit:value>
+      </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>MCLK_divided_by_BCLK</spirit:name>
+        <spirit:displayName>Mclk Divided By Bclk</spirit:displayName>
+        <spirit:value spirit:format="long" spirit:resolve="dependent" spirit:id="MODELPARAM_VALUE.MCLK_divided_by_BCLK" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.MCLK_freq&apos;)) / spirit:decode(id(&apos;MODELPARAM_VALUE.BCLK_freq&apos;)))">16</spirit:value>
       </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
   <spirit:choices>
-    <spirit:choice>
-      <spirit:name>choice_list_62b88f02</spirit:name>
-      <spirit:enumeration>256</spirit:enumeration>
-      <spirit:enumeration>384</spirit:enumeration>
-    </spirit:choice>
     <spirit:choice>
       <spirit:name>choice_list_65eb7741</spirit:name>
       <spirit:enumeration>8000</spirit:enumeration>
@@ -272,9 +269,10 @@
       <spirit:enumeration>96000</spirit:enumeration>
     </spirit:choice>
     <spirit:choice>
-      <spirit:name>choice_list_8112d406</spirit:name>
+      <spirit:name>choice_list_bb6e8c60</spirit:name>
       <spirit:enumeration>8</spirit:enumeration>
       <spirit:enumeration>16</spirit:enumeration>
+      <spirit:enumeration>24</spirit:enumeration>
       <spirit:enumeration>32</spirit:enumeration>
     </spirit:choice>
   </spirit:choices>
@@ -284,7 +282,7 @@
       <spirit:file>
         <spirit:name>src/PmodAMP3.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_e506be83</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_b040012c</spirit:userFileType>
         <spirit:userFileType>IMPORTED_FILE</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -301,7 +299,7 @@
       <spirit:file>
         <spirit:name>xgui/PmodAMP3_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_165160a2</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_2f59410a</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -327,7 +325,7 @@
     <spirit:parameter>
       <spirit:name>resolution</spirit:name>
       <spirit:displayName>Resolution</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.resolution" spirit:choiceRef="choice_list_8112d406">8</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.resolution" spirit:choiceRef="choice_list_bb6e8c60">8</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>is_stereo</spirit:name>
@@ -336,17 +334,53 @@
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>MCLK_ratio</spirit:name>
-      <spirit:displayName>Mclk Ratio</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.MCLK_ratio" spirit:choiceRef="choice_list_62b88f02">384</spirit:value>
+      <spirit:displayName>MCLK Ratio</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.MCLK_ratio">256</spirit:value>
+      <spirit:vendorExtensions>
+        <xilinx:parameterInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="PARAM_ENABLEMENT.MCLK_ratio">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:parameterInfo>
+      </spirit:vendorExtensions>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>MCLK_freq</spirit:name>
-      <spirit:displayName>Mclk Freq</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.MCLK_freq">16934400</spirit:value>
+      <spirit:displayName>MCLK Frequency</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.MCLK_freq">11289600</spirit:value>
       <spirit:vendorExtensions>
         <xilinx:parameterInfo>
           <xilinx:enablement>
             <xilinx:isEnabled xilinx:id="PARAM_ENABLEMENT.MCLK_freq">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:parameterInfo>
+      </spirit:vendorExtensions>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>width</spirit:name>
+      <spirit:displayName>Width</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.width">8</spirit:value>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>BCLK_freq</spirit:name>
+      <spirit:displayName>BCLK Frequency</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.BCLK_freq">705600</spirit:value>
+      <spirit:vendorExtensions>
+        <xilinx:parameterInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="PARAM_ENABLEMENT.BCLK_freq">false</xilinx:isEnabled>
+          </xilinx:enablement>
+        </xilinx:parameterInfo>
+      </spirit:vendorExtensions>
+    </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>MCLK_divided_by_BCLK</spirit:name>
+      <spirit:displayName>MCLK Divided By BCLK</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.MCLK_divided_by_BCLK">16</spirit:value>
+      <spirit:vendorExtensions>
+        <xilinx:parameterInfo>
+          <xilinx:enablement>
+            <xilinx:isEnabled xilinx:id="PARAM_ENABLEMENT.MCLK_divided_by_BCLK">false</xilinx:isEnabled>
           </xilinx:enablement>
         </xilinx:parameterInfo>
       </spirit:vendorExtensions>
@@ -369,15 +403,15 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:PmodAMP3:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-05-28T05:56:50Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-05-28T08:52:15Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="106bfcc0"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="adb986d7"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="410fd012"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b4c4a378"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="558a8d5e"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="d7a4b511"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="e74523ab"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="86b549b5"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="878fe241"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>
