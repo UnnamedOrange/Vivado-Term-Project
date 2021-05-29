@@ -6,7 +6,10 @@
 /// <projectdescription>An unofficial IP core of Pmod AMP3.</projectdescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
+/// 0.0.2 (UnnamedOrange) : 根据仿真修正代码。
 /// </version>
+
+`timescale 1ns / 1ps
 
 module PmodAMP3 #
 (
@@ -19,11 +22,10 @@ module PmodAMP3 #
 	parameter MCLK_divided_by_BCLK = MCLK_freq / BCLK_freq,
 	parameter width = resolution * (1 + is_stereo),
 
-	localparam log_MCLK_divided_by_BCLK =
+	parameter log_MCLK_divided_by_BCLK =
 		MCLK_divided_by_BCLK == 4 ? 2 :
 		MCLK_divided_by_BCLK == 8 ? 3 :
-		MCLK_divided_by_BCLK == 16 ? 4 : 114514,
-	localparam __unused = 0
+		MCLK_divided_by_BCLK == 16 ? 4 : 114514
 )
 (
 	output EX_LRCLK,
@@ -38,14 +40,15 @@ module PmodAMP3 #
 
 	reg [width - 1 : 0] sync_sample_buffer, sync_sample; // 同步器。
 	reg sync_en_buffer, sync_en; // 同步器。
-	reg [log_MCLK_divided_by_BCLK : 0] divide_to_bclk; // 分频器。
+	reg [log_MCLK_divided_by_BCLK - 1 : 0] divide_to_bclk; // 分频器。
 
 	reg [width - 1 : 0] to_play; // 保存的值。
 	reg [5:0] current_bit; // 当前是第几位。
-	reg is_right; // 当前是哪个声道。
+	reg is_LRCLK_right; // 左右声道时钟。
+	reg is_left; // 当前是哪个声道。
 
 	assign EX_MCLK = CLK;
-	assign EX_BCLK = divide_to_bclk[log_MCLK_divided_by_BCLK];
+	assign EX_BCLK = !divide_to_bclk[log_MCLK_divided_by_BCLK - 1];
 
 	// 同步器。
 	always @(posedge CLK) begin
@@ -75,32 +78,34 @@ module PmodAMP3 #
 
 	// BCLK 上升沿时处理。
 	always @(posedge CLK) begin // 保持同步时钟设计。
-		if (divide_to_bclk == (MCLK_divided_by_BCLK >> 1) - 1) begin // BCLK 上升沿后的第一个时钟时。
-			if (!RESET_L) begin
-				to_play <= 0;
-				current_bit <= 0;
-				is_right <= 0;
+		if (!RESET_L) begin
+			to_play <= 0;
+			current_bit <= 0;
+			is_LRCLK_right <= 0;
+			is_left <= 0;
+		end
+		else if (divide_to_bclk == MCLK_divided_by_BCLK - 1) begin // BCLK 上升沿后的第一个时钟时。
+			if (current_bit == 0) begin
+				if (is_LRCLK_right == 0) // 准备读入新的数据。
+					if (sync_en)
+						to_play <= sync_sample;
+					else
+						to_play <= 0;
+				current_bit <= resolution - 1;
+				// 更新 is_left。
+				is_left <= !is_left;
+				// is_LRCLK_right 保持不变。
 			end
 			else begin
-				if (current_bit == 0) begin
-					if (is_right == 0) // 准备读入新的数据。
-						if (sync_en)
-							to_play <= sync_sample;
-						else
-							to_play <= 0;
-					current_bit <= resolution - 1;
-					// is_right 保持不变。
-				end
-				else begin
-					if (current_bit == 1)
-						is_right <= !is_right;
-					current_bit <= current_bit - 1;
-				end
+				// 更新 is_LRCLK_right。
+				if (current_bit == 1)
+					is_LRCLK_right <= !is_LRCLK_right;
+				current_bit <= current_bit - 1;
 			end
 		end
 	end
 
-	assign EX_LRCLK = is_right;
-	assign EX_SDATA = (is_stereo && is_right) ? to_play[resolution + current_bit] : to_play[current_bit];
+	assign EX_LRCLK = is_LRCLK_right;
+	assign EX_SDATA = (is_stereo && !is_left) ? to_play[resolution + current_bit] : to_play[current_bit];
 
 endmodule

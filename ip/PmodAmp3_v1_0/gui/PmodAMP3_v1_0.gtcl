@@ -4,3 +4,4 @@ proc gen_USERPARAMETER_MCLK_freq_VALUE {sample_rate MCLK_ratio } {expr $sample_r
 proc gen_USERPARAMETER_width_VALUE {resolution is_stereo } {expr $resolution * (1 + ($is_stereo == true))}
 proc gen_USERPARAMETER_BCLK_freq_VALUE {sample_rate resolution } {expr $sample_rate * $resolution * 2}
 proc gen_USERPARAMETER_MCLK_divided_by_BCLK_VALUE {MCLK_freq BCLK_freq } {expr $MCLK_freq / $BCLK_freq}
+proc gen_USERPARAMETER_log_MCLK_divided_by_BCLK_VALUE {MCLK_divided_by_BCLK } {expr $MCLK_divided_by_BCLK == 4 ? 2 : $MCLK_divided_by_BCLK == 8 ? 3 : $MCLK_divided_by_BCLK == 16 ? 4 : 114514}

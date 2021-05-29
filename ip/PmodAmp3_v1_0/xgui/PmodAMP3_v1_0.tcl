@@ -14,7 +14,7 @@ proc init_gui { IPINST } {
   set MCLK_ratio [ipgui::add_param $IPINST -name "MCLK_ratio"]
   set_property tooltip {外部主时钟倍率。外部主时钟的频率为采样率乘以倍率。} ${MCLK_ratio}
   set MCLK_freq [ipgui::add_param $IPINST -name "MCLK_freq"]
-  set_property tooltip {外部时钟频率。} ${MCLK_freq}
+  set_property tooltip {外部主时钟频率。} ${MCLK_freq}
   set BCLK_freq [ipgui::add_param $IPINST -name "BCLK_freq"]
   set_property tooltip {BCLK 时钟频率。} ${BCLK_freq}
   set MCLK_divided_by_BCLK [ipgui::add_param $IPINST -name "MCLK_divided_by_BCLK"]
@@ -81,6 +81,20 @@ proc update_PARAM_VALUE.MCLK_ratio { PARAM_VALUE.MCLK_ratio PARAM_VALUE.resoluti
 
 proc validate_PARAM_VALUE.MCLK_ratio { PARAM_VALUE.MCLK_ratio } {
 	# Procedure called to validate MCLK_ratio
+	return true
+}
+
+proc update_PARAM_VALUE.log_MCLK_divided_by_BCLK { PARAM_VALUE.log_MCLK_divided_by_BCLK PARAM_VALUE.MCLK_divided_by_BCLK } {
+	# Procedure called to update log_MCLK_divided_by_BCLK when any of the dependent parameters in the arguments change
+	
+	set log_MCLK_divided_by_BCLK ${PARAM_VALUE.log_MCLK_divided_by_BCLK}
+	set MCLK_divided_by_BCLK ${PARAM_VALUE.MCLK_divided_by_BCLK}
+	set values(MCLK_divided_by_BCLK) [get_property value $MCLK_divided_by_BCLK]
+	set_property value [gen_USERPARAMETER_log_MCLK_divided_by_BCLK_VALUE $values(MCLK_divided_by_BCLK)] $log_MCLK_divided_by_BCLK
+}
+
+proc validate_PARAM_VALUE.log_MCLK_divided_by_BCLK { PARAM_VALUE.log_MCLK_divided_by_BCLK } {
+	# Procedure called to validate log_MCLK_divided_by_BCLK
 	return true
 }
 
@@ -166,5 +180,10 @@ proc update_MODELPARAM_VALUE.BCLK_freq { MODELPARAM_VALUE.BCLK_freq PARAM_VALUE.
 proc update_MODELPARAM_VALUE.MCLK_divided_by_BCLK { MODELPARAM_VALUE.MCLK_divided_by_BCLK PARAM_VALUE.MCLK_divided_by_BCLK } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.MCLK_divided_by_BCLK}] ${MODELPARAM_VALUE.MCLK_divided_by_BCLK}
+}
+
+proc update_MODELPARAM_VALUE.log_MCLK_divided_by_BCLK { MODELPARAM_VALUE.log_MCLK_divided_by_BCLK PARAM_VALUE.log_MCLK_divided_by_BCLK } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.log_MCLK_divided_by_BCLK}] ${MODELPARAM_VALUE.log_MCLK_divided_by_BCLK}
 }
 
