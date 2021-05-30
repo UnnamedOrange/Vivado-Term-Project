@@ -3,7 +3,7 @@
 
 /// <projectname>mania-to-go</projectname>
 /// <modulename>audio_synthesis</modulename>
-/// <projectdescription>音频合成</projectdescription>
+/// <filedescription>音频合成。</filedescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
 /// </version>
