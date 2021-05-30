@@ -26,4 +26,30 @@
 
 更详细的时序说明暂时省略，可以参见 REQUEST_DATA 和 DATA_READY。
 
+AXI 页中的参数不要改。
+
 ## 编码与内部寄存器
+
+该模块通过 AXI4 总线与 CPU 进行通信，相关原理不进行研究，下图给出了一个可行的解决方案（[参考资料](https://blog.csdn.net/tangkunjyy/article/details/62045863)）。
+
+```mermaid
+sequenceDiagram
+CPU ->> (内存地址): cpu_data_transmitter 基地址
+(内存地址) ->> 寄存器: 写到“从寄存器”
+寄存器 ->> cpu_data_transmitter: 从“从寄存器”读
+cpu_data_transmitter ->> 寄存器: 写到主寄存器
+寄存器 ->> (内存地址): 从主寄存器读
+(内存地址) ->> CPU: cpu_data_transmitter 基地址
+CPU --> cpu_data_transmitter: AXI4
+```
+
+CPU 将数据写到 cpu_data_transmitter 的，自动生成的的 AXI4 相关代码会自动将写操作产生的数据保存到“从寄存器”中。而 CPU 需要读取数据时，数据来源于“主寄存器”。可见虽然地址一样，但是对应的数据是完全不同的，保存在了两组寄存器中。默认地（也不可修改），主寄存器和从寄存器的个数均为 4，各 128 比特（即每个寄存器是的 32 位）。
+
+由于不使用 AXI 总线其他的信号，因此需要通过对比寄存器的数据进行同步，下面介绍寄存器中数据的编码。
+
+### 从寄存器
+
+
+
+### 主寄存器
+
