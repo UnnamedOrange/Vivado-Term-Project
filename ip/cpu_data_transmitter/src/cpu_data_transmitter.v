@@ -52,6 +52,6 @@ module cpu_data_transmitter #
 	assign REGISTER_OUT_0 = 0;
 	assign REGISTER_OUT_1 = 0;
 	assign REGISTER_OUT_2 = 0;
-	assign REGISTER_OUT_3 = { REQUEST_DATA, 7'b0, INIT_AUX_INFO, INIT_INDEX };
+	assign REGISTER_OUT_3 = { REQUEST_DATA, 15'b0, INIT_AUX_INFO, INIT_INDEX };
 
 endmodule
