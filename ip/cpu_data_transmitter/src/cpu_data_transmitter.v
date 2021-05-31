@@ -33,13 +33,25 @@ module cpu_data_transmitter #
 	input CLK
 );
 
+	reg [27:0] progress;
+
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
-
+			progress <= 0;
 		end
 		else begin
-
+			if (REGISTER_IN_3[31])
+				progress <= REGISTER_IN_3[27:0];
+			else
+				progress <= 0;
 		end
 	end
+
+	assign DATA_OUT = REGISTER_IN_0[output_data_width - 1 : 0];
+	assign DATA_READY = progress != REGISTER_IN_3[27:0];
+	assign REGISTER_OUT_0 = 0;
+	assign REGISTER_OUT_1 = 0;
+	assign REGISTER_OUT_2 = 0;
+	assign REGISTER_OUT_3 = { REQUEST_DATA, 7'b0, INIT_AUX_INFO, INIT_INDEX };
 
 endmodule
