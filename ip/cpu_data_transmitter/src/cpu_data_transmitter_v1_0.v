@@ -1,5 +1,5 @@
-// Copyright (c) UnnamedOrange and Jack-Lyu. Licensed under the MIT Licence.
-// See the LICENSE file in the repository root for full licence text.
+// Copyright (c) UnnamedOrange and Jack-Lyu. Licensed under the MIT License.
+// See the LICENSE file in the repository root for full license text.
 
 /// <projectname>mania-to-go</projectname>
 /// <modulename>cpu_data_transmitter_v1_0</modulename>
