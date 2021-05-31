@@ -84,7 +84,8 @@ public:
 				{
 					total_read += sizeof(data_t);
 					Xil_Out32(base_addr, buf[st]);
-					Xil_Out32(base_addr + 12, total_read | (1 << 31) | ((total_read == file_size) << 28));
+					finished = total_read == file_size;
+					Xil_Out32(base_addr + 12, total_read | (1 << 31) | (finished << 28));
 					st = (st + 1) & buf_size_mask;
 				}
 			}
