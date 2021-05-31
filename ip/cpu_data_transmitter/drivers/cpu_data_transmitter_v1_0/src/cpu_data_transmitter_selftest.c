@@ -1,4 +1,3 @@
-
 /***************************** Include Files *******************************/
 #include "cpu_data_transmitter.h"
 #include "xparameters.h"

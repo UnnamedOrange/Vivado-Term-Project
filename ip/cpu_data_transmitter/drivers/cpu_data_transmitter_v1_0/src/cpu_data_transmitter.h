@@ -1,3 +1,5 @@
+// Copyright (c) UnnamedOrange and Jack-Lyu. Licensed under the MIT Licence.
+// See the LICENSE file in the repository root for full licence text.
 
 #ifndef CPU_DATA_TRANSMITTER_H
 #define CPU_DATA_TRANSMITTER_H
@@ -6,6 +8,7 @@
 /****************** Include Files ********************/
 #include "xil_types.h"
 #include "xstatus.h"
+#include "loop.h"
 
 #define CPU_DATA_TRANSMITTER_S00_AXI_SLV_REG0_OFFSET 0
 #define CPU_DATA_TRANSMITTER_S00_AXI_SLV_REG1_OFFSET 4
@@ -52,7 +55,7 @@
  *
  */
 #define CPU_DATA_TRANSMITTER_mReadReg(BaseAddress, RegOffset) \
-    Xil_In32((BaseAddress) + (RegOffset))
+	Xil_In32((BaseAddress) + (RegOffset))
 
 /************************** Function Prototypes ****************************/
 /**
