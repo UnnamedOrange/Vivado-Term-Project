@@ -52,6 +52,22 @@
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_verilogtestbench</spirit:name>
+        <spirit:displayName>Verilog Test Bench</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation.testbench</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>uut_basic</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_verilogtestbench_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>2d4ea8fd</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
     </spirit:views>
     <spirit:ports>
       <spirit:port>
@@ -217,6 +233,7 @@
         <spirit:name>src/audio_synthesis.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>CHECKSUM_428f6477</spirit:userFileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -226,6 +243,16 @@
         <spirit:name>src/audio_synthesis.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+    </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_verilogtestbench_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/uut_basic.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_testbench</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -270,11 +297,11 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:audio_synthesis_t:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-05-31T10:36:48Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-05-31T13:43:19Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="1e2456ea"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="c32d37a2"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="17f4cfde"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="8c70f7c4"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="fa2fb2bb"/>
