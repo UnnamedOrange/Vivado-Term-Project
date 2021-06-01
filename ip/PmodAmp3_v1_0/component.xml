@@ -80,7 +80,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>eb7df8db</spirit:value>
+            <spirit:value>146e4471</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -105,14 +105,14 @@
         <spirit:displayName>Verilog Simulation</spirit:displayName>
         <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation</spirit:envIdentifier>
         <spirit:language>verilog</spirit:language>
-        <spirit:modelName>uut_basic_timing</spirit:modelName>
+        <spirit:modelName>PmodAMP3</spirit:modelName>
         <spirit:fileSetRef>
           <spirit:localName>xilinx_verilogbehavioralsimulation_view_fileset</spirit:localName>
         </spirit:fileSetRef>
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>eb7df8db</spirit:value>
+            <spirit:value>146e4471</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -319,7 +319,8 @@
       <spirit:file>
         <spirit:name>src/PmodAMP3.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_eb7df8db</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_146e4471</spirit:userFileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -328,6 +329,8 @@
       <spirit:file>
         <spirit:name>src/uut_basic_timing.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_testbench</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
@@ -452,12 +455,12 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:PmodAMP3:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-05-31T10:34:00Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-01T13:09:57Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="106bfcc0"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="5e3c300e"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="8bda860d"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="fea9cea1"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="1e6916fa"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="2c1327ba"/>

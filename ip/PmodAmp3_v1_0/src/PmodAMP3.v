@@ -7,6 +7,7 @@
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
 /// 0.0.2 (UnnamedOrange) : 根据仿真修正代码。
+/// 0.0.3 (UnnamedOrange) : 修正 BCLK 工作在了上升沿的错误，应该工作在下降沿。
 /// </version>
 
 `timescale 1ns / 1ps
@@ -84,7 +85,7 @@ module PmodAMP3 #
 			is_LRCLK_right <= 0;
 			is_left <= 0;
 		end
-		else if (divide_to_bclk == MCLK_divided_by_BCLK - 1) begin // BCLK 上升沿后的第一个时钟时。
+		else if (divide_to_bclk == (MCLK_divided_by_BCLK >> 1) - 1) begin // BCLK 下降沿后的第一个时钟时。
 			if (current_bit == 0) begin
 				if (is_LRCLK_right == 0) // 准备读入新的数据。
 					if (sync_en)
