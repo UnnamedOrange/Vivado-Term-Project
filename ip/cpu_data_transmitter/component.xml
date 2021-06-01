@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>c4e56b38</spirit:value>
+            <spirit:value>f51ce3df</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -282,7 +282,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>c4e56b38</spirit:value>
+            <spirit:value>f51ce3df</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -296,7 +296,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>a59b7a86</spirit:value>
+            <spirit:value>4393c741</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -325,6 +325,22 @@
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
             <spirit:value>16328387</spirit:value>
+          </spirit:parameter>
+        </spirit:parameters>
+      </spirit:view>
+      <spirit:view>
+        <spirit:name>xilinx_verilogtestbench</spirit:name>
+        <spirit:displayName>Verilog Test Bench</spirit:displayName>
+        <spirit:envIdentifier>verilogSource:vivado.xilinx.com:simulation.testbench</spirit:envIdentifier>
+        <spirit:language>verilog</spirit:language>
+        <spirit:modelName>uut_cpu_data_transmitter</spirit:modelName>
+        <spirit:fileSetRef>
+          <spirit:localName>xilinx_verilogtestbench_view_fileset</spirit:localName>
+        </spirit:fileSetRef>
+        <spirit:parameters>
+          <spirit:parameter>
+            <spirit:name>viewChecksum</spirit:name>
+            <spirit:value>776b5bfd</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -856,6 +872,16 @@
         <spirit:fileType>tclSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
+    <spirit:fileSet>
+      <spirit:name>xilinx_verilogtestbench_view_fileset</spirit:name>
+      <spirit:file>
+        <spirit:name>src/uut_cpu_data_transmitter.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_simulation</spirit:userFileType>
+        <spirit:userFileType>USED_IN_testbench</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+    </spirit:fileSet>
   </spirit:fileSets>
   <spirit:description>CPU data transmitter.</spirit:description>
   <spirit:parameters>
@@ -932,13 +958,13 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:cpu_data_transmitter:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-01T02:16:44Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-01T12:21:44Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="7a63f3fc"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="7b6e8069"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="5471d81c"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="75685a74"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="02147304"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="1a9c8c39"/>

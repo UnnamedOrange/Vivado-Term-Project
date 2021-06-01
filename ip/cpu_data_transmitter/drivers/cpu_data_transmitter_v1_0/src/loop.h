@@ -6,18 +6,12 @@
 
 #include "xil_io.h"
 
-template <typename data_t, size_t buf_size>
+template <typename data_t>
 class loop_t
 {
-	static constexpr size_t buf_size_mask = buf_size - 1;
-
 	UINTPTR base_addr;
-	data_t buf[buf_size];
-	const data_t *buf_addr = buf;
-	size_t st{}, ed{};
 	u32 file_size{};
 	u32 total_read{};
-	u32 total_output{};
 
 	bool inited{};
 	u8 init_index{};
@@ -26,12 +20,8 @@ class loop_t
 	bool finished{};
 
 public:
-	loop_t(UINTPTR base_addr) : base_addr(base_addr), buf()
+	loop_t(UINTPTR base_addr) : base_addr(base_addr)
 	{
-		static_assert((buf_size & (-buf_size)) == buf_size,
-					  "buf_size should be 2 to the power of n.");
-		static_assert(buf_size * sizeof(data_t) <= 512,
-					  "The stack space is limited!");
 	}
 
 	void loop()
@@ -74,21 +64,15 @@ public:
 		{
 			if (!finished)
 			{
-				if (total_read < file_size && buf_size - ((buf_size + ed - st) & buf_size_mask) > 1)
+				if ((status & (1 << 31)) && total_read < file_size)
 				{
 					u32 read;
-					file.fsread(buf + ed, sizeof(data_t), &read);
+					data_t buf;
+					file.fsread(&buf, sizeof(data_t), &read);
 					total_read += read;
-					ed = (ed + 1) & buf_size_mask;
-				}
-
-				if (st != ed && (status & (1 << 31)))
-				{
-					total_output += sizeof(data_t);
-					Xil_Out32(base_addr, buf[st]);
-					finished = total_output >= file_size;
-					Xil_Out32(base_addr + 12, total_output | (1 << 31) | (finished << 28));
-					st = (st + 1) & buf_size_mask;
+					Xil_Out32(base_addr, buf);
+					finished = total_read >= file_size;
+					Xil_Out32(base_addr + 12, total_read | (1 << 31) | (finished << 28));
 				}
 			}
 		}

@@ -13,7 +13,10 @@
 module cpu_data_transmitter #
 (
 	parameter data_width = 32,
-	parameter output_data_width = 8
+	parameter output_data_width = 8,
+	parameter log_buf_size = 2,
+	parameter buf_size = 1 << log_buf_size,
+	parameter buf_size_mask = buf_size - 1
 )
 (
 	output [output_data_width - 1 : 0] DATA_OUT,
@@ -34,24 +37,48 @@ module cpu_data_transmitter #
 );
 
 	reg [27:0] progress;
+	reg [output_data_width * buf_size - 1 : 0] buffer, next_buffer;
+	reg [log_buf_size - 1 : 0] st, next_st, ed, next_ed;
+
+	reg request_data_from_host;
 
 	always @(posedge CLK) begin
-		if (!RESET_L) begin
+		if (!RESET_L || !REGISTER_IN_3[31]) begin
 			progress <= 0;
+			buffer <= 0;
+			st <= 0;
+			ed <= 0;
 		end
 		else begin
-			if (REGISTER_IN_3[31])
-				progress <= REGISTER_IN_3[27:0];
-			else
-				progress <= 0;
+			// 新数据一定在一个时钟周期内获得。
+			progress <= REGISTER_IN_3[27:0];
+			buffer <= next_buffer;
+			st <= next_st;
+			ed <= next_ed;
 		end
 	end
 
-	assign DATA_OUT = REGISTER_IN_0[output_data_width - 1 : 0];
-	assign DATA_READY = progress != REGISTER_IN_3[27:0];
+	always @* begin
+		next_buffer = buffer;
+		next_st = st;
+		next_ed = ed;
+		// 更新是否需要继续填充缓冲区。
+		request_data_from_host = (buf_size - ((buf_size + ed - st) & buf_size_mask)) > 1;
+		// 更新出队列。
+		if (REQUEST_DATA && st != ed)
+			next_st = (st + 1) & buf_size_mask;
+		// 更新入队列。
+		if (progress < REGISTER_IN_3[27:0]) begin
+			next_buffer[ed * output_data_width +: output_data_width] = REGISTER_IN_0[output_data_width - 1 : 0];
+			next_ed = (ed + 1) & buf_size_mask;
+		end
+	end
+
+	assign DATA_OUT = buffer[st * output_data_width +: output_data_width];
+	assign DATA_READY = REQUEST_DATA && st != ed;
 	assign REGISTER_OUT_0 = 0;
 	assign REGISTER_OUT_1 = 0;
 	assign REGISTER_OUT_2 = 0;
-	assign REGISTER_OUT_3 = { REQUEST_DATA, 15'b0, INIT_AUX_INFO, INIT_INDEX };
+	assign REGISTER_OUT_3 = { request_data_from_host, 15'b0, INIT_AUX_INFO, INIT_INDEX };
 
 endmodule
