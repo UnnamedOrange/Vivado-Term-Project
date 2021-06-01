@@ -54,7 +54,7 @@ public:
 				filename[i] = filename[j];
 				filename[j] = t;
 			}
-			filename[length++] = '.';
+			filename[length++] = '/';
 
 			constexpr const char *names[2] =
 				{".song", ".beatmap"};
