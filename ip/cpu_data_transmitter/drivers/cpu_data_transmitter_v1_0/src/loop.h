@@ -17,6 +17,7 @@ class loop_t
 	size_t st{}, ed{};
 	u32 file_size{};
 	u32 total_read{};
+	u32 total_output{};
 
 	bool inited{};
 	u8 init_index{};
@@ -73,19 +74,20 @@ public:
 		{
 			if (!finished)
 			{
-				if (buf_size - ((buf_size + ed - st) & buf_size_mask) > 1)
+				if (total_read < file_size && buf_size - ((buf_size + ed - st) & buf_size_mask) > 1)
 				{
 					u32 read;
 					file.fsread(buf + ed, sizeof(data_t), &read);
+					total_read += read;
 					ed = (ed + 1) & buf_size_mask;
 				}
 
 				if (st != ed && (status & (1 << 31)))
 				{
-					total_read += sizeof(data_t);
+					total_output += sizeof(data_t);
 					Xil_Out32(base_addr, buf[st]);
-					finished = total_read == file_size;
-					Xil_Out32(base_addr + 12, total_read | (1 << 31) | (finished << 28));
+					finished = total_output >= file_size;
+					Xil_Out32(base_addr + 12, total_output | (1 << 31) | (finished << 28));
 					st = (st + 1) & buf_size_mask;
 				}
 			}
