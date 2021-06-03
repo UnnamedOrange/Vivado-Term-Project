@@ -57,6 +57,7 @@ public:
 
 			file.fsopen(filename, FA_READ);
 			file_size = file.fssize();
+			Xil_Out32(base_addr + 12, 0);
 
 			inited = true;
 		}
