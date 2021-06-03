@@ -14,6 +14,7 @@ module cpu_data_transmitter_v1_0 #
 (
 	// Users to add parameters here
 	parameter output_data_width = 8,
+	parameter log_buf_size = 4,
 	// User parameters ends
 	// Do not modify the parameters beyond this line
 
@@ -59,6 +60,7 @@ module cpu_data_transmitter_v1_0 #
 	// Instantiation of Axi Bus Interface S00_AXI
 	cpu_data_transmitter_v1_0_S00_AXI # (
 		.output_data_width(output_data_width),
+		.log_buf_size(log_buf_size),
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
 		.C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
 	) cpu_data_transmitter_v1_0_S00_AXI_inst (

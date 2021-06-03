@@ -13,7 +13,7 @@ module uut_cpu_data_transmitter #
 (
 	parameter data_width = 32,
 	parameter output_data_width = 8,
-	parameter log_buf_size = 2,
+	parameter log_buf_size = 4,
 	parameter buf_size = 1 << log_buf_size,
 	parameter buf_size_mask = buf_size - 1
 )
@@ -87,7 +87,6 @@ module uut_cpu_data_transmitter #
 		#5;
 		REGISTER_IN_0 = 3;
 		REGISTER_IN_3 = {1'b1, 3'b0, 28'd3};
-		REQUEST_DATA = 1;
 		#5;
 		REGISTER_IN_0 = 4;
 		REGISTER_IN_3 = {1'b1, 3'b0, 28'd4};
@@ -103,9 +102,40 @@ module uut_cpu_data_transmitter #
 		#5;
 		REGISTER_IN_0 = 8;
 		REGISTER_IN_3 = {1'b1, 3'b0, 28'd8};
+		REQUEST_DATA = 1;
 		#5;
 		REGISTER_IN_0 = 9;
 		REGISTER_IN_3 = {1'b1, 3'b0, 28'd9};
+		#5;
+		REGISTER_IN_0 = 10;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd10};
+		#5;
+		REGISTER_IN_0 = 11;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd11};
+		#5;
+		REGISTER_IN_0 = 12;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd12};
+		#5;
+		REGISTER_IN_0 = 13;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd13};
+		#5;
+		REGISTER_IN_0 = 14;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd14};
+		#5;
+		REGISTER_IN_0 = 15;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd15};
+		#5;
+		REGISTER_IN_0 = 16;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd16};
+		#5;
+		REGISTER_IN_0 = 17;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd17};
+		#5;
+		REGISTER_IN_0 = 18;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd18};
+		#5;
+		REGISTER_IN_0 = 19;
+		REGISTER_IN_3 = {1'b1, 3'b0, 28'd19};
 		$stop(1);
 	end
 

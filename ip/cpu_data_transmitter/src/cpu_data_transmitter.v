@@ -6,6 +6,7 @@
 /// <filedescription>CPU 数据传输器。</filedescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
+/// 0.0.2 (UnnamedOrange) : 增大缓冲区大小。将输出改为同步输出。
 /// </version>
 
 `timescale 1 ns / 1 ps
@@ -14,13 +15,13 @@ module cpu_data_transmitter #
 (
 	parameter data_width = 32,
 	parameter output_data_width = 8,
-	parameter log_buf_size = 2,
+	parameter log_buf_size = 4,
 	parameter buf_size = 1 << log_buf_size,
 	parameter buf_size_mask = buf_size - 1
 )
 (
-	output [output_data_width - 1 : 0] DATA_OUT,
-	output DATA_READY,
+	output reg [output_data_width - 1 : 0] DATA_OUT,
+	output reg DATA_READY,
 	input REQUEST_DATA,
 	input [7:0] INIT_INDEX,
 	input [7:0] INIT_AUX_INFO,
@@ -48,6 +49,8 @@ module cpu_data_transmitter #
 			buffer <= 0;
 			st <= 0;
 			ed <= 0;
+			DATA_OUT <= 0;
+			DATA_READY <= 0;
 		end
 		else begin
 			// 新数据一定在一个时钟周期内获得。
@@ -55,6 +58,9 @@ module cpu_data_transmitter #
 			buffer <= next_buffer;
 			st <= next_st;
 			ed <= next_ed;
+			if (REQUEST_DATA && st != ed)
+				DATA_OUT <= next_buffer[st * output_data_width +: output_data_width];
+			DATA_READY <= REQUEST_DATA && st != ed;
 		end
 	end
 
@@ -74,8 +80,6 @@ module cpu_data_transmitter #
 		end
 	end
 
-	assign DATA_OUT = buffer[st * output_data_width +: output_data_width];
-	assign DATA_READY = REQUEST_DATA && st != ed;
 	assign REGISTER_OUT_0 = 0;
 	assign REGISTER_OUT_1 = 0;
 	assign REGISTER_OUT_2 = 0;

@@ -14,6 +14,7 @@ module cpu_data_transmitter_v1_0_S00_AXI #
 (
 	// Users to add parameters here
 	parameter output_data_width = 8,
+	parameter log_buf_size = 4,
 	// User parameters ends
 	// Do not modify the parameters beyond this line
 
@@ -416,7 +417,8 @@ module cpu_data_transmitter_v1_0_S00_AXI #
 
 	// Add user logic here
 	cpu_data_transmitter # (
-		.output_data_width(output_data_width)
+		.output_data_width(output_data_width),
+		.log_buf_size(log_buf_size)
 	) U1 (
 		.DATA_OUT(DATA_OUT),
 		.DATA_READY(DATA_READY),

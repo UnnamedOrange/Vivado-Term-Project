@@ -17,7 +17,18 @@ proc init_gui { IPINST } {
   set output_data_width [ipgui::add_param $IPINST -name "output_data_width" -parent ${Page_1} -widget comboBox]
   set_property tooltip {输出数据的位宽，以比特为单位。可以选择一次输出 1 字节、2 字节、4 字节。} ${output_data_width}
 
+  set log_buf_size [ipgui::add_param $IPINST -name "log_buf_size"]
+  set_property tooltip {缓冲区大小的对数。} ${log_buf_size}
 
+}
+
+proc update_PARAM_VALUE.log_buf_size { PARAM_VALUE.log_buf_size } {
+	# Procedure called to update log_buf_size when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.log_buf_size { PARAM_VALUE.log_buf_size } {
+	# Procedure called to validate log_buf_size
+	return true
 }
 
 proc update_PARAM_VALUE.output_data_width { PARAM_VALUE.output_data_width } {
@@ -79,5 +90,10 @@ proc update_MODELPARAM_VALUE.C_S00_AXI_ADDR_WIDTH { MODELPARAM_VALUE.C_S00_AXI_A
 proc update_MODELPARAM_VALUE.output_data_width { MODELPARAM_VALUE.output_data_width PARAM_VALUE.output_data_width } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.output_data_width}] ${MODELPARAM_VALUE.output_data_width}
+}
+
+proc update_MODELPARAM_VALUE.log_buf_size { MODELPARAM_VALUE.log_buf_size PARAM_VALUE.log_buf_size } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.log_buf_size}] ${MODELPARAM_VALUE.log_buf_size}
 }
 
