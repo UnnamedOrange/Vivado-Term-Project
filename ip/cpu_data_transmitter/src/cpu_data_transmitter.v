@@ -7,6 +7,7 @@
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
 /// 0.0.2 (UnnamedOrange) : 增大缓冲区大小。将输出改为同步输出。
+/// 0.0.3 (UnnamedOrange) : 增加一些调试用输出。
 /// </version>
 
 `timescale 1 ns / 1 ps
@@ -22,6 +23,8 @@ module cpu_data_transmitter #
 (
 	output reg [output_data_width - 1 : 0] DATA_OUT,
 	output reg DATA_READY,
+	output reg DEBUG_DATA_FROM_CPU_READY,
+	output reg [15:0] DEBUG_BUFFER_SIZE,
 	input REQUEST_DATA,
 	input [7:0] INIT_INDEX,
 	input [7:0] INIT_AUX_INFO,
@@ -40,6 +43,8 @@ module cpu_data_transmitter #
 	reg [27:0] progress;
 	reg [output_data_width * buf_size - 1 : 0] buffer, next_buffer;
 	reg [log_buf_size - 1 : 0] st, next_st, ed, next_ed;
+	reg next_debug_data_from_cpu_ready;
+	reg [15:0] next_debug_buffer_size;
 
 	reg request_data_from_host;
 
@@ -51,6 +56,9 @@ module cpu_data_transmitter #
 			ed <= 0;
 			DATA_OUT <= 0;
 			DATA_READY <= 0;
+
+			DEBUG_DATA_FROM_CPU_READY <= 0;
+			DEBUG_BUFFER_SIZE <= 0;
 		end
 		else begin
 			// 新数据一定在一个时钟周期内获得。
@@ -61,6 +69,8 @@ module cpu_data_transmitter #
 			if (REQUEST_DATA && st != ed)
 				DATA_OUT <= next_buffer[st * output_data_width +: output_data_width];
 			DATA_READY <= REQUEST_DATA && st != ed;
+			DEBUG_DATA_FROM_CPU_READY <= next_debug_data_from_cpu_ready;
+			DEBUG_BUFFER_SIZE = next_debug_buffer_size;
 		end
 	end
 
@@ -70,6 +80,8 @@ module cpu_data_transmitter #
 		next_ed = ed;
 		// 更新是否需要继续填充缓冲区。
 		request_data_from_host = (buf_size - ((buf_size + ed - st) & buf_size_mask)) > 1;
+		// 更新当前队列大小。
+		next_debug_buffer_size = (buf_size + ed - st) & buf_size_mask;
 		// 更新出队列。
 		if (REQUEST_DATA && st != ed)
 			next_st = (st + 1) & buf_size_mask;
@@ -77,7 +89,10 @@ module cpu_data_transmitter #
 		if (progress < REGISTER_IN_3[27:0]) begin
 			next_buffer[ed * output_data_width +: output_data_width] = REGISTER_IN_0[output_data_width - 1 : 0];
 			next_ed = (ed + 1) & buf_size_mask;
+			next_debug_data_from_cpu_ready = 1;
 		end
+		else
+			next_debug_data_from_cpu_ready = 0;
 	end
 
 	assign REGISTER_OUT_0 = 0;

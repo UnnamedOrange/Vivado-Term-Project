@@ -27,6 +27,8 @@ module cpu_data_transmitter_v1_0 #
 	// Users to add ports here
 	output [output_data_width - 1 : 0] DATA_OUT,
 	output DATA_READY,
+	output DEBUG_DATA_FROM_CPU_READY,
+	output [15:0] DEBUG_BUFFER_SIZE,
 	input REQUEST_DATA,
 	input [7:0] INIT_INDEX,
 	input [7:0] INIT_AUX_INFO,
@@ -66,6 +68,8 @@ module cpu_data_transmitter_v1_0 #
 	) cpu_data_transmitter_v1_0_S00_AXI_inst (
 		.DATA_OUT(DATA_OUT),
 		.DATA_READY(DATA_READY),
+		.DEBUG_DATA_FROM_CPU_READY(DEBUG_DATA_FROM_CPU_READY),
+		.DEBUG_BUFFER_SIZE(DEBUG_BUFFER_SIZE),
 		.REQUEST_DATA(REQUEST_DATA),
 		.INIT_INDEX(INIT_INDEX),
 		.INIT_AUX_INFO(INIT_AUX_INFO),
