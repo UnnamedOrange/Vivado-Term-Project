@@ -19,10 +19,10 @@ module audio_synthesis_t #
 	output [resolution_output - 1 : 0] AUDIO_OUT,
 	input [resolution_input - 1 : 0] MAIN_AUDIO_IN,
 	input MAIN_AUDIO_EN,
-	input [3:0] MAIN_AUDIO_VOLUMN,
+	input [4:0] MAIN_AUDIO_VOLUMN,
 	input [resolution_input - 1 : 0] AUX_AUDIO_IN,
 	input AUX_AUDIO_EN,
-	input [3:0] AUX_AUDIO_VOLUMN,
+	input [4:0] AUX_AUDIO_VOLUMN,
 	input EN
 );
 

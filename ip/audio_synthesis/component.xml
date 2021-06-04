@@ -32,7 +32,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>428f6477</spirit:value>
+            <spirit:value>10d07b35</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -48,7 +48,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>428f6477</spirit:value>
+            <spirit:value>10d07b35</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -122,7 +122,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">3</spirit:left>
+            <spirit:left spirit:format="long">4</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -169,7 +169,7 @@
         <spirit:wire>
           <spirit:direction>in</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long">3</spirit:left>
+            <spirit:left spirit:format="long">4</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -232,7 +232,7 @@
       <spirit:file>
         <spirit:name>src/audio_synthesis.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_428f6477</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_10d07b35</spirit:userFileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
@@ -297,12 +297,12 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:audio_synthesis_t:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-05-31T13:43:19Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-04T03:24:32Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="c32d37a2"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="17f4cfde"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="188f4a79"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="4cf37195"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="8c70f7c4"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="fa2fb2bb"/>
     </xilinx:packagingInfo>
