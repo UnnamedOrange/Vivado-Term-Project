@@ -17,7 +17,6 @@ class loop_t
 	u8 init_index{};
 	u8 init_aux_info{};
 	DFILE file;
-	bool finished{};
 
 public:
 	loop_t(UINTPTR base_addr) : base_addr(base_addr)
@@ -30,6 +29,7 @@ public:
 		if (status & (1 << 31))
 		{
 			inited = false;
+			total_read = 0;
 			return true;
 		}
 		if (!inited)
@@ -68,18 +68,14 @@ public:
 		}
 		else
 		{
-			if (!finished)
+			if ((status & (1 << 30)) && total_read < file_size)
 			{
-				if ((status & (1 << 30)) && total_read < file_size)
-				{
-					u32 read;
-					data_t buf;
-					file.fsread(&buf, sizeof(data_t), &read);
-					total_read += read;
-					Xil_Out32(base_addr, buf);
-					finished = total_read >= file_size;
-					Xil_Out32(base_addr + 12, total_read | (1 << 31) | (finished << 28));
-				}
+				u32 read;
+				data_t buf;
+				file.fsread(&buf, sizeof(data_t), &read);
+				total_read += read;
+				Xil_Out32(base_addr, buf);
+				Xil_Out32(base_addr + 12, total_read | (1 << 31) | ((total_read >= file_size) << 28));
 			}
 		}
 		return true;
