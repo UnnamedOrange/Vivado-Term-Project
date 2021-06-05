@@ -24,9 +24,14 @@ public:
 	{
 	}
 
-	void loop()
+	bool loop()
 	{
 		u32 status = Xil_In32(base_addr + 12);
+		if (status & (1 << 31))
+		{
+			inited = false;
+			return true;
+		}
 		if (!inited)
 		{
 			init_index = status & 255;
@@ -65,7 +70,7 @@ public:
 		{
 			if (!finished)
 			{
-				if ((status & (1 << 31)) && total_read < file_size)
+				if ((status & (1 << 30)) && total_read < file_size)
 				{
 					u32 read;
 					data_t buf;
@@ -77,6 +82,7 @@ public:
 				}
 			}
 		}
+		return true;
 	}
 };
 

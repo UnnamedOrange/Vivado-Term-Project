@@ -14,7 +14,6 @@ module cpu_data_transmitter_v1_0 #
 (
 	// Users to add parameters here
 	parameter output_data_width = 8,
-	parameter log_buf_size = 4,
 	// User parameters ends
 	// Do not modify the parameters beyond this line
 
@@ -27,9 +26,8 @@ module cpu_data_transmitter_v1_0 #
 	// Users to add ports here
 	output [output_data_width - 1 : 0] DATA_OUT,
 	output DATA_READY,
-	output DEBUG_DATA_FROM_CPU_READY,
-	output [15:0] DEBUG_BUFFER_SIZE,
 	input REQUEST_DATA,
+	input RESTART,
 	input [7:0] INIT_INDEX,
 	input [7:0] INIT_AUX_INFO,
 	// User ports ends
@@ -62,15 +60,13 @@ module cpu_data_transmitter_v1_0 #
 	// Instantiation of Axi Bus Interface S00_AXI
 	cpu_data_transmitter_v1_0_S00_AXI # (
 		.output_data_width(output_data_width),
-		.log_buf_size(log_buf_size),
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
 		.C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
 	) cpu_data_transmitter_v1_0_S00_AXI_inst (
 		.DATA_OUT(DATA_OUT),
 		.DATA_READY(DATA_READY),
-		.DEBUG_DATA_FROM_CPU_READY(DEBUG_DATA_FROM_CPU_READY),
-		.DEBUG_BUFFER_SIZE(DEBUG_BUFFER_SIZE),
 		.REQUEST_DATA(REQUEST_DATA),
+		.RESTART(RESTART),
 		.INIT_INDEX(INIT_INDEX),
 		.INIT_AUX_INFO(INIT_AUX_INFO),
 		.S_AXI_ACLK(s00_axi_aclk),

@@ -21,9 +21,8 @@ module uut_cpu_data_transmitter #
 
 	wire [output_data_width - 1 : 0] DATA_OUT;
 	wire DATA_READY;
-	wire DEBUG_DATA_FROM_CPU_READY;
-	wire [15:0] DEBUG_BUFFER_SIZE;
 	reg REQUEST_DATA;
+	reg RESTART;
 	reg [7:0] INIT_INDEX;
 	reg [7:0] INIT_AUX_INFO;
 	wire [data_width - 1 : 0] REGISTER_OUT_0;
@@ -46,9 +45,8 @@ module uut_cpu_data_transmitter #
 	) U1 (
 		.DATA_OUT(DATA_OUT),
 		.DATA_READY(DATA_READY),
-		.DEBUG_DATA_FROM_CPU_READY(DEBUG_DATA_FROM_CPU_READY),
-		.DEBUG_BUFFER_SIZE(DEBUG_BUFFER_SIZE),
 		.REQUEST_DATA(REQUEST_DATA),
+		.RESTART(RESTART),
 		.INIT_INDEX(INIT_INDEX),
 		.INIT_AUX_INFO(INIT_AUX_INFO),
 		.REGISTER_OUT_0(REGISTER_OUT_0),

@@ -8,6 +8,7 @@
 /// 0.0.1 (UnnamedOrange) : First commit.
 /// 0.0.2 (UnnamedOrange) : 增大缓冲区大小。将输出改为同步输出。
 /// 0.0.3 (UnnamedOrange) : 增加一些调试用输出。
+/// 0.0.4 (UnnamedOrange) : 回退到无缓冲区的模式。使用新的编码。
 /// </version>
 
 `timescale 1 ns / 1 ps
@@ -15,17 +16,13 @@
 module cpu_data_transmitter #
 (
 	parameter data_width = 32,
-	parameter output_data_width = 8,
-	parameter log_buf_size = 4,
-	parameter buf_size = 1 << log_buf_size,
-	parameter buf_size_mask = buf_size - 1
+	parameter output_data_width = 8
 )
 (
-	output reg [output_data_width - 1 : 0] DATA_OUT,
-	output reg DATA_READY,
-	output reg DEBUG_DATA_FROM_CPU_READY,
-	output reg [15:0] DEBUG_BUFFER_SIZE,
+	output [output_data_width - 1 : 0] DATA_OUT,
+	output DATA_READY,
 	input REQUEST_DATA,
+	input RESTART,
 	input [7:0] INIT_INDEX,
 	input [7:0] INIT_AUX_INFO,
 	output [data_width - 1 : 0] REGISTER_OUT_0,
@@ -41,63 +38,24 @@ module cpu_data_transmitter #
 );
 
 	reg [27:0] progress;
-	reg [output_data_width * buf_size - 1 : 0] buffer, next_buffer;
-	reg [log_buf_size - 1 : 0] st, next_st, ed, next_ed;
-	reg next_debug_data_from_cpu_ready;
-	reg [15:0] next_debug_buffer_size;
-
-	reg request_data_from_host;
 
 	always @(posedge CLK) begin
 		if (!RESET_L || !REGISTER_IN_3[31]) begin
 			progress <= 0;
-			buffer <= 0;
-			st <= 0;
-			ed <= 0;
-			DATA_OUT <= 0;
-			DATA_READY <= 0;
-
-			DEBUG_DATA_FROM_CPU_READY <= 0;
-			DEBUG_BUFFER_SIZE <= 0;
 		end
 		else begin
-			// 新数据一定在一个时钟周期内获得。
-			progress <= REGISTER_IN_3[27:0];
-			buffer <= next_buffer;
-			st <= next_st;
-			ed <= next_ed;
-			if (REQUEST_DATA && st != ed)
-				DATA_OUT <= next_buffer[st * output_data_width +: output_data_width];
-			DATA_READY <= REQUEST_DATA && st != ed;
-			DEBUG_DATA_FROM_CPU_READY <= next_debug_data_from_cpu_ready;
-			DEBUG_BUFFER_SIZE = next_debug_buffer_size;
+			if (REGISTER_IN_3[31])
+				progress <= REGISTER_IN_3[27:0];
+			else
+				progress <= 0;
 		end
 	end
 
-	always @* begin
-		next_buffer = buffer;
-		next_st = st;
-		next_ed = ed;
-		// 更新是否需要继续填充缓冲区。
-		request_data_from_host = (buf_size - ((buf_size + ed - st) & buf_size_mask)) > 1;
-		// 更新当前队列大小。
-		next_debug_buffer_size = (buf_size + ed - st) & buf_size_mask;
-		// 更新出队列。
-		if (REQUEST_DATA && st != ed)
-			next_st = (st + 1) & buf_size_mask;
-		// 更新入队列。
-		if (progress < REGISTER_IN_3[27:0]) begin
-			next_buffer[ed * output_data_width +: output_data_width] = REGISTER_IN_0[output_data_width - 1 : 0];
-			next_ed = (ed + 1) & buf_size_mask;
-			next_debug_data_from_cpu_ready = 1;
-		end
-		else
-			next_debug_data_from_cpu_ready = 0;
-	end
-
+	assign DATA_OUT = REGISTER_IN_0[output_data_width - 1 : 0];
+	assign DATA_READY = progress != REGISTER_IN_3[27:0];
 	assign REGISTER_OUT_0 = 0;
 	assign REGISTER_OUT_1 = 0;
 	assign REGISTER_OUT_2 = 0;
-	assign REGISTER_OUT_3 = { request_data_from_host, 15'b0, INIT_AUX_INFO, INIT_INDEX };
+	assign REGISTER_OUT_3 = { RESTART, REQUEST_DATA, 14'b0, INIT_AUX_INFO, INIT_INDEX };
 
 endmodule

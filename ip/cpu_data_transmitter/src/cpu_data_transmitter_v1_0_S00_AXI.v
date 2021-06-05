@@ -14,7 +14,6 @@ module cpu_data_transmitter_v1_0_S00_AXI #
 (
 	// Users to add parameters here
 	parameter output_data_width = 8,
-	parameter log_buf_size = 4,
 	// User parameters ends
 	// Do not modify the parameters beyond this line
 
@@ -27,9 +26,8 @@ module cpu_data_transmitter_v1_0_S00_AXI #
 	// Users to add ports here
 	output [output_data_width - 1 : 0] DATA_OUT,
 	output DATA_READY,
-	output DEBUG_DATA_FROM_CPU_READY,
-	output [15:0] DEBUG_BUFFER_SIZE,
 	input REQUEST_DATA,
+	input RESTART,
 	input [7:0] INIT_INDEX,
 	input [7:0] INIT_AUX_INFO,
 	// User ports ends
@@ -419,14 +417,12 @@ module cpu_data_transmitter_v1_0_S00_AXI #
 
 	// Add user logic here
 	cpu_data_transmitter # (
-		.output_data_width(output_data_width),
-		.log_buf_size(log_buf_size)
+		.output_data_width(output_data_width)
 	) U1 (
 		.DATA_OUT(DATA_OUT),
 		.DATA_READY(DATA_READY),
-		.DEBUG_DATA_FROM_CPU_READY(DEBUG_DATA_FROM_CPU_READY),
-		.DEBUG_BUFFER_SIZE(DEBUG_BUFFER_SIZE),
 		.REQUEST_DATA(REQUEST_DATA),
+		.RESTART(RESTART),
 		.INIT_INDEX(INIT_INDEX),
 		.INIT_AUX_INFO(INIT_AUX_INFO),
 		.REGISTER_OUT_0(mst_reg0),
