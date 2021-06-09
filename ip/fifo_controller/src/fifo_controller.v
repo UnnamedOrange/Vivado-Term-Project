@@ -30,12 +30,14 @@ module fifo_controller_t #
 	output C_RESTART,
 	input [data_width - 1 : 0] C_DATA_OUT,
 	input C_DATA_READY,
+	input C_TRANSMIT_FINISHED,
 
 	// 对外的输入输出。
 	input REQUEST_DATA,
 	input RESTART,
 	output [data_width - 1 : 0] DATA_OUT,
 	output DATA_READY,
+	output TRANSMIT_FINISHED,
 
 	// 复位。
 	input RESET_L
@@ -56,5 +58,6 @@ module fifo_controller_t #
 	assign Q_REN = REQUEST_DATA && !Q_EMPTY;
 	assign DATA_OUT = Q_OUT;
 	assign DATA_READY = Q_VALID;
+	assign TRANSMIT_FINISHED = C_TRANSMIT_FINISHED && Q_EMPTY;
 
 endmodule
