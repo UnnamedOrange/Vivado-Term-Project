@@ -26,6 +26,7 @@ module cpu_data_transmitter_v1_0 #
 	// Users to add ports here
 	output [output_data_width - 1 : 0] DATA_OUT,
 	output DATA_READY,
+	output TRANSMIT_FINISHED,
 	input REQUEST_DATA,
 	input RESTART,
 	input [7:0] INIT_INDEX,
@@ -65,6 +66,7 @@ module cpu_data_transmitter_v1_0 #
 	) cpu_data_transmitter_v1_0_S00_AXI_inst (
 		.DATA_OUT(DATA_OUT),
 		.DATA_READY(DATA_READY),
+		.TRANSMIT_FINISHED(TRANSMIT_FINISHED),
 		.REQUEST_DATA(REQUEST_DATA),
 		.RESTART(RESTART),
 		.INIT_INDEX(INIT_INDEX),

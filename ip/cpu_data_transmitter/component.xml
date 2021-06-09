@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>57b9b66f</spirit:value>
+            <spirit:value>641ebf19</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -282,7 +282,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>57b9b66f</spirit:value>
+            <spirit:value>641ebf19</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -340,7 +340,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>fbcddc27</spirit:value>
+            <spirit:value>36007ebd</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -365,6 +365,19 @@
       </spirit:port>
       <spirit:port>
         <spirit:name>DATA_READY</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>TRANSMIT_FINISHED</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:wireTypeDefs>
@@ -805,7 +818,7 @@
       <spirit:file>
         <spirit:name>src/cpu_data_transmitter_v1_0.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_878f7903</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_a7e23059</spirit:userFileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
@@ -971,14 +984,14 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:cpu_data_transmitter:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-05T13:35:36Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-09T14:03:05Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="7a63f3fc"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="60ed7832"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="3df84ee2"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="88a9eb12"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="833b1a98"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="02147304"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="1a9c8c39"/>
     </xilinx:packagingInfo>

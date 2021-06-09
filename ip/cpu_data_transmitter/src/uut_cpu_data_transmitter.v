@@ -73,6 +73,7 @@ module uut_cpu_data_transmitter #
 		RESET_L = 0;
 		INIT_INDEX = 0;
 		INIT_AUX_INFO = 0;
+		RESTART = 0;
 		REGISTER_IN_0 = 0;
 		REGISTER_IN_1 = 0;
 		REGISTER_IN_2 = 0;

@@ -21,6 +21,7 @@ module cpu_data_transmitter #
 (
 	output [output_data_width - 1 : 0] DATA_OUT,
 	output DATA_READY,
+	output TRANSMIT_FINISHED,
 	input REQUEST_DATA,
 	input RESTART,
 	input [7:0] INIT_INDEX,
@@ -53,6 +54,7 @@ module cpu_data_transmitter #
 
 	assign DATA_OUT = REGISTER_IN_0[output_data_width - 1 : 0];
 	assign DATA_READY = progress != REGISTER_IN_3[27:0];
+	assign TRANSMIT_FINISHED = REGISTER_IN_3[28];
 	assign REGISTER_OUT_0 = 0;
 	assign REGISTER_OUT_1 = 0;
 	assign REGISTER_OUT_2 = 0;
