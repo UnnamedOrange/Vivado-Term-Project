@@ -38,7 +38,7 @@ module core_t #
 	output [7:0] do_data_in,
 	output do_en_w,
 	output [12:0] do_addr_r,
-	input [4:0] do_data_out,
+	input [3:0] do_data_out,
 	output do_en_r,
 
 	// .pixel (dp) 对应 BRAM。
@@ -51,18 +51,18 @@ module core_t #
 
 	// .timing (dt) 对应 BRAM。
 	output [11:0] dt_addr_w,
-	output [39:0] dt_data_in,
+	output [31:0] dt_data_in,
 	output dt_en_w,
-	output [12:0] dt_addr_r,
+	output [11:0] dt_addr_r,
 	input [31:0] dt_data_out,
 	output dt_en_r,
 
 	// .skin (ds) 对应 BRAM。
-	output [11:0] ds_addr_w,
-	output [11:0] ds_data_in,
+	output [14:0] ds_addr_w,
+	output [15:0] ds_data_in,
 	output ds_en_w,
-	output [12:0] ds_addr_r,
-	input [31:0] ds_data_out,
+	output [14:0] ds_addr_r,
+	input [15:0] ds_data_out,
 	output ds_en_r,
 
 	// 选歌开关。
