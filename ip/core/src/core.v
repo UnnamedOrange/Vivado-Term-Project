@@ -6,6 +6,7 @@
 /// <filedescription>核心模块。</filedescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange and Jack-Lyu) : First commit.
+/// 0.0.2 (UnnamedOrange) : 实现 BRAM 的初始化。
 /// </version>
 
 `timescale 1ns / 1ps
@@ -127,7 +128,8 @@ module core_t #
 	bram_data_loader_t #
 	(
 		.addr_width(13),
-		.data_width_in_byte(3)
+		.data_width_in_byte(3),
+		.static_init_aux_info(8'b00000000),
 	) bram_data_loader_db
 	(
 		.bram_addr_w(db_addr_w),
@@ -155,7 +157,8 @@ module core_t #
 	bram_data_loader_t #
 	(
 		.addr_width(13),
-		.data_width_in_byte(1)
+		.data_width_in_byte(1),
+		.static_init_aux_info(8'b00000001),
 	) bram_data_loader_do
 	(
 		.bram_addr_w(do_addr_w),
@@ -183,7 +186,8 @@ module core_t #
 	bram_data_loader_t #
 	(
 		.addr_width(13),
-		.data_width_in_byte(4)
+		.data_width_in_byte(4),
+		.static_init_aux_info(8'b00000010),
 	) bram_data_loader_dp
 	(
 		.bram_addr_w(dp_addr_w),
@@ -211,7 +215,8 @@ module core_t #
 	bram_data_loader_t #
 	(
 		.addr_width(12),
-		.data_width_in_byte(4)
+		.data_width_in_byte(4),
+		.static_init_aux_info(8'b00000011),
 	) bram_data_loader_dt
 	(
 		.bram_addr_w(dt_addr_w),
@@ -239,7 +244,8 @@ module core_t #
 	bram_data_loader_t #
 	(
 		.addr_width(15),
-		.data_width_in_byte(2)
+		.data_width_in_byte(2),
+		.static_init_aux_info(8'b10000000),
 	) bram_data_loader_ds
 	(
 		.bram_addr_w(ds_addr_w),
