@@ -51,12 +51,16 @@ public:
 			}
 			filename[length++] = '/';
 
-			constexpr const char *names[2] =
-				{".song", ".beatmap"};
-			constexpr size_t lengths[2] =
-				{5, 8};
-			const char *name = names[init_aux_info];
-			for (size_t i = 0; i < lengths[init_aux_info]; i++)
+			constexpr const char *names[] =
+				{".beatmap", ".object", ".pixel", ".timing", ".song", ".preview", ".skin"};
+			constexpr size_t lengths[] =
+				{8, 7, 6, 7, 5, 8, 5};
+			constexpr size_t size_of_stock = sizeof(lengths) / sizeof(lengths[0]);
+			size_t index = (init_aux_info & (1 << 7)) ? size_of_stock - 1 : init_aux_info;
+			const char *name = names[index];
+			if (init_aux_info & (1 << 7))
+				length = 0;
+			for (size_t i = 0; i < lengths[index]; i++)
 				filename[length++] = name[i];
 			filename[length] = 0;
 
