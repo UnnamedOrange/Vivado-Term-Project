@@ -219,3 +219,20 @@ void on_update_all()
 
 预计还剩 13.5 个 36Kb BRAM，即 62 KB 剩余空间。
 
+### `.skin` 文件
+
+`.skin` 文件是全局的皮肤文件，位宽为 12。
+
+|            字数            |                 说明                 |
+| :------------------------: | :----------------------------------: |
+| $10 \times (24 \times 20)$ |     数字 $0$ 到数字 $9$ 的图片。     |
+| $5 \times (24 \times 64)$  | 小 Perfect, Great, Good, Bad, Miss。 |
+| $5 \times (36 \times 96)$  | 大 Perfect, Great, Good, Bad, Miss。 |
+| $1 \times (36 \times 60)$  |              方块图片。              |
+| $1 \times (18 \times 60)$  |            面条起始图片。            |
+| $1 \times (18 \times 60)$  |            面条结尾图片。            |
+|  $1 \times (1 \times 60)$  |            面条中间图片。            |
+| $1 \times (60 \times 60)$  |          按键指示按下图片。          |
+| $1 \times (60 \times 60)$  |          按键指示放开图片。          |
+
+使用 62010 字节的空间，刚刚够。
