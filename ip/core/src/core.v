@@ -358,7 +358,7 @@ module core_t #
 			s_w_load_beatmap_1:
 				n_state = sig_do_done ? s_load_beatmap_2 : s_w_load_beatmap_1;
 			s_load_beatmap_2:
-				n_state = s_w_load_beatmap_1;
+				n_state = s_w_load_beatmap_2;
 			s_w_load_beatmap_2:
 				n_state = sig_dp_done ? s_load_beatmap_3 : s_w_load_beatmap_2;
 			s_load_beatmap_3:
