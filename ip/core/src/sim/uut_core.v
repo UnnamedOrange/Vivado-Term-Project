@@ -93,6 +93,7 @@ module uut_bram_data_loader #
 		#1;
 		sig_on = 0;
 		#restarting_timeout;
+		#restarting_timeout;
 
 		for (i = 1; i <= 12; i = i + 1) begin
 			#i;
@@ -178,6 +179,7 @@ module uut_core_0_load #
 
 		#10;
 		RESET_L = 1;
+		#1000000;
 		#1000000;
 		
 		#2;

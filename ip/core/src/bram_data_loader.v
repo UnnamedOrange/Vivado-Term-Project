@@ -49,9 +49,10 @@ module bram_data_loader_t #
 	localparam [state_width - 1 : 0]
 		s_init =       0, // 等待工作使能。
 		s_restarting = 1, // 等待 CPU 初始化。
-		s_read =       2, // 读数据到缓冲区。
-		s_write =      3, // 缓冲区满，写数据到 BRAM。
-		s_done =       4, // 向外宣布工作完成。
+		s_standby =    2, // 等一会儿。
+		s_read =       3, // 读数据到缓冲区。
+		s_write =      4, // 缓冲区满，写数据到 BRAM。
+		s_done =       5, // 向外宣布工作完成。
 		s_unused = 0;
 	reg [state_width - 1 : 0] state, n_state;
 
@@ -62,7 +63,7 @@ module bram_data_loader_t #
 			timer <= 0;
 		end
 		else begin
-			if (state == s_restarting) begin
+			if (state == s_restarting || state == s_standby) begin
 				if (timer == restarting_timeout - 1)
 					timer <= 0;
 				else
@@ -135,9 +136,11 @@ module bram_data_loader_t #
 			s_init:
 				n_state = sig_on ? s_restarting : s_init;
 			s_restarting:
-				n_state = timer == restarting_timeout - 1 ? s_read : s_restarting;
+				n_state = timer == restarting_timeout - 1 ? s_standby : s_restarting;
+			s_standby:
+				n_state = timer == restarting_timeout - 1 ? s_read : s_standby;
 			s_read:
-				n_state = dumped == data_width_in_byte - 1 && data_ready ? s_write : s_read;
+				n_state = transmit_finished ? s_write : (dumped == data_width_in_byte - 1 && data_ready ? s_write : s_read);
 			s_write:
 				n_state = hold_on == 1 ? (transmit_finished ? s_done : s_read) : s_write;
 			s_done:
