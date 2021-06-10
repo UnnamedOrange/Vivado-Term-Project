@@ -29,7 +29,10 @@ public:
 		if (status & (1 << 31))
 		{
 			inited = false;
+			file_size = 0;
 			total_read = 0;
+			if (file)
+				file.fsclose();
 			return true;
 		}
 		if (!inited)

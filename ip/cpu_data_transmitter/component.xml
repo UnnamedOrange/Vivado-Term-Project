@@ -296,7 +296,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>fd6a53df</spirit:value>
+            <spirit:value>432b694e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -984,13 +984,13 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:cpu_data_transmitter:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-09T14:29:19Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-10T10:00:54Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="7a63f3fc"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="517db3b1"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="aa34e37a"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="833b1a98"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="02147304"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="1a9c8c39"/>
