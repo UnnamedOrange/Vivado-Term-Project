@@ -165,7 +165,9 @@ module uut_core_0_load #
 		#0.45;
 	end
 
-	initial begin
+	initial begin : TB
+		integer i;
+
 		RESET_L = 0;
 		CLK = 0;
 		ds_data_out = 0;
@@ -176,6 +178,18 @@ module uut_core_0_load #
 
 		#10;
 		RESET_L = 1;
+		#1000000;
+		
+		#2;
+		for (i = 1; i <= 12; i = i + 1) begin
+			#i;
+			pre_data_in = i;
+			pre_data_ready = 1;
+			#1;
+			pre_data_ready = 0;
+		end
+		pre_transmit_finished = 1;
+		#1;
 
 		#5;
 		$stop(1);
