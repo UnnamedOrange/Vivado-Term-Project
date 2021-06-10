@@ -164,7 +164,7 @@ module core_t #
 	wire do_pre_restart;
 	bram_data_loader_t #
 	(
-		.addr_width(13),
+		.addr_width(12),
 		.data_width_in_byte(1),
 		.static_init_aux_info(8'b00000001)
 	) bram_data_loader_do
@@ -279,31 +279,38 @@ module core_t #
 	// Ñ¡Í¨ pre_cpu¡£
 	always @(*) begin
 		case (state)
-			s_load_skin: begin
+			s_load_skin,
+			s_w_load_skin: begin
 				pre_init_index =    ds_pre_init_index;
 				pre_init_aux_info = ds_pre_init_aux_info;
 				pre_request_data =  ds_pre_request_data;
 				pre_restart =       ds_pre_restart;
 			end
-			s_load_beatmap_0: begin
+			s_load_beatmap_0,
+			s_w_load_beatmap_0:
+			begin
 				pre_init_index =    db_pre_init_index;
 				pre_init_aux_info = db_pre_init_aux_info;
 				pre_request_data =  db_pre_request_data;
 				pre_restart =       db_pre_restart;
 			end
-			s_load_beatmap_1: begin
+			s_load_beatmap_1,
+			s_w_load_beatmap_1:
+			begin
 				pre_init_index =    do_pre_init_index;
 				pre_init_aux_info = do_pre_init_aux_info;
 				pre_request_data =  do_pre_request_data;
 				pre_restart =       do_pre_restart;
 			end
-			s_load_beatmap_2: begin
+			s_load_beatmap_2,
+			s_w_load_beatmap_2: begin
 				pre_init_index =    dp_pre_init_index;
 				pre_init_aux_info = dp_pre_init_aux_info;
 				pre_request_data =  dp_pre_request_data;
 				pre_restart =       dp_pre_restart;
 			end
-			s_load_beatmap_3: begin
+			s_load_beatmap_3,
+			s_w_load_beatmap_3: begin
 				pre_init_index =    dt_pre_init_index;
 				pre_init_aux_info = dt_pre_init_aux_info;
 				pre_request_data =  dt_pre_request_data;
