@@ -373,10 +373,10 @@ module core_t #
 	end
 
 	// Êä³ö·½³Ì¡£
-	assign sig_ds_on = n_state == s_load_skin;
-	assign sig_db_on = n_state == s_load_beatmap_0;
-	assign sig_do_on = n_state == s_load_beatmap_1;
-	assign sig_dp_on = n_state == s_load_beatmap_2;
-	assign sig_dt_on = n_state == s_load_beatmap_3;
+	assign sig_ds_on = state == s_load_skin;
+	assign sig_db_on = state == s_load_beatmap_0;
+	assign sig_do_on = state == s_load_beatmap_1;
+	assign sig_dp_on = state == s_load_beatmap_2;
+	assign sig_dt_on = state == s_load_beatmap_3;
 
 endmodule
