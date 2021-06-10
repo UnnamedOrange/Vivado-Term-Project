@@ -15,7 +15,7 @@ module uut_bram_data_loader #
 	parameter addr_width = 13,
 	parameter data_width_in_byte = 3,
 	parameter [7:0] static_init_aux_info = 8'b00000000,
-	parameter restarting_timeout = 1000000
+	parameter restarting_timeout = 5
 )
 ();
 	// BRAM¡£
@@ -75,7 +75,9 @@ module uut_bram_data_loader #
 		#0.45;
 	end
 
-	initial begin
+	initial begin : TB
+		integer i;
+
 		RESET_L = 0;
 		CLK = 0;
 
@@ -85,8 +87,26 @@ module uut_bram_data_loader #
 		transmit_finished = 0;
 		song_selection = 0;
 
-		#105;
+		#10;
 		RESET_L = 1;
+
+		sig_on = 1;
+		#1;
+		sig_on = 0;
+		#restarting_timeout;
+
+		for (i = 1; i <= 12; i = i + 1) begin
+			#i;
+			cpu_data_in = i;
+			data_ready = 1;
+			#1;
+			data_ready = 0;
+		end
+		transmit_finished = 1;
+		#1;
+
+		#5;
+		$stop(1);
 	end
 
 endmodule
