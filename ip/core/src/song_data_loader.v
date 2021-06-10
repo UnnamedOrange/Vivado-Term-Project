@@ -42,10 +42,25 @@ module song_data_loader_t #
 		s_unused = 0;
 	reg [state_width - 1 : 0] state, n_state;
 
+	// 计时器。
+	reg [31:0] timer;
+
+	always @(posedge CLK) begin
+		if (!RESET_L) begin
+			timer <= 0;
+		end
+		else begin
+			if (timer == restarting_timeout - 1)
+				timer <= 0;
+			else
+				timer <= timer + 1;
+		end
+	end
+
 	// 特征方程。
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
-			state <= 0;
+			state <= s_init;
 		end
 		else begin
 			state <= n_state;
@@ -64,21 +79,6 @@ module song_data_loader_t #
 			default:
 				n_state = s_init;
 		endcase
-	end
-
-	// 计时器。
-	reg [31:0] timer;
-
-	always @(posedge CLK) begin
-		if (!RESET_L) begin
-			timer <= 0;
-		end
-		else begin
-			if (timer == restarting_timeout - 1)
-				timer <= 0;
-			else
-				timer <= timer + 1;
-		end
 	end
 
 	// 输出方程。
