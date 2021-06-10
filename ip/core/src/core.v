@@ -120,6 +120,8 @@ module core_t #
 		s_w_load_beatmap_2  = 16'h0008, // 等待加载 .pixel 到 BRAM。
 		s_load_beatmap_3    = 16'h0009, // 加载 .timing 到 BRAM。
 		s_w_load_beatmap_3  = 16'h0010, // 等待加载 .timing 到 BRAM。
+		s_reset_cpu_song    = 16'h0011, // 重置 CPU 到歌曲播放。
+		s_w_reset_cpu_song  = 16'h0012, // 等待重置 CPU 到歌曲播放。
 		s_standby           = 16'h9999, // 游戏结束，不做其他事（暂时保留）。
 		s_unused = 16'hffff;
 	reg [state_width - 1 : 0] state, n_state;
@@ -325,6 +327,21 @@ module core_t #
 		endcase
 	end
 
+	// reset_cpu_song。
+	wire sig_reset_cpu_song_on;
+	wire sig_reset_cpu_song_done;
+	song_data_loader_t song_data_loader
+	(
+		.song_init_index(song_init_index),
+		.song_init_aux_info(song_init_aux_info),
+		.song_restart(song_restart),
+		.song_selection(song_selection),
+		.sig_on(sig_reset_cpu_song_on),
+		.sig_done(sig_reset_cpu_song_done),
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
 	/* 调试输出。*/
 	assign DEBUG_CURRENT_STATE = state;
 
@@ -364,7 +381,11 @@ module core_t #
 			s_load_beatmap_3:
 				n_state = s_w_load_beatmap_3;
 			s_w_load_beatmap_3:
-				n_state = sig_dt_done ? s_standby : s_w_load_beatmap_3;
+				n_state = sig_dt_done ? s_reset_cpu_song : s_w_load_beatmap_3;
+			s_reset_cpu_song:
+				n_state = s_w_reset_cpu_song;
+			s_w_reset_cpu_song:
+				n_state = sig_reset_cpu_song_done ? s_standby : s_w_reset_cpu_song;
 			s_standby:
 				n_state = s_standby;
 			default:
@@ -372,11 +393,15 @@ module core_t #
 		endcase
 	end
 
-	// 输出方程。
+	/* 输出方程。*/
+	// BRAM 初始化。
 	assign sig_ds_on = state == s_load_skin;
 	assign sig_db_on = state == s_load_beatmap_0;
 	assign sig_do_on = state == s_load_beatmap_1;
 	assign sig_dp_on = state == s_load_beatmap_2;
 	assign sig_dt_on = state == s_load_beatmap_3;
+
+	// reset_cpu_song。
+	assign sig_reset_cpu_song_on = state == s_reset_cpu_song;
 
 endmodule
