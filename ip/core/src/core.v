@@ -73,6 +73,7 @@ module core_t #
 	output reg [7:0] pre_init_aux_info,
 	input [pre_data_width - 1 : 0] pre_data_in,
 	input pre_data_ready,
+	input pre_transmit_finished,
 	output reg pre_request_data,
 	output reg pre_restart,
 
@@ -81,6 +82,7 @@ module core_t #
 	output [7:0] song_init_aux_info,
 	input [song_data_width - 1 : 0] song_data_in,
 	input song_data_ready,
+	input song_transmit_finished,
 	output song_request_data,
 	output song_restart,
 
@@ -109,17 +111,22 @@ module core_t #
 	localparam [state_width - 1 : 0] // 使用 BCD 码进行编码。
 		s_init              = 16'h0000, // 复位。
 		s_load_skin         = 16'h0001, // 加载 .skin 到 BRAM。
-		s_load_beatmap_0    = 16'h0002, // 加载 .beatmap 到 BRAM。
-		s_load_beatmap_1    = 16'h0003, // 加载 .object 到 BRAM。
-		s_load_beatmap_2    = 16'h0004, // 加载 .pixel 到 BRAM。
-		s_load_beatmap_3    = 16'h0005, // 加载 .timing 到 BRAM。
+		s_w_load_skin       = 16'h0002, // 等待加载 .skin 到 BRAM。
+		s_load_beatmap_0    = 16'h0003, // 加载 .beatmap 到 BRAM。
+		s_w_load_beatmap_0  = 16'h0004, // 等待加载 .beatmap 到 BRAM。
+		s_load_beatmap_1    = 16'h0005, // 加载 .object 到 BRAM。
+		s_w_load_beatmap_1  = 16'h0006, // 等待加载 .object 到 BRAM。
+		s_load_beatmap_2    = 16'h0007, // 加载 .pixel 到 BRAM。
+		s_w_load_beatmap_2  = 16'h0008, // 等待加载 .pixel 到 BRAM。
+		s_load_beatmap_3    = 16'h0009, // 加载 .timing 到 BRAM。
+		s_w_load_beatmap_3  = 16'h0010, // 等待加载 .timing 到 BRAM。
 		s_standby           = 16'h9999, // 游戏结束，不做其他事（暂时保留）。
 		s_unused = 16'hffff;
 	reg [state_width - 1 : 0] state, n_state;
 
 	/* 模块互联。*/
 	// BRAM。
-	reg sig_db_on;
+	wire sig_db_on;
 	wire sig_db_done;
 	wire [7:0] db_pre_init_index;
 	wire [7:0] db_pre_init_aux_info;
@@ -129,7 +136,7 @@ module core_t #
 	(
 		.addr_width(13),
 		.data_width_in_byte(3),
-		.static_init_aux_info(8'b00000000),
+		.static_init_aux_info(8'b00000000)
 	) bram_data_loader_db
 	(
 		.bram_addr_w(db_addr_w),
@@ -143,12 +150,13 @@ module core_t #
 		.request_data(db_pre_request_data),
 		.data_ready(pre_data_ready),
 		.cpu_data_in(pre_data_in),
+		.transmit_finished(pre_transmit_finished),
 		.song_selection(song_selection),
 		.RESET_L(RESET_L),
 		.CLK(CLK)
 	);
 
-	reg sig_do_on;
+	wire sig_do_on;
 	wire sig_do_done;
 	wire [7:0] do_pre_init_index;
 	wire [7:0] do_pre_init_aux_info;
@@ -158,7 +166,7 @@ module core_t #
 	(
 		.addr_width(13),
 		.data_width_in_byte(1),
-		.static_init_aux_info(8'b00000001),
+		.static_init_aux_info(8'b00000001)
 	) bram_data_loader_do
 	(
 		.bram_addr_w(do_addr_w),
@@ -172,12 +180,13 @@ module core_t #
 		.request_data(do_pre_request_data),
 		.data_ready(pre_data_ready),
 		.cpu_data_in(pre_data_in),
+		.transmit_finished(pre_transmit_finished),
 		.song_selection(song_selection),
 		.RESET_L(RESET_L),
 		.CLK(CLK)
 	);
 
-	reg sig_dp_on;
+	wire sig_dp_on;
 	wire sig_dp_done;
 	wire [7:0] dp_pre_init_index;
 	wire [7:0] dp_pre_init_aux_info;
@@ -187,7 +196,7 @@ module core_t #
 	(
 		.addr_width(13),
 		.data_width_in_byte(4),
-		.static_init_aux_info(8'b00000010),
+		.static_init_aux_info(8'b00000010)
 	) bram_data_loader_dp
 	(
 		.bram_addr_w(dp_addr_w),
@@ -201,12 +210,13 @@ module core_t #
 		.request_data(dp_pre_request_data),
 		.data_ready(pre_data_ready),
 		.cpu_data_in(pre_data_in),
+		.transmit_finished(pre_transmit_finished),
 		.song_selection(song_selection),
 		.RESET_L(RESET_L),
 		.CLK(CLK)
 	);
 
-	reg sig_dt_on;
+	wire sig_dt_on;
 	wire sig_dt_done;
 	wire [7:0] dt_pre_init_index;
 	wire [7:0] dt_pre_init_aux_info;
@@ -216,7 +226,7 @@ module core_t #
 	(
 		.addr_width(12),
 		.data_width_in_byte(4),
-		.static_init_aux_info(8'b00000011),
+		.static_init_aux_info(8'b00000011)
 	) bram_data_loader_dt
 	(
 		.bram_addr_w(dt_addr_w),
@@ -230,12 +240,13 @@ module core_t #
 		.request_data(dt_pre_request_data),
 		.data_ready(pre_data_ready),
 		.cpu_data_in(pre_data_in),
+		.transmit_finished(pre_transmit_finished),
 		.song_selection(song_selection),
 		.RESET_L(RESET_L),
 		.CLK(CLK)
 	);
 
-	reg sig_ds_on;
+	wire sig_ds_on;
 	wire sig_ds_done;
 	wire [7:0] ds_pre_init_index;
 	wire [7:0] ds_pre_init_aux_info;
@@ -245,7 +256,7 @@ module core_t #
 	(
 		.addr_width(15),
 		.data_width_in_byte(2),
-		.static_init_aux_info(8'b10000000),
+		.static_init_aux_info(8'b10000000)
 	) bram_data_loader_ds
 	(
 		.bram_addr_w(ds_addr_w),
@@ -259,6 +270,7 @@ module core_t #
 		.request_data(ds_pre_request_data),
 		.data_ready(pre_data_ready),
 		.cpu_data_in(pre_data_in),
+		.transmit_finished(pre_transmit_finished),
 		.song_selection(song_selection),
 		.RESET_L(RESET_L),
 		.CLK(CLK)
@@ -309,6 +321,8 @@ module core_t #
 	/* 调试输出。*/
 	assign DEBUG_CURRENT_STATE = state;
 
+	/* 控制。*/
+
 	// 特征方程。
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
@@ -322,11 +336,40 @@ module core_t #
 	// 激励方程。
 	always @(*) begin
 		case (state)
-			s_init: n_state = s_load_skin;
-
-			s_standby: n_state = s_standby;
-			default: n_state = s_init;
+			s_init:
+				n_state = s_load_skin;
+			s_load_skin:
+				n_state = s_w_load_skin;
+			s_w_load_skin:
+				n_state = sig_ds_done ? s_load_beatmap_0 : s_w_load_skin;
+			s_load_beatmap_0:
+				n_state = s_w_load_beatmap_0;
+			s_w_load_beatmap_0:
+				n_state = sig_db_done ? s_load_beatmap_1 : s_w_load_beatmap_0;
+			s_load_beatmap_1:
+				n_state = s_w_load_beatmap_1;
+			s_w_load_beatmap_1:
+				n_state = sig_do_done ? s_load_beatmap_2 : s_w_load_beatmap_1;
+			s_load_beatmap_2:
+				n_state = s_w_load_beatmap_1;
+			s_w_load_beatmap_2:
+				n_state = sig_dp_done ? s_load_beatmap_3 : s_w_load_beatmap_2;
+			s_load_beatmap_3:
+				n_state = s_w_load_beatmap_3;
+			s_w_load_beatmap_3:
+				n_state = sig_dt_done ? s_standby : s_w_load_beatmap_3;
+			s_standby:
+				n_state = s_standby;
+			default:
+				n_state = s_init;
 		endcase
 	end
+
+	// 输出方程。
+	assign sig_ds_on = n_state == s_load_skin;
+	assign sig_db_on = n_state == s_load_beatmap_0;
+	assign sig_do_on = n_state == s_load_beatmap_1;
+	assign sig_dp_on = n_state == s_load_beatmap_2;
+	assign sig_dt_on = n_state == s_load_beatmap_3;
 
 endmodule

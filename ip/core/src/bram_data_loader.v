@@ -20,7 +20,7 @@ module bram_data_loader_t #
 (
 	// BRAM。
 	output reg [addr_width - 1 : 0] bram_addr_w,
-	output reg [data_width_in_byte * 8 - 1 : 0] bram_data_in,
+	output [data_width_in_byte * 8 - 1 : 0] bram_data_in,
 	output reg bram_en_w,
 
 	// 控制。
@@ -34,6 +34,7 @@ module bram_data_loader_t #
 	output request_data,
 	input data_ready,
 	input [7:0] cpu_data_in,
+	input transmit_finished,
 
 	// 外部信息。
 	input [7:0] song_selection,
@@ -100,16 +101,17 @@ module bram_data_loader_t #
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
 			bram_addr_w <= 0;
+			bram_en_w <= 0;
 			hold_on <= 0;
 		end
 		else begin
 			if (state == s_write) begin
 				if (!hold_on) begin
-					bram_data_in <= cache;
 					bram_en_w <= 1;
 					hold_on <= 1;
 				end
 				else begin
+					bram_addr_w <= bram_addr_w + 1;
 					bram_en_w <= 0;
 					hold_on <= 0;
 				end
@@ -131,17 +133,17 @@ module bram_data_loader_t #
 	always @(*) begin
 		case (state)
 			s_init:
-				state = sig_on ? s_restarting : s_init;
+				n_state = sig_on ? s_restarting : s_init;
 			s_restarting:
-				state = timer == restarting_timeout - 1 ? s_read : s_restarting;
+				n_state = timer == restarting_timeout - 1 ? s_read : s_restarting;
 			s_read:
-				state = dumped == data_width_in_byte - 1 && data_ready ? s_write : s_read;
+				n_state = dumped == data_width_in_byte - 1 && data_ready ? s_write : s_read;
 			s_write:
-				state = hold_on == 1 ? (s_read) : s_write;
+				n_state = hold_on == 1 ? (transmit_finished ? s_done : s_read) : s_write;
 			s_done:
-				state = s_init;
+				n_state = s_init;
 			default:
-				state = s_init;
+				n_state = s_init;
 		endcase
 	end
 
@@ -151,5 +153,7 @@ module bram_data_loader_t #
 	assign init_index = song_selection;
 	assign init_aux_info = static_init_aux_info;
 	assign request_data = state == s_read;
+
+	assign bram_data_in = cache;
 
 endmodule
