@@ -33,6 +33,7 @@ public:
 			total_read = 0;
 			if (file)
 				file.fsclose();
+			Xil_Out32(base_addr + 12, 0);
 			return true;
 		}
 		if (!inited)

@@ -5,6 +5,7 @@
 /// <modulename>uut_cpu_data_transmitter</modulename>
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
+/// 0.0.2 (UnnamedOrange) : 该测试文件适用于目前的无缓冲区版本。
 /// </version>
 
 `timescale 10ns / 1ps
@@ -21,6 +22,7 @@ module uut_cpu_data_transmitter #
 
 	wire [output_data_width - 1 : 0] DATA_OUT;
 	wire DATA_READY;
+	wire TRANSMIT_FINISHED;
 	reg REQUEST_DATA;
 	reg RESTART;
 	reg [7:0] INIT_INDEX;
@@ -45,6 +47,7 @@ module uut_cpu_data_transmitter #
 	) U1 (
 		.DATA_OUT(DATA_OUT),
 		.DATA_READY(DATA_READY),
+		.TRANSMIT_FINISHED(TRANSMIT_FINISHED),
 		.REQUEST_DATA(REQUEST_DATA),
 		.RESTART(RESTART),
 		.INIT_INDEX(INIT_INDEX),
@@ -81,64 +84,37 @@ module uut_cpu_data_transmitter #
 		REQUEST_DATA = 0;
 		#11;
 		RESET_L = 1;
-		#5;
-		REGISTER_IN_0 = 1;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd1};
-		#5;
-		REGISTER_IN_0 = 2;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd2};
-		#5;
-		REGISTER_IN_0 = 3;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd3};
-		#5;
-		REGISTER_IN_0 = 4;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd4};
-		#5;
-		REGISTER_IN_0 = 5;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd5};
-		#5;
-		REGISTER_IN_0 = 6;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd6};
-		#5;
-		REGISTER_IN_0 = 7;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd7};
-		#5;
-		REGISTER_IN_0 = 8;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd8};
+		REGISTER_IN_3 = {1'b0, 2'b0, 1'b0, 28'd0};
+		#1;
 		REQUEST_DATA = 1;
 		#5;
-		REGISTER_IN_0 = 9;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd9};
+		REGISTER_IN_0 = 1;
+		REGISTER_IN_3 = {1'b1, 2'b0, 1'b0, 28'd1};
 		#5;
-		REGISTER_IN_0 = 10;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd10};
+		REGISTER_IN_0 = 2;
+		REGISTER_IN_3 = {1'b1, 2'b0, 1'b0, 28'd2};
 		#5;
-		REGISTER_IN_0 = 11;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd11};
+		REGISTER_IN_0 = 3;
+		REGISTER_IN_3 = {1'b1, 2'b0, 1'b1, 28'd3};
+		#1;
+		REQUEST_DATA = 0;
+		RESTART = 1;
+		#2;
+		REGISTER_IN_3 = {1'b0, 2'b0, 1'b0, 28'd0};
+		#2;
+		RESTART = 0;
+		REQUEST_DATA = 1;
+		#10;
+		REGISTER_IN_0 = 1;
+		REGISTER_IN_3 = {1'b1, 2'b0, 1'b0, 28'd1};
 		#5;
-		REGISTER_IN_0 = 12;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd12};
+		REGISTER_IN_0 = 2;
+		REGISTER_IN_3 = {1'b1, 2'b0, 1'b0, 28'd2};
 		#5;
-		REGISTER_IN_0 = 13;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd13};
+		REGISTER_IN_0 = 3;
+		REGISTER_IN_3 = {1'b1, 2'b0, 1'b1, 28'd3};
+
 		#5;
-		REGISTER_IN_0 = 14;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd14};
-		#5;
-		REGISTER_IN_0 = 15;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd15};
-		#5;
-		REGISTER_IN_0 = 16;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd16};
-		#5;
-		REGISTER_IN_0 = 17;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd17};
-		#5;
-		REGISTER_IN_0 = 18;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd18};
-		#5;
-		REGISTER_IN_0 = 19;
-		REGISTER_IN_3 = {1'b1, 3'b0, 28'd19};
 		$stop(1);
 	end
 

@@ -9,6 +9,7 @@
 /// 0.0.2 (UnnamedOrange) : 增大缓冲区大小。将输出改为同步输出。
 /// 0.0.3 (UnnamedOrange) : 增加一些调试用输出。
 /// 0.0.4 (UnnamedOrange) : 回退到无缓冲区的模式。使用新的编码。
+/// 0.0.5 (UnnamedOrange) : 将控制信号的输出改为同步的。
 /// </version>
 
 `timescale 1 ns / 1 ps
@@ -20,8 +21,8 @@ module cpu_data_transmitter #
 )
 (
 	output [output_data_width - 1 : 0] DATA_OUT,
-	output DATA_READY,
-	output TRANSMIT_FINISHED,
+	output reg DATA_READY,
+	output reg TRANSMIT_FINISHED,
 	input REQUEST_DATA,
 	input RESTART,
 	input [7:0] INIT_INDEX,
@@ -41,10 +42,14 @@ module cpu_data_transmitter #
 	reg [27:0] progress;
 
 	always @(posedge CLK) begin
-		if (!RESET_L || !REGISTER_IN_3[31]) begin
+		if (!RESET_L) begin
 			progress <= 0;
+			DATA_READY <= 0;
+			TRANSMIT_FINISHED <= 0;
 		end
 		else begin
+			DATA_READY <= REGISTER_IN_3[31] && progress < REGISTER_IN_3[27:0];
+			TRANSMIT_FINISHED <= REGISTER_IN_3[28];
 			if (REGISTER_IN_3[31])
 				progress <= REGISTER_IN_3[27:0];
 			else
@@ -53,8 +58,6 @@ module cpu_data_transmitter #
 	end
 
 	assign DATA_OUT = REGISTER_IN_0[output_data_width - 1 : 0];
-	assign DATA_READY = progress != REGISTER_IN_3[27:0];
-	assign TRANSMIT_FINISHED = REGISTER_IN_3[28];
 	assign REGISTER_OUT_0 = 0;
 	assign REGISTER_OUT_1 = 0;
 	assign REGISTER_OUT_2 = 0;
