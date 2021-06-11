@@ -6,6 +6,7 @@
 /// <filedescription>将资源从 SD 卡中读出，并放到指定 BRAM 中。</filedescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
+/// 0.0.2 (UnnamedOrange) : 修复该模块没有在正确的状态下工作的问题。
 /// </version>
 
 `timescale 1ns / 1ps
@@ -83,15 +84,17 @@ module bram_data_loader_t #
 			dumped <= 0;
 		end
 		else begin
-			if (data_ready) begin
-				if (data_width_in_byte == 1)
-					cache <= cpu_data_in;
-				else
-					cache <= {cpu_data_in, cache[data_width_in_byte * 8 - 1: 8]};
-				if (dumped == data_width_in_byte - 1)
-					dumped <= 0;
-				else
-					dumped <= dumped + 1;
+			if (state == s_read) begin
+				if (data_ready) begin
+					if (data_width_in_byte == 1)
+						cache <= cpu_data_in;
+					else
+						cache <= {cpu_data_in, cache[data_width_in_byte * 8 - 1: 8]};
+					if (dumped == data_width_in_byte - 1)
+						dumped <= 0;
+					else
+						dumped <= dumped + 1;
+				end
 			end
 		end
 	end
@@ -140,7 +143,7 @@ module bram_data_loader_t #
 			s_standby:
 				n_state = timer == restarting_timeout - 1 ? s_read : s_standby;
 			s_read:
-				n_state = transmit_finished ? s_write : (dumped == data_width_in_byte - 1 && data_ready ? s_write : s_read);
+				n_state = dumped == data_width_in_byte - 1 && data_ready ? s_write : s_read;
 			s_write:
 				n_state = hold_on == 1 ? (transmit_finished ? s_done : s_read) : s_write;
 			s_done:
