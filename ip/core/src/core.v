@@ -109,28 +109,30 @@ module core_t #
 
 	/* 状态定义。*/
 	localparam [state_width - 1 : 0] // 使用 BCD 码进行编码。
-		s_init              = 16'h0000, // 复位。
-		s_load_skin         = 16'h0001, // 加载 .skin 到 BRAM。
-		s_w_load_skin       = 16'h0002, // 等待加载 .skin 到 BRAM。
-		s_load_beatmap_0    = 16'h0003, // 加载 .beatmap 到 BRAM。
-		s_w_load_beatmap_0  = 16'h0004, // 等待加载 .beatmap 到 BRAM。
-		s_load_beatmap_1    = 16'h0005, // 加载 .object 到 BRAM。
-		s_w_load_beatmap_1  = 16'h0006, // 等待加载 .object 到 BRAM。
-		s_load_beatmap_2    = 16'h0007, // 加载 .pixel 到 BRAM。
-		s_w_load_beatmap_2  = 16'h0008, // 等待加载 .pixel 到 BRAM。
-		s_load_beatmap_3    = 16'h0009, // 加载 .timing 到 BRAM。
-		s_w_load_beatmap_3  = 16'h0010, // 等待加载 .timing 到 BRAM。
-		s_reset_cpu_song    = 16'h0011, // 重置 CPU 到歌曲播放。
-		s_w_reset_cpu_song  = 16'h0012, // 等待重置 CPU 到歌曲播放。
-		s_get_base_addr_0   = 16'h0013, // 获取 .beatmap 的各个基地址。
-		s_w_get_base_addr_0 = 16'h0014, // 等待获取 .beatmap 的各个基地址和数量。
-		s_get_base_addr_1   = 16'h0015, // 获取 .object 的各个基地址和数量。
-		s_w_get_base_addr_1 = 16'h0016, // 等待获取 .object 的各个基地址和数量。
-		s_get_base_addr_2   = 16'h0017, // 获取 .pixel 的各个基地址和数量。
-		s_w_get_base_addr_2 = 16'h0018, // 等待获取 .pixel 的各个基地址和数量。
-		s_get_base_addr_3   = 16'h0019, // 获取 .timing 的各个基地址和数量。
-		s_w_get_base_addr_3 = 16'h0020, // 等待获取 .timing 的各个基地址和数量。
-		s_standby           = 16'h9999, // 游戏结束，不做其他事（暂时保留）。
+		s_init                      = 16'h0000, // 复位。
+		s_load_skin                 = 16'h0001, // 加载 .skin 到 BRAM。
+		s_w_load_skin               = 16'h0002, // 等待加载 .skin 到 BRAM。
+		s_load_beatmap_0            = 16'h0003, // 加载 .beatmap 到 BRAM。
+		s_w_load_beatmap_0          = 16'h0004, // 等待加载 .beatmap 到 BRAM。
+		s_load_beatmap_1            = 16'h0005, // 加载 .object 到 BRAM。
+		s_w_load_beatmap_1          = 16'h0006, // 等待加载 .object 到 BRAM。
+		s_load_beatmap_2            = 16'h0007, // 加载 .pixel 到 BRAM。
+		s_w_load_beatmap_2          = 16'h0008, // 等待加载 .pixel 到 BRAM。
+		s_load_beatmap_3            = 16'h0009, // 加载 .timing 到 BRAM。
+		s_w_load_beatmap_3          = 16'h0010, // 等待加载 .timing 到 BRAM。
+		s_reset_cpu_song            = 16'h0011, // 重置 CPU 到歌曲播放。
+		s_w_reset_cpu_song          = 16'h0012, // 等待重置 CPU 到歌曲播放。
+		s_get_base_addr_0           = 16'h0013, // 获取 .beatmap 的各个基地址。
+		s_w_get_base_addr_0         = 16'h0014, // 等待获取 .beatmap 的各个基地址和数量。
+		s_get_base_addr_1           = 16'h0015, // 获取 .object 的各个基地址和数量。
+		s_w_get_base_addr_1         = 16'h0016, // 等待获取 .object 的各个基地址和数量。
+		s_get_base_addr_2           = 16'h0017, // 获取 .pixel 的各个基地址和数量。
+		s_w_get_base_addr_2         = 16'h0018, // 等待获取 .pixel 的各个基地址和数量。
+		s_get_base_addr_3           = 16'h0019, // 获取 .timing 的各个基地址和数量。
+		s_w_get_base_addr_3         = 16'h0020, // 等待获取 .timing 的各个基地址和数量。
+		s_system_clock_on           = 16'h0100, // 游戏开始。全局时钟开始运行。
+		s_system_clock_pause        = 16'h0101, // 游戏暂停。各时钟停止运行（保留）。
+		s_standby                   = 16'h9999, // 游戏结束，不做其他事（暂时保留）。
 		s_unused = 16'hffff;
 	reg [state_width - 1 : 0] state, n_state;
 
@@ -621,7 +623,11 @@ module core_t #
 			s_get_base_addr_3:
 				n_state = s_w_get_base_addr_3;
 			s_w_get_base_addr_3:
-				n_state = sig_get_base_addr_3_done ? s_standby : s_w_get_base_addr_3;
+				n_state = sig_get_base_addr_3_done ? s_system_clock_on : s_w_get_base_addr_3;
+			s_system_clock_on:
+				n_state = s_system_clock_on;
+			s_system_clock_pause: // 保留。
+				n_state = n_system_clock_pause;
 			s_standby:
 				n_state = s_standby;
 			default:
