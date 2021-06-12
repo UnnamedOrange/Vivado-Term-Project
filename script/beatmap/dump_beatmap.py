@@ -1,4 +1,6 @@
-import numpy as np
+# Copyright (c) UnnamedOrange and Jack-Lyu. Licensed under the MIT License.
+# See the LICENSE file in the repository root for full license text.
+
 import librosa
 
 g_basic_timing = 109  # 基础速度。
