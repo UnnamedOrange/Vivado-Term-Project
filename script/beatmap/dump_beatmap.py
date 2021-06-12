@@ -7,6 +7,7 @@ g_timing_final = None
 g_original_object = [[] for _ in range(4)]  # [起始, 结束（没有就是空）]
 g_object_final = None
 g_beatmap_final = None
+g_pixel_final = None
 
 if __name__ == '__main__':
     sound, sample_rate = librosa.load('audio.mp3', 44100)
@@ -136,10 +137,41 @@ if __name__ == '__main__':
         3, byteorder='little', signed=False) for x in g_beatmap)
     print('报告：.beatmap 文件大小为 %d 字节' % len(g_beatmap_final))
 
+    # 构建 pixel。
+    g_pixel = []
+    for col in range(4):
+        g_pixel.append(sum(1 + bool(x[1]) for x in g_original_object[col]))
+        current_timing_idx = 0
+        current_beatmap_idx = 0
+        current_pos = 0
+        for i in range(length_in_milli + 1):
+            if i == g_original_object[col][current_beatmap_idx][0]:
+                g_pixel.append(current_pos)
+                if not g_original_object[col][current_beatmap_idx][1]:
+                    if current_beatmap_idx + 1 < len(g_original_object[col]):
+                        current_beatmap_idx += 1
+                    else:
+                        break
+            elif i and i == g_original_object[col][current_beatmap_idx][1]:
+                g_pixel.append(current_pos)
+                if current_beatmap_idx + 1 < len(g_original_object[col]):
+                    current_beatmap_idx += 1
+                else:
+                    break
+
+            if current_timing_idx + 1 < len(g_timing) and i == g_timing[current_timing_idx + 1][0]:
+                current_timing_idx += 1
+            current_pos += g_timing[current_timing_idx][1]
+    g_pixel_final = b''.join(x.to_bytes(
+        4, byteorder='little', signed=False) for x in g_pixel)
+    print('报告：.pixel 文件大小为 %d 字节' % len(g_pixel_final))
+
     # 写文件。
     with open('.beatmap', 'wb') as file:
         file.write(g_beatmap_final)
     with open('.object', 'wb') as file:
         file.write(g_object_final)
+    with open('.pixel', 'wb') as file:
+        file.write(g_pixel_final)
     with open('.timing', 'wb') as file:
         file.write(g_timing_final)
