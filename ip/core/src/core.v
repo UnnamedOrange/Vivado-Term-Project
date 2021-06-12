@@ -373,6 +373,18 @@ module core_t #
 	wire sig_get_base_addr_3_on;
 	reg sig_get_base_addr_3_done;
 
+	reg [12:0] init_db_addr_r;
+	reg init_db_en_r;
+	always @(*) begin
+		if (state == s_get_base_addr_0 || state == s_w_get_base_addr_0) begin
+			db_addr_r = init_db_addr_r;
+			db_en_r = init_db_en_r;
+		end
+		else begin
+			// TODO
+		end
+	end
+
 	always @(posedge CLK) begin: get_base_addr_0_t
 		integer i;
 		reg [2:0] which;
@@ -386,8 +398,8 @@ module core_t #
 			sig_get_base_addr_0_done <= 0;
 			which <= 0;
 			pat <= 0;
-			db_en_r <= 0;
-			db_addr_r <= 0;
+			init_db_en_r <= 0;
+			init_db_addr_r <= 0;
 		end
 		else begin
 			if (!which[2]) begin
@@ -397,10 +409,10 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[1:0] == 2'd0)
-						db_addr_r <= 0;
+						init_db_addr_r <= 0;
 					else
-						db_addr_r <= db_base_addr[which[1:0] - 1] + db_size[which[1:0] - 1];
-					db_en_r <= 1;
+						init_db_addr_r <= db_base_addr[which[1:0] - 1] + db_size[which[1:0] - 1];
+					init_db_en_r <= 1;
 				end
 				else if (pat == 3) begin // 改成 == 2 也可，但是需要额外处理 pat。这里利用了自然溢出。
 					db_size[which[1:0]] <= db_data_out;
@@ -408,7 +420,7 @@ module core_t #
 						db_base_addr[0] <= 1;
 					else
 						db_base_addr[which[1:0]] <= db_base_addr[which[1:0] - 1] + db_size[which[1:0] - 1] + 1;
-					db_en_r <= 0;
+					init_db_en_r <= 0;
 					if (which[1:0] < 3)
 						which[1:0] <= which[1:0] + 1;
 					else
@@ -417,6 +429,18 @@ module core_t #
 				pat <= pat + 1;
 			end
 			sig_get_base_addr_0_done <= which == 3'b111 && pat == 2'b11;
+		end
+	end
+
+	reg [12:0] init_do_addr_r;
+	reg init_do_en_r;
+	always @(*) begin
+		if (state == s_get_base_addr_1 || state == s_w_get_base_addr_1) begin
+			do_addr_r = init_do_addr_r;
+			do_en_r = init_do_en_r;
+		end
+		else begin
+			// TODO
 		end
 	end
 
@@ -435,8 +459,8 @@ module core_t #
 			which <= 0;
 			part <= 0;
 			pat <= 0;
-			do_en_r <= 0;
-			do_addr_r <= 0;
+			init_do_en_r <= 0;
+			init_do_addr_r <= 0;
 		end
 		else begin
 			if (!which[2]) begin
@@ -446,15 +470,15 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[1:0] == 2'd0)
-						do_addr_r <= part;
+						init_do_addr_r <= part;
 					else
-						do_addr_r <= do_base_addr[which[1:0] - 1] + do_size[which[1:0] - 1] + part;
-					do_en_r <= 1;
+						init_do_addr_r <= do_base_addr[which[1:0] - 1] + do_size[which[1:0] - 1] + part;
+					init_do_en_r <= 1;
 				end
 				else if (pat == 3) begin
 					do_size[which[1:0]][part * 4 +: 4] <= do_data_out;
 					part <= part + 1;
-					do_en_r <= 0;
+					init_do_en_r <= 0;
 					if (part == 2'b11) begin
 						if (which[1:0] == 2'd0)
 							do_base_addr[0] <= 4;
@@ -473,6 +497,18 @@ module core_t #
 		end
 	end
 
+	reg [12:0] init_dp_addr_r;
+	reg init_dp_en_r;
+	always @(*) begin
+		if (state == s_get_base_addr_2 || state == s_w_get_base_addr_2) begin
+			dp_addr_r = init_dp_addr_r;
+			dp_en_r = init_dp_en_r;
+		end
+		else begin
+			// TODO
+		end
+	end
+
 	always @(posedge CLK) begin: get_base_addr_2_t
 		integer i;
 		reg [2:0] which;
@@ -486,8 +522,8 @@ module core_t #
 			sig_get_base_addr_2_done <= 0;
 			which <= 0;
 			pat <= 0;
-			dp_en_r <= 0;
-			dp_addr_r <= 0;
+			init_dp_en_r <= 0;
+			init_dp_addr_r <= 0;
 		end
 		else begin
 			if (!which[2]) begin
@@ -497,10 +533,10 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[1:0] == 2'd0)
-						dp_addr_r <= 0;
+						init_dp_addr_r <= 0;
 					else
-						dp_addr_r <= dp_base_addr[which[1:0] - 1] + dp_size[which[1:0] - 1];
-					dp_en_r <= 1;
+						init_dp_addr_r <= dp_base_addr[which[1:0] - 1] + dp_size[which[1:0] - 1];
+					init_dp_en_r <= 1;
 				end
 				else if (pat == 3) begin
 					dp_size[which[1:0]] <= dp_data_out;
@@ -508,7 +544,7 @@ module core_t #
 						dp_base_addr[0] <= 1;
 					else
 						dp_base_addr[which[1:0]] <= dp_base_addr[which[1:0] - 1] + dp_size[which[1:0] - 1] + 1;
-					dp_en_r <= 0;
+					init_dp_en_r <= 0;
 					if (which[1:0] < 3)
 						which[1:0] <= which[1:0] + 1;
 					else
@@ -517,6 +553,18 @@ module core_t #
 				pat <= pat + 1;
 			end
 			sig_get_base_addr_2_done <= which == 3'b111 && pat == 2'b11;
+		end
+	end
+
+	reg [11:0] init_dt_addr_r;
+	reg init_dt_en_r;
+	always @(*) begin
+		if (state == s_get_base_addr_3 || state == s_w_get_base_addr_3) begin
+			dt_addr_r = init_dt_addr_r;
+			dt_en_r = init_dt_en_r;
+		end
+		else begin
+			// TODO
 		end
 	end
 
@@ -531,8 +579,8 @@ module core_t #
 			sig_get_base_addr_3_done <= 0;
 			which <= 0;
 			pat <= 0;
-			dt_en_r <= 0;
-			dt_addr_r <= 0;
+			init_dt_en_r <= 0;
+			init_dt_addr_r <= 0;
 		end
 		else begin
 			if (!which[1]) begin
@@ -542,17 +590,17 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[0:0] == 1)
-						dt_addr_r <= 1;
+						init_dt_addr_r <= 1;
 					else
-						dt_addr_r <= 0;
-					dt_en_r <= 1;
+						init_dt_addr_r <= 0;
+					init_dt_en_r <= 1;
 				end
 				else if (pat == 3) begin
 					if (which[0:0] == 1)
 						song_length <= dt_data_out;
 					else
 						dt_size <= dt_data_out;
-					dt_en_r <= 0;
+					init_dt_en_r <= 0;
 					if (which[0:0] < 1)
 						which[0:0] <= which[0:0] + 1;
 					else
