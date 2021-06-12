@@ -18,6 +18,10 @@ module core_t #
 	parameter song_data_width = 8,
 
 	// 内部参数。
+	parameter system_clock = 100000000,
+	parameter update_period = system_clock / 1000,
+	parameter audio_period = system_clock / 44100,
+	parameter draw_period = 800 * 525 * 4,
 	parameter state_width = 16
 )
 (
@@ -146,6 +150,9 @@ module core_t #
 	reg [11:0] dt_size;
 	reg [11:0] dt_base_addr; // == 2
 	reg [19:0] song_length;
+
+	reg [31:0] update_clock;
+	reg [31:0] audio_clock;
 
 	/* 模块互联与信号量。*/
 	// BRAM。
@@ -612,6 +619,27 @@ module core_t #
 		end
 	end
 
+	// update 与 audio 时钟。
+	always @(posedge CLK) begin
+		if (!RESET_L) begin
+			update_clock <= 0;
+			audio_clock <= 0;
+		end
+		else begin
+			if (state == s_system_clock_on) begin
+				if (update_clock >= update_period - 1)
+					update_clock <= 0;
+				else
+					update_clock <= update_clock + 1;
+
+				if (audio_clock >= audio_period - 1)
+					audio_clock <= 0;
+				else
+					audio_clock <= audio_clock + 1;
+			end
+		end
+	end
+
 	/* 调试输出。*/
 	assign DEBUG_CURRENT_STATE = state;
 
@@ -675,7 +703,7 @@ module core_t #
 			s_system_clock_on:
 				n_state = s_system_clock_on;
 			s_system_clock_pause: // 保留。
-				n_state = n_system_clock_pause;
+				n_state = s_system_clock_pause;
 			s_standby:
 				n_state = s_standby;
 			default:
