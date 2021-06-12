@@ -4,14 +4,14 @@ import librosa
 g_basic_timing = 109  # 基础速度。
 g_timing = []  # [时间点, 速度]
 g_timing_final = None
-g_original_object = [[] for _ in range(4)]
-g_object = [[] for _ in range(4)]
+g_original_object = [[] for _ in range(4)]  # [起始, 结束（没有就是空）]
 g_object_final = None
+g_beatmap_final = None
 
 if __name__ == '__main__':
     sound, sample_rate = librosa.load('audio.mp3', 44100)
     length_in_milli = sound.shape[0] * 1000 // 44100
-    print('歌曲长度为 %d 毫秒' % length_in_milli)
+    print('报告：歌曲长度为 %d 毫秒' % length_in_milli)
 
     # 解析 osu 谱面文件。
     with open('beatmap.osu', 'r') as file:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         i += 1
     original_timing = (x.split(',') for x in original_timing)
     original_timing = [[int(float(x[0])), float(x[1])]
-                       for x in original_timing]  # [时间点，速率]
+                       for x in original_timing]  # [时间点, 速度]
 
     original_timing[0][0] = 0
     first_bpm = original_timing[0][1]  # 第一个 BPM，单位为毫秒每拍。
@@ -124,8 +124,22 @@ if __name__ == '__main__':
     g_object_final = b''.join(g_object_final)
     print('报告：.object 文件大小为 %d 字节' % len(g_object_final))
 
+    # 构建 beatmap。
+    g_beatmap = []
+    for i in range(4):
+        g_beatmap.append(sum(1 + bool(x[1]) for x in g_original_object[i]))
+        for j in range(len(g_original_object[i])):
+            g_beatmap.append(g_original_object[i][j][0])
+            if g_original_object[i][j][1]:
+                g_beatmap.append(g_original_object[i][j][1])
+    g_beatmap_final = b''.join(x.to_bytes(
+        3, byteorder='little', signed=False) for x in g_beatmap)
+    print('报告：.beatmap 文件大小为 %d 字节' % len(g_beatmap_final))
+
     # 写文件。
-    with open('.timing', 'wb') as file:
-        file.write(g_timing_final)
+    with open('.beatmap', 'wb') as file:
+        file.write(g_beatmap_final)
     with open('.object', 'wb') as file:
         file.write(g_object_final)
+    with open('.timing', 'wb') as file:
+        file.write(g_timing_final)
