@@ -27,47 +27,63 @@ module core_t #
 (
 	// 调试。
 	output [15:0] DEBUG_CURRENT_STATE,
+	output [15:0] DEBUG_BASE_ADDR,
 
 	// 直连的 BRAM。
 	// .beatmap (db) 对应 BRAM。
-	output [12:0] db_addr_w,
-	output [23:0] db_data_in,
-	output db_en_w,
-	output reg [12:0] db_addr_r,
-	input [23:0] db_data_out,
-	output reg db_en_r,
+	output reg [12:0] db_a_addr,
+	output db_a_clk,
+	output reg [23:0] db_a_data_in,
+	output reg db_a_en_w,
+
+	output reg [12:0] db_b_addr,
+	output db_b_clk,
+	input [23:0] db_b_data_out,
+	output reg db_b_en,
 
 	// .object (do) 对应 BRAM。
-	output [11:0] do_addr_w,
-	output [7:0] do_data_in,
-	output do_en_w,
-	output reg [12:0] do_addr_r,
-	input [3:0] do_data_out,
-	output reg do_en_r,
+	output reg [11:0] do_a_addr,
+	output do_a_clk,
+	output reg [7:0] do_a_data_in,
+	output reg do_a_en_w,
+
+	output reg [12:0] do_b_addr,
+	output do_b_clk,
+	input [3:0] do_b_data_out,
+	output reg do_b_en,
 
 	// .pixel (dp) 对应 BRAM。
-	output [12:0] dp_addr_w,
-	output [31:0] dp_data_in,
-	output dp_en_w,
-	output reg [12:0] dp_addr_r,
-	input [31:0] dp_data_out,
-	output reg dp_en_r,
+	output reg [12:0] dp_a_addr,
+	output dp_a_clk,
+	output reg [31:0] dp_a_data_in,
+	output reg dp_a_en_w,
+
+	output reg [12:0] dp_b_addr,
+	output dp_b_clk,
+	input [31:0] dp_b_data_out,
+	output reg dp_b_en,
 
 	// .timing (dt) 对应 BRAM。
-	output [11:0] dt_addr_w,
-	output [31:0] dt_data_in,
-	output dt_en_w,
-	output reg [11:0] dt_addr_r,
-	input [31:0] dt_data_out,
-	output reg dt_en_r,
+	output reg [11:0] dt_a_addr,
+	output dt_a_clk,
+	output reg [31:0] dt_a_data_in,
+	output reg dt_a_en_w,
+
+	output reg [11:0] dt_b_addr,
+	output dt_b_clk,
+	input [31:0] dt_b_data_out,
+	output reg dt_b_en,
 
 	// .skin (ds) 对应 BRAM。
-	output [14:0] ds_addr_w,
-	output [15:0] ds_data_in,
-	output ds_en_w,
-	output reg [14:0] ds_addr_r,
-	input [15:0] ds_data_out,
-	output reg ds_en_r,
+	output reg [14:0] ds_a_addr,
+	output ds_a_clk,
+	output reg [15:0] ds_a_data_in,
+	output reg ds_a_en_w,
+
+	output reg [14:0] ds_b_addr,
+	output ds_b_clk,
+	input [15:0] ds_b_data_out,
+	output reg ds_b_en,
 
 	// 选歌开关。
 	input [7:0] song_selection, // 假设不变。
@@ -155,6 +171,18 @@ module core_t #
 	reg [31:0] audio_clock;
 
 	/* 模块互联与信号量。*/
+	// BRAM 时钟。
+	assign db_a_clk = CLK;
+	assign db_b_clk = CLK;
+	assign do_a_clk = CLK;
+	assign do_b_clk = CLK;
+	assign dp_a_clk = CLK;
+	assign dp_b_clk = CLK;
+	assign dt_a_clk = CLK;
+	assign dt_b_clk = CLK;
+	assign ds_a_clk = CLK;
+	assign ds_b_clk = CLK;
+
 	// BRAM。
 	wire sig_db_on;
 	wire sig_db_done;
@@ -162,6 +190,9 @@ module core_t #
 	wire [7:0] db_pre_init_aux_info;
 	wire db_pre_request_data;
 	wire db_pre_restart;
+	wire [12:0] db_pre_a_addr;
+	wire [23:0] db_pre_a_data_in;
+	wire db_pre_a_en_w;
 	bram_data_loader_t #
 	(
 		.addr_width(13),
@@ -169,9 +200,9 @@ module core_t #
 		.static_init_aux_info(8'b00000000)
 	) bram_data_loader_db
 	(
-		.bram_addr_w(db_addr_w),
-		.bram_data_in(db_data_in),
-		.bram_en_w(db_en_w),
+		.bram_addr_w(db_pre_addr_a),
+		.bram_data_in(db_pre_a_data_in),
+		.bram_en_w(db_pre_a_en_w),
 		.sig_on(sig_db_on),
 		.sig_done(sig_db_done),
 		.restart(db_pre_restart),
@@ -192,6 +223,9 @@ module core_t #
 	wire [7:0] do_pre_init_aux_info;
 	wire do_pre_request_data;
 	wire do_pre_restart;
+	wire [11:0] do_pre_a_addr;
+	wire [7:0] do_pre_a_data_in;
+	wire do_pre_a_en_w;
 	bram_data_loader_t #
 	(
 		.addr_width(12),
@@ -199,9 +233,9 @@ module core_t #
 		.static_init_aux_info(8'b00000001)
 	) bram_data_loader_do
 	(
-		.bram_addr_w(do_addr_w),
-		.bram_data_in(do_data_in),
-		.bram_en_w(do_en_w),
+		.bram_addr_w(do_pre_a_addr),
+		.bram_data_in(do_pre_a_data_in),
+		.bram_en_w(do_pre_a_en_w),
 		.sig_on(sig_do_on),
 		.sig_done(sig_do_done),
 		.restart(do_pre_restart),
@@ -222,6 +256,9 @@ module core_t #
 	wire [7:0] dp_pre_init_aux_info;
 	wire dp_pre_request_data;
 	wire dp_pre_restart;
+	wire [12:0] dp_pre_a_addr;
+	wire [31:0] dp_pre_a_data_in;
+	wire dp_pre_a_en_w;
 	bram_data_loader_t #
 	(
 		.addr_width(13),
@@ -229,9 +266,9 @@ module core_t #
 		.static_init_aux_info(8'b00000010)
 	) bram_data_loader_dp
 	(
-		.bram_addr_w(dp_addr_w),
-		.bram_data_in(dp_data_in),
-		.bram_en_w(dp_en_w),
+		.bram_addr_w(dp_pre_a_addr),
+		.bram_data_in(dp_pre_a_data_in),
+		.bram_en_w(dp_pre_a_en_w),
 		.sig_on(sig_dp_on),
 		.sig_done(sig_dp_done),
 		.restart(dp_pre_restart),
@@ -252,6 +289,9 @@ module core_t #
 	wire [7:0] dt_pre_init_aux_info;
 	wire dt_pre_request_data;
 	wire dt_pre_restart;
+	wire [11:0] dt_pre_a_addr;
+	wire [31:0] dt_pre_a_data_in;
+	wire dt_pre_a_en_w;
 	bram_data_loader_t #
 	(
 		.addr_width(12),
@@ -259,9 +299,9 @@ module core_t #
 		.static_init_aux_info(8'b00000011)
 	) bram_data_loader_dt
 	(
-		.bram_addr_w(dt_addr_w),
-		.bram_data_in(dt_data_in),
-		.bram_en_w(dt_en_w),
+		.bram_addr_w(dt_pre_a_addr),
+		.bram_data_in(dt_pre_a_data_in),
+		.bram_en_w(dt_pre_a_en_w),
 		.sig_on(sig_dt_on),
 		.sig_done(sig_dt_done),
 		.restart(dt_pre_restart),
@@ -282,6 +322,9 @@ module core_t #
 	wire [7:0] ds_pre_init_aux_info;
 	wire ds_pre_request_data;
 	wire ds_pre_restart;
+	wire [14:0] ds_pre_a_addr;
+	wire [15:0] ds_pre_a_data_in;
+	wire ds_pre_a_en_w;
 	bram_data_loader_t #
 	(
 		.addr_width(15),
@@ -289,9 +332,9 @@ module core_t #
 		.static_init_aux_info(8'b10000000)
 	) bram_data_loader_ds
 	(
-		.bram_addr_w(ds_addr_w),
-		.bram_data_in(ds_data_in),
-		.bram_en_w(ds_en_w),
+		.bram_addr_w(ds_pre_a_addr),
+		.bram_data_in(ds_pre_a_data_in),
+		.bram_en_w(ds_pre_a_en_w),
 		.sig_on(sig_ds_on),
 		.sig_done(sig_ds_done),
 		.restart(ds_pre_restart),
@@ -306,8 +349,12 @@ module core_t #
 		.CLK(CLK)
 	);
 
-	// 选通 pre_cpu。
+	// 选通 pre_cpu。内存在后面选通。
 	always @(*) begin
+		pre_init_index =    0;
+		pre_init_aux_info = 0;
+		pre_request_data =  0;
+		pre_restart =       0;
 		case (state)
 			s_load_skin,
 			s_w_load_skin: begin
@@ -346,12 +393,6 @@ module core_t #
 				pre_request_data =  dt_pre_request_data;
 				pre_restart =       dt_pre_restart;
 			end
-			default: begin
-				pre_init_index =    0;
-				pre_init_aux_info = 0;
-				pre_request_data =  0;
-				pre_restart =       0;
-			end
 		endcase
 	end
 
@@ -370,7 +411,7 @@ module core_t #
 		.CLK(CLK)
 	);
 
-	// get_base_addr。
+	// get_base_addr。选通内存。
 	wire sig_get_base_addr_0_on;
 	reg sig_get_base_addr_0_done;
 	wire sig_get_base_addr_1_on;
@@ -380,12 +421,23 @@ module core_t #
 	wire sig_get_base_addr_3_on;
 	reg sig_get_base_addr_3_done;
 
-	reg [12:0] init_db_addr_r;
-	reg init_db_en_r;
+	reg db_init_b_en;
+	reg [12:0] db_init_b_addr;
 	always @(*) begin
-		if (state == s_get_base_addr_0 || state == s_w_get_base_addr_0) begin
-			db_addr_r = init_db_addr_r;
-			db_en_r = init_db_en_r;
+		db_a_addr = 0;
+		db_a_data_in = 0;
+		db_a_en_w = 0;
+		db_b_addr = 0;
+		db_b_en = 0;
+
+		if (state == s_load_beatmap_0 || state == s_w_load_beatmap_0) begin
+			db_a_en_w = db_pre_a_en_w;
+			db_a_addr = db_pre_a_addr;
+			db_a_data_in = db_pre_a_data_in;
+		end
+		else if (state == s_get_base_addr_0 || state == s_w_get_base_addr_0) begin
+			db_b_en = db_init_b_en;
+			db_b_addr = db_init_b_addr;
 		end
 		else begin
 			// TODO
@@ -405,8 +457,8 @@ module core_t #
 			sig_get_base_addr_0_done <= 0;
 			which <= 0;
 			pat <= 0;
-			init_db_en_r <= 0;
-			init_db_addr_r <= 0;
+			db_init_b_en <= 0;
+			db_init_b_addr <= 0;
 		end
 		else begin
 			if (!which[2]) begin
@@ -416,18 +468,18 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[1:0] == 2'd0)
-						init_db_addr_r <= 0;
+						db_init_b_addr <= 0;
 					else
-						init_db_addr_r <= db_base_addr[which[1:0] - 1] + db_size[which[1:0] - 1];
-					init_db_en_r <= 1;
+						db_init_b_addr <= db_base_addr[which[1:0] - 1] + db_size[which[1:0] - 1];
+					db_init_b_en <= 1;
 				end
-				else if (pat == 3) begin // 改成 == 2 也可，但是需要额外处理 pat。这里利用了自然溢出。
-					db_size[which[1:0]] <= db_data_out;
+				else if (pat == 3) begin // 不可改成 == 2，因为地址是在 0 拍结束时改变的。
+					db_size[which[1:0]] <= db_b_data_out;
 					if (which[1:0] == 2'd0)
 						db_base_addr[0] <= 1;
 					else
 						db_base_addr[which[1:0]] <= db_base_addr[which[1:0] - 1] + db_size[which[1:0] - 1] + 1;
-					init_db_en_r <= 0;
+					db_init_b_en <= 0;
 					if (which[1:0] < 3)
 						which[1:0] <= which[1:0] + 1;
 					else
@@ -439,12 +491,23 @@ module core_t #
 		end
 	end
 
-	reg [12:0] init_do_addr_r;
-	reg init_do_en_r;
+	reg do_init_b_en;
+	reg [11:0] do_init_b_addr;
 	always @(*) begin
-		if (state == s_get_base_addr_1 || state == s_w_get_base_addr_1) begin
-			do_addr_r = init_do_addr_r;
-			do_en_r = init_do_en_r;
+		do_a_addr = 0;
+		do_a_data_in = 0;
+		do_a_en_w = 0;
+		do_b_addr = 0;
+		do_b_en = 0;
+
+		if (state == s_load_beatmap_1 || state == s_w_load_beatmap_1) begin
+			do_a_en_w = do_pre_a_en_w;
+			do_a_addr = do_pre_a_addr;
+			do_a_data_in = do_pre_a_data_in;
+		end
+		else if (state == s_get_base_addr_1 || state == s_w_get_base_addr_1) begin
+			do_b_en = do_init_b_en;
+			do_b_addr = do_init_b_addr;
 		end
 		else begin
 			// TODO
@@ -466,8 +529,8 @@ module core_t #
 			which <= 0;
 			part <= 0;
 			pat <= 0;
-			init_do_en_r <= 0;
-			init_do_addr_r <= 0;
+			do_init_b_en <= 0;
+			do_init_b_addr <= 0;
 		end
 		else begin
 			if (!which[2]) begin
@@ -477,15 +540,15 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[1:0] == 2'd0)
-						init_do_addr_r <= part;
+						do_init_b_addr <= part;
 					else
-						init_do_addr_r <= do_base_addr[which[1:0] - 1] + do_size[which[1:0] - 1] + part;
-					init_do_en_r <= 1;
+						do_init_b_addr <= do_base_addr[which[1:0] - 1] + do_size[which[1:0] - 1] + part;
+					do_init_b_en <= 1;
 				end
 				else if (pat == 3) begin
-					do_size[which[1:0]][part * 4 +: 4] <= do_data_out;
+					do_size[which[1:0]][part * 4 +: 4] <= do_b_data_out;
 					part <= part + 1;
-					init_do_en_r <= 0;
+					do_init_b_en <= 0;
 					if (part == 2'b11) begin
 						if (which[1:0] == 2'd0)
 							do_base_addr[0] <= 4;
@@ -504,12 +567,23 @@ module core_t #
 		end
 	end
 
-	reg [12:0] init_dp_addr_r;
-	reg init_dp_en_r;
+	reg dp_init_b_en;
+	reg [12:0] dp_init_b_addr;
 	always @(*) begin
-		if (state == s_get_base_addr_2 || state == s_w_get_base_addr_2) begin
-			dp_addr_r = init_dp_addr_r;
-			dp_en_r = init_dp_en_r;
+		dp_a_addr = 0;
+		dp_a_data_in = 0;
+		dp_a_en_w = 0;
+		dp_b_addr = 0;
+		dp_b_en = 0;
+
+		if (state == s_load_beatmap_2 || state == s_w_load_beatmap_2) begin
+			dp_a_en_w = dp_pre_a_en_w;
+			dp_a_addr = dp_pre_a_addr;
+			dp_a_data_in = dp_pre_a_data_in;
+		end
+		else if (state == s_get_base_addr_2 || state == s_w_get_base_addr_2) begin
+			dp_b_en = dp_init_b_en;
+			dp_b_addr = dp_init_b_addr;
 		end
 		else begin
 			// TODO
@@ -529,8 +603,8 @@ module core_t #
 			sig_get_base_addr_2_done <= 0;
 			which <= 0;
 			pat <= 0;
-			init_dp_en_r <= 0;
-			init_dp_addr_r <= 0;
+			dp_init_b_en <= 0;
+			dp_init_b_addr <= 0;
 		end
 		else begin
 			if (!which[2]) begin
@@ -540,18 +614,18 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[1:0] == 2'd0)
-						init_dp_addr_r <= 0;
+						dp_init_b_addr <= 0;
 					else
-						init_dp_addr_r <= dp_base_addr[which[1:0] - 1] + dp_size[which[1:0] - 1];
-					init_dp_en_r <= 1;
+						dp_init_b_addr <= dp_base_addr[which[1:0] - 1] + dp_size[which[1:0] - 1];
+					dp_init_b_en <= 1;
 				end
 				else if (pat == 3) begin
-					dp_size[which[1:0]] <= dp_data_out;
+					dp_size[which[1:0]] <= dp_b_data_out;
 					if (which[1:0] == 2'd0)
 						dp_base_addr[0] <= 1;
 					else
 						dp_base_addr[which[1:0]] <= dp_base_addr[which[1:0] - 1] + dp_size[which[1:0] - 1] + 1;
-					init_dp_en_r <= 0;
+					dp_init_b_en <= 0;
 					if (which[1:0] < 3)
 						which[1:0] <= which[1:0] + 1;
 					else
@@ -563,12 +637,23 @@ module core_t #
 		end
 	end
 
-	reg [11:0] init_dt_addr_r;
-	reg init_dt_en_r;
+	reg dt_init_b_en;
+	reg [11:0] dt_init_b_addr;
 	always @(*) begin
-		if (state == s_get_base_addr_3 || state == s_w_get_base_addr_3) begin
-			dt_addr_r = init_dt_addr_r;
-			dt_en_r = init_dt_en_r;
+		dt_a_addr = 0;
+		dt_a_data_in = 0;
+		dt_a_en_w = 0;
+		dt_b_addr = 0;
+		dt_b_en = 0;
+
+		if (state == s_load_beatmap_3 || state == s_w_load_beatmap_3) begin
+			dt_a_en_w = dt_pre_a_en_w;
+			dt_a_addr = dt_pre_a_addr;
+			dt_a_data_in = dt_pre_a_data_in;
+		end
+		else if (state == s_get_base_addr_3 || state == s_w_get_base_addr_3) begin
+			dt_b_en = dt_init_b_en;
+			dt_b_addr = dt_init_b_addr;
 		end
 		else begin
 			// TODO
@@ -586,8 +671,8 @@ module core_t #
 			sig_get_base_addr_3_done <= 0;
 			which <= 0;
 			pat <= 0;
-			init_dt_en_r <= 0;
-			init_dt_addr_r <= 0;
+			dt_init_b_en <= 0;
+			dt_init_b_addr <= 0;
 		end
 		else begin
 			if (!which[1]) begin
@@ -597,17 +682,17 @@ module core_t #
 			else begin
 				if (pat == 0) begin
 					if (which[0:0] == 1)
-						init_dt_addr_r <= 1;
+						dt_init_b_addr <= 1;
 					else
-						init_dt_addr_r <= 0;
-					init_dt_en_r <= 1;
+						dt_init_b_addr <= 0;
+					dt_init_b_en <= 1;
 				end
 				else if (pat == 3) begin
 					if (which[0:0] == 1)
-						song_length <= dt_data_out;
+						song_length <= dt_b_data_out;
 					else
-						dt_size <= dt_data_out;
-					init_dt_en_r <= 0;
+						dt_size <= dt_b_data_out;
+					dt_init_b_en <= 0;
 					if (which[0:0] < 1)
 						which[0:0] <= which[0:0] + 1;
 					else
@@ -616,6 +701,23 @@ module core_t #
 				pat <= pat + 1;
 			end
 			sig_get_base_addr_3_done <= which == 2'b11 && pat == 2'b11;
+		end
+	end
+
+	always @(*) begin
+		ds_a_en_w = 0;
+		ds_a_addr = 0;
+		ds_a_data_in = 0;
+		ds_b_en = 0;
+		ds_b_addr = 0;
+
+		if (state == s_load_skin || state == s_w_load_skin) begin
+			ds_a_addr = ds_pre_a_addr;
+			ds_a_en_w = ds_pre_a_en_w;
+			ds_a_data_in = ds_pre_a_data_in;
+		end
+		else begin
+			// TODO
 		end
 	end
 
@@ -642,6 +744,7 @@ module core_t #
 
 	/* 调试输出。*/
 	assign DEBUG_CURRENT_STATE = state;
+	assign DEBUG_BASE_ADDR = do_size[3];
 
 	/* 控制。*/
 
