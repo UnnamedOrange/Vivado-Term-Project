@@ -82,7 +82,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>f78cd945</spirit:value>
+            <spirit:value>377dbf39</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -98,7 +98,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>f78cd945</spirit:value>
+            <spirit:value>4b4fa029</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -231,6 +231,18 @@
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>CHECKSUM_f78cd945</spirit:userFileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>src/debouncer.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>src/PS2scan.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>CHECKSUM_aae02073</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -239,6 +251,19 @@
         <spirit:name>src/keyboard.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>src/PS2scan.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>src/debouncer.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+        <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
     </spirit:fileSet>
   </spirit:fileSets>
@@ -285,13 +310,13 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:keyboard_t:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-01T07:40:09Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-13T03:37:48Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="e9d9930e"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="29029a2e"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="f4501398"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="3d0242ac"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="6f27bdce"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="746fc722"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="39c4fbde"/>
     </xilinx:packagingInfo>

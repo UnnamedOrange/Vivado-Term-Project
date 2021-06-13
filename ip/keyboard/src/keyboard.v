@@ -6,38 +6,76 @@
 /// <filedescription>键盘输入。</filedescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange and Jack-Lyu) : First commit.
+/// 0.0.2 (Jack-Lyu) : 成了。
 /// </version>
 
 `timescale 1ns / 1ps
 
 module keyboard_t #
 (
-	parameter key_0 = 8'h23,
-	parameter key_1 = 8'h2B,
-	parameter key_2 = 8'h3B,
-	parameter key_3 = 8'h42
+	parameter key_0 = 8'h24,
+	parameter key_1 = 8'h2D,
+	parameter key_2 = 8'h3C,
+	parameter key_3 = 8'h43
 )
 (
-	output [3:0] IS_KEY_DOWN,
-	output [3:0] IS_KEY_CHANGED,
-	input KB_DATA,
-	input KB_CLK,
-	input RESET_L,
-	input CLK
+	input kbdata,
+	input kbclk,
+	input clk,
+	input reset,
+	output [3:0] DOWN,
+	output [3:0] CHANGE
 );
 
-	reg sync_clk;
+	wire [15:0] keycode;
+	wire oflag;
+	reg [3:0] down;
+	reg [3:0] n_down;
+	reg [3:0] change;
+	reg [3:0] n_change;
 
-	always @(posedge CLK) begin
-		if (!RESET_L) begin
-			sync_clk <= 1;
+	PS2scan u1(
+		.clk(clk),
+		.kclk(kbclk),
+		.kdata(kbdata),
+		.keycode(keycode), //out
+		.oflag(oflag) //out
+	);
+
+	always @(posedge clk) begin
+		change <= n_change;
+		down <= n_down;
+	end
+
+	always @(*) begin // 组合逻辑设计
+		n_down = down;
+		n_change = change;
+		if(reset) begin
+			n_down = 4'b0;
+			n_change = 4'b0;
+		end
+		else if (!oflag) begin
+			n_change = 4'b0;
+		end
+ 		else if(keycode[15:8] == 8'hf0) begin // 确定要松开的键
+			case(keycode[7:0])
+				key_0: begin n_down[0] = 0 ; n_change[0] = 1; end
+				key_1: begin n_down[1] = 0 ; n_change[1] = 1; end
+				key_2: begin n_down[2] = 0 ; n_change[2] = 1; end
+				key_3: begin n_down[3] = 0 ; n_change[3] = 1; end
+			endcase
 		end
 		else begin
-			if (!KB_CLK)
-				sync_clk <= KB_CLK;
-			else
-				sync_clk <= 1;
+			case(keycode[7:0])
+				key_0: begin n_down[0] = 1 ; n_change[0] = 1; end
+				key_1: begin n_down[1] = 1 ; n_change[1] = 1; end
+				key_2: begin n_down[2] = 1 ; n_change[2] = 1; end
+				key_3: begin n_down[3] = 1 ; n_change[3] = 1; end
+			endcase
 		end
 	end
+
+	assign DOWN = down;
+	assign CHANGE = change;
 
 endmodule
