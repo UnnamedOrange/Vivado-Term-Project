@@ -1,6 +1,7 @@
 # Copyright (c) UnnamedOrange and Jack-Lyu. Licensed under the MIT License.
 # See the LICENSE file in the repository root for full license text.
 
+import numpy as np
 import librosa
 
 g_basic_timing = 109  # 基础速度。
@@ -177,3 +178,5 @@ if __name__ == '__main__':
         file.write(g_pixel_final)
     with open('.timing', 'wb') as file:
         file.write(g_timing_final)
+    sound = np.array((sound + 1) / 2 * 255, dtype=np.uint8)
+    sound.tofile('.song')

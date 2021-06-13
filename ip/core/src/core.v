@@ -27,7 +27,6 @@ module core_t #
 (
 	// 调试。
 	output [15:0] DEBUG_CURRENT_STATE,
-	output [15:0] DEBUG_BASE_ADDR,
 
 	// 直连的 BRAM。
 	// .beatmap (db) 对应 BRAM。
@@ -103,7 +102,7 @@ module core_t #
 	input [song_data_width - 1 : 0] song_data_in,
 	input song_data_ready,
 	input song_transmit_finished,
-	output song_request_data,
+	output reg song_request_data,
 	output song_restart,
 
 	// 键盘模块。
@@ -111,12 +110,12 @@ module core_t #
 	input [3:0] IS_KEY_CHANGED,
 
 	// 音频模块。
-	output [song_data_width - 1 : 0] MAIN_AUDIO_OUT,
+	output reg [song_data_width - 1 : 0] MAIN_AUDIO_OUT,
 	output MAIN_AUDIO_EN,
-	output [3:0] MAIN_AUDIO_VOLUMN,
+	output [4:0] MAIN_AUDIO_VOLUMN,
 	output [song_data_width - 1 : 0] AUX_AUDIO_OUT,
 	output AUX_AUDIO_EN,
-	output [3:0] AUX_AUDIO_VOLUMN,
+	output [4:0] AUX_AUDIO_VOLUMN,
 	output AUDIO_EN,
 
 	// VGA 模块。
@@ -200,7 +199,7 @@ module core_t #
 		.static_init_aux_info(8'b00000000)
 	) bram_data_loader_db
 	(
-		.bram_addr_w(db_pre_addr_a),
+		.bram_addr_w(db_pre_a_addr),
 		.bram_data_in(db_pre_a_data_in),
 		.bram_en_w(db_pre_a_en_w),
 		.sig_on(sig_db_on),
@@ -742,9 +741,27 @@ module core_t #
 		end
 	end
 
+	// 音频输出。
+	always @(posedge CLK) begin
+		if (!RESET_L) begin
+			MAIN_AUDIO_OUT <= 0;
+		end
+		else begin
+			if (song_data_ready)
+				MAIN_AUDIO_OUT <= song_data_in;
+			song_request_data <= state == s_system_clock_on && audio_clock == audio_period - 1;
+		end
+	end
+
+	assign MAIN_AUDIO_EN = 1;
+	assign MAIN_AUDIO_VOLUMN = 12;
+	assign AUX_AUDIO_OUT = 0;
+	assign AUX_AUDIO_EN = 0;
+	assign AUX_AUDIO_VOLUMN = 0;
+	assign AUDIO_EN = state == s_system_clock_on;
+
 	/* 调试输出。*/
 	assign DEBUG_CURRENT_STATE = state;
-	assign DEBUG_BASE_ADDR = do_size[3];
 
 	/* 控制。*/
 
