@@ -410,6 +410,68 @@ module core_t #
 		.CLK(CLK)
 	);
 
+	// update_routine。
+	wire sig_update_on;
+	wire sig_update_done; // 保留。
+	wire [12:0] db_update_b_addr;
+	wire db_update_b_en;
+	wire [11:0] do_update_a_addr;
+	wire [7:0] do_update_a_data_in;
+	wire do_update_a_en_w;
+	wire [12:0] do_update_b_addr;
+	wire do_update_b_en;
+	wire [12:0] dp_update_b_addr;
+	wire dp_update_b_en;
+	wire [11:0] dt_update_b_addr;
+	wire dt_update_b_en;
+	update_routine_t update_routine
+	(
+		.sig_on(sig_update_on),
+		.sig_done(sig_update_done),
+
+		.db_b_addr(db_update_b_addr),
+		.db_b_data_out(db_b_data_out),
+		.db_b_en(db_update_b_en),
+
+		.do_a_addr(do_update_a_addr),
+		.do_a_data_in(do_update_a_data_in),
+		.do_a_en_w(do_update_a_en_w),
+		.do_b_addr(do_update_b_addr),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_update_b_en),
+
+		.dp_b_addr(dp_update_b_addr),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_update_b_en),
+
+		.dt_b_addr(dt_update_b_addr),
+		.dt_b_data_out(dt_b_data_out),
+		.dt_b_en(dt_update_b_en),
+
+		.db_size_0(db_size[0]),
+		.db_size_1(db_size[1]),
+		.db_size_2(db_size[2]),
+		.db_size_3(db_size[3]),
+		.db_base_addr_0(db_base_addr[0]),
+		.db_base_addr_1(db_base_addr[1]),
+		.db_base_addr_2(db_base_addr[2]),
+		.db_base_addr_3(db_base_addr[3]),
+		.do_size_0(do_size[0]),
+		.do_size_1(do_size[1]),
+		.do_size_2(do_size[2]),
+		.do_size_3(do_size[3]),
+		.do_base_addr_0(do_base_addr[0]),
+		.do_base_addr_1(do_base_addr[1]),
+		.do_base_addr_2(do_base_addr[2]),
+		.do_base_addr_3(do_base_addr[3]),
+		.dt_size(dt_size),
+		.dt_base_addr(dt_base_addr),
+		.song_length(song_length),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
 	// get_base_addr。选通内存。
 	wire sig_get_base_addr_0_on;
 	reg sig_get_base_addr_0_done;
@@ -438,8 +500,9 @@ module core_t #
 			db_b_en = db_init_b_en;
 			db_b_addr = db_init_b_addr;
 		end
-		else begin
-			// TODO
+		else if (state == s_system_clock_on) begin
+			db_b_addr = db_update_b_addr;
+			db_b_en = db_update_b_en;
 		end
 	end
 
@@ -508,8 +571,12 @@ module core_t #
 			do_b_en = do_init_b_en;
 			do_b_addr = do_init_b_addr;
 		end
-		else begin
-			// TODO
+		else if (state == s_system_clock_on) begin
+			do_a_en_w = do_update_a_en_w;
+			do_a_addr = do_update_a_addr;
+			do_a_data_in = do_update_a_data_in;
+			do_b_addr = do_update_b_addr;
+			do_b_en = do_update_b_en;
 		end
 	end
 
@@ -584,8 +651,9 @@ module core_t #
 			dp_b_en = dp_init_b_en;
 			dp_b_addr = dp_init_b_addr;
 		end
-		else begin
-			// TODO
+		else if (state == s_system_clock_on) begin
+			dp_b_addr = dp_update_b_addr;
+			dp_b_en = dp_update_b_en;
 		end
 	end
 
@@ -654,8 +722,9 @@ module core_t #
 			dt_b_en = dt_init_b_en;
 			dt_b_addr = dt_init_b_addr;
 		end
-		else begin
-			// TODO
+		else if (state == s_system_clock_on) begin
+			dt_b_addr = dt_update_b_addr;
+			dt_b_en = dt_update_b_en;
 		end
 	end
 
@@ -847,5 +916,8 @@ module core_t #
 	assign sig_get_base_addr_1_on = state == s_get_base_addr_1;
 	assign sig_get_base_addr_2_on = state == s_get_base_addr_2;
 	assign sig_get_base_addr_3_on = state == s_get_base_addr_3;
+
+	// update。
+	assign sig_update_on = state == s_system_clock_on && update_clock == update_period - 1;
 
 endmodule
