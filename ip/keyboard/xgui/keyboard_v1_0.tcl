@@ -1,9 +1,6 @@
 # Definitional proc to organize widgets for parameters.
 proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "Component_Name"
-  #Adding Page
-  ipgui::add_page $IPINST -name "Page 0"
-
   set key_0 [ipgui::add_param $IPINST -name "key_0"]
   set_property tooltip {从左到右第一个键。} ${key_0}
   set key_1 [ipgui::add_param $IPINST -name "key_1"]
