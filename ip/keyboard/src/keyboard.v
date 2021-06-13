@@ -19,13 +19,16 @@ module keyboard_t #
 	parameter key_3 = 8'h43
 )
 (
+	output [3:0] DOWN,
+	output [3:0] CHANGE,
 	input kbdata,
 	input kbclk,
-	input clk,
-	input reset,
-	output [3:0] DOWN,
-	output [3:0] CHANGE
+	input RESET_L,
+	input CLK
 );
+	wire reset, clk;
+	assign reset = !RESET_L;
+	assign clk = CLK;
 
 	wire [15:0] keycode;
 	wire oflag;
