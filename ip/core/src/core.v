@@ -22,7 +22,7 @@ module core_t #
 	parameter update_period = system_clock / 1000,
 	parameter audio_period = system_clock / 44100,
 	parameter draw_period = 800 * 525 * 4,
-	parameter play_delay = 1500,
+	parameter play_delay = 44100 * 3 / 2,
 	parameter state_width = 16
 )
 (
@@ -812,7 +812,7 @@ module core_t #
 	end
 
 	// 音频输出。
-	reg [15:0] delay_counter; // 延时 play_delay 毫秒再开始播放。
+	reg [31:0] delay_counter; // 延时 play_delay / 44100 秒再开始播放。
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
 			MAIN_AUDIO_OUT <= 0;
@@ -821,10 +821,14 @@ module core_t #
 		else begin
 			if (song_data_ready)
 				MAIN_AUDIO_OUT <= song_data_in;
-			if (delay_counter < play_delay)
+			if (audio_clock == audio_period - 1 &&
+				delay_counter < play_delay &&
+				state == s_system_clock_on)
 				delay_counter <= delay_counter + 1;
-			song_request_data <= delay_counter == play_delay &&
-				state == s_system_clock_on && audio_clock == audio_period - 1;
+			song_request_data <=
+				audio_clock == audio_period - 1 &&
+				delay_counter == play_delay &&
+				state == s_system_clock_on;
 		end
 	end
 
