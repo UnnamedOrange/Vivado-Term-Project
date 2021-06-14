@@ -4,6 +4,7 @@
 import numpy as np
 import librosa
 
+g_delay = 1500  # 所有时间点延时指定时间。
 g_basic_timing = 109  # 基础速度。
 g_timing = []  # [时间点, 速度]
 g_timing_final = None
@@ -71,10 +72,14 @@ if __name__ == '__main__':
         print('错误：关键时间点超过数量限制')
         exit()
 
+    # 为 timing 延时。
+    for i in range(len(g_timing)):
+        g_timing[i][0] += g_delay
+
     # 构建 timing。
     g_timing_final = []
     g_timing_final.append(len(g_timing))
-    g_timing_final.append(length_in_milli)
+    g_timing_final.append(length_in_milli + g_delay)  # 为歌曲长度加上延时。
     for i in range(len(g_timing)):
         g_timing_final.append((g_timing[i][1] << 20) + g_timing[i][0])
     g_timing_final = b''.join(x.to_bytes(
@@ -99,6 +104,13 @@ if __name__ == '__main__':
         is_hit = original_object[i][3] == '1'
         et = round(float(original_object[i][5].split(':')[0]))
         g_original_object[idx].append([st, et])  # [起始, 结束（没有就是空）]
+
+    # 为 original_object 延时。
+    for idx in range(4):
+        for i in range(len(g_original_object[idx])):
+            g_original_object[idx][i][0] += g_delay
+            if g_original_object[idx][i][1]:
+                g_original_object[idx][i][1] += g_delay
 
     print('报告：对象占用 %d / 8176 个' % sum(len(x) for x in g_original_object))
     if sum(len(x) for x in g_original_object) > 8176:
