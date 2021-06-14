@@ -130,18 +130,18 @@ module core_t #
 	/* 状态定义。*/
 	localparam [state_width - 1 : 0] // 使用 BCD 码进行编码。
 		s_init                      = 16'h0000, // 复位。
-		s_load_skin                 = 16'h0001, // 加载 .skin 到 BRAM。
-		s_w_load_skin               = 16'h0002, // 等待加载 .skin 到 BRAM。
-		s_load_beatmap_0            = 16'h0003, // 加载 .beatmap 到 BRAM。
-		s_w_load_beatmap_0          = 16'h0004, // 等待加载 .beatmap 到 BRAM。
-		s_load_beatmap_1            = 16'h0005, // 加载 .object 到 BRAM。
-		s_w_load_beatmap_1          = 16'h0006, // 等待加载 .object 到 BRAM。
-		s_load_beatmap_2            = 16'h0007, // 加载 .pixel 到 BRAM。
-		s_w_load_beatmap_2          = 16'h0008, // 等待加载 .pixel 到 BRAM。
-		s_load_beatmap_3            = 16'h0009, // 加载 .timing 到 BRAM。
-		s_w_load_beatmap_3          = 16'h0010, // 等待加载 .timing 到 BRAM。
-		s_reset_cpu_song            = 16'h0011, // 重置 CPU 到歌曲播放。
-		s_w_reset_cpu_song          = 16'h0012, // 等待重置 CPU 到歌曲播放。
+		s_reset_cpu_song            = 16'h0001, // 重置 CPU 到歌曲播放。
+		s_w_reset_cpu_song          = 16'h0002, // 等待重置 CPU 到歌曲播放。
+		s_load_skin                 = 16'h0003, // 加载 .skin 到 BRAM。
+		s_w_load_skin               = 16'h0004, // 等待加载 .skin 到 BRAM。
+		s_load_beatmap_0            = 16'h0005, // 加载 .beatmap 到 BRAM。
+		s_w_load_beatmap_0          = 16'h0006, // 等待加载 .beatmap 到 BRAM。
+		s_load_beatmap_1            = 16'h0007, // 加载 .object 到 BRAM。
+		s_w_load_beatmap_1          = 16'h0008, // 等待加载 .object 到 BRAM。
+		s_load_beatmap_2            = 16'h0009, // 加载 .pixel 到 BRAM。
+		s_w_load_beatmap_2          = 16'h0010, // 等待加载 .pixel 到 BRAM。
+		s_load_beatmap_3            = 16'h0011, // 加载 .timing 到 BRAM。
+		s_w_load_beatmap_3          = 16'h0012, // 等待加载 .timing 到 BRAM。
 		s_get_base_addr_0           = 16'h0013, // 获取 .beatmap 的各个基地址。
 		s_w_get_base_addr_0         = 16'h0014, // 等待获取 .beatmap 的各个基地址和数量。
 		s_get_base_addr_1           = 16'h0015, // 获取 .object 的各个基地址和数量。
@@ -859,7 +859,11 @@ module core_t #
 	always @(*) begin
 		case (state)
 			s_init:
-				n_state = s_load_skin;
+				n_state = s_reset_cpu_song;
+			s_reset_cpu_song:
+				n_state = s_w_reset_cpu_song;
+			s_w_reset_cpu_song:
+				n_state = sig_reset_cpu_song_done ? s_load_skin : s_w_reset_cpu_song;
 			s_load_skin:
 				n_state = s_w_load_skin;
 			s_w_load_skin:
@@ -879,11 +883,7 @@ module core_t #
 			s_load_beatmap_3:
 				n_state = s_w_load_beatmap_3;
 			s_w_load_beatmap_3:
-				n_state = sig_dt_done ? s_reset_cpu_song : s_w_load_beatmap_3;
-			s_reset_cpu_song:
-				n_state = s_w_reset_cpu_song;
-			s_w_reset_cpu_song:
-				n_state = sig_reset_cpu_song_done ? s_get_base_addr_0 : s_w_reset_cpu_song;
+				n_state = sig_dt_done ? s_get_base_addr_0 : s_w_load_beatmap_3;
 			s_get_base_addr_0:
 				n_state = s_w_get_base_addr_0;
 			s_w_get_base_addr_0:
