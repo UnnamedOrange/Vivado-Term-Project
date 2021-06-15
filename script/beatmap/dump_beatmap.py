@@ -74,7 +74,8 @@ if __name__ == '__main__':
 
     # 为 timing 延时。
     for i in range(len(g_timing)):
-        g_timing[i][0] += g_delay
+        if g_timing[i][0]:
+            g_timing[i][0] += g_delay
 
     # 构建 timing。
     g_timing_final = []
