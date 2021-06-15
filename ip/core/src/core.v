@@ -421,8 +421,6 @@ module core_t #
 	wire do_update_a_en_w;
 	wire [12:0] do_update_b_addr;
 	wire do_update_b_en;
-	wire [12:0] dp_update_b_addr;
-	wire dp_update_b_en;
 	wire [11:0] dt_update_b_addr;
 	wire dt_update_b_en;
 	update_routine_t update_routine
@@ -440,10 +438,6 @@ module core_t #
 		.do_b_addr(do_update_b_addr),
 		.do_b_data_out(do_b_data_out),
 		.do_b_en(do_update_b_en),
-
-		.dp_b_addr(dp_update_b_addr),
-		.dp_b_data_out(dp_b_data_out),
-		.dp_b_en(dp_update_b_en),
 
 		.dt_b_addr(dt_update_b_addr),
 		.dt_b_data_out(dt_b_data_out),
@@ -653,8 +647,7 @@ module core_t #
 			dp_b_addr = dp_init_b_addr;
 		end
 		else if (state == s_system_clock_on) begin
-			dp_b_addr = dp_update_b_addr;
-			dp_b_en = dp_update_b_en;
+			// TODO
 		end
 	end
 
