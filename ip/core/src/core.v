@@ -423,6 +423,8 @@ module core_t #
 	wire do_update_b_en;
 	wire [11:0] dt_update_b_addr;
 	wire dt_update_b_en;
+	wire [19:0] current_time;
+	wire [31:0] current_pixel;
 	update_routine_t update_routine
 	(
 		.sig_on(sig_update_on),
@@ -462,6 +464,12 @@ module core_t #
 		.dt_size(dt_size),
 		.dt_base_addr(dt_base_addr),
 		.song_length(song_length),
+
+		.is_key_down(IS_KEY_DOWN),
+		.is_key_changed(IS_KEY_CHANGED),
+
+		.current_time(current_time),
+		.current_pixel(current_pixel),
 
 		.RESET_L(RESET_L),
 		.CLK(CLK)
@@ -730,6 +738,8 @@ module core_t #
 		if (!RESET_L) begin
 			dt_size <= 0;
 			dt_base_addr <= 2; // ×ÜÊÇ 2¡£
+			song_length <= 0;
+
 			sig_get_base_addr_3_done <= 0;
 			which <= 0;
 			pat <= 0;

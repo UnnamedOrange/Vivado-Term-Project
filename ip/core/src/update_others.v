@@ -29,6 +29,14 @@ module update_others_t #
 	input [11:0] dt_size,
 	input [11:0] dt_base_addr, // == 2
 
+	// 游戏状态。
+	input [3:0] is_game_over,
+	input [3:0] is_miss,
+	input [3:0] is_bad,
+	input [3:0] is_good,
+	input [3:0] is_great,
+	input [3:0] is_perfect,
+
 	// 需要作为输出的变量。
 	output reg [19:0] current_time,
 	output reg [31:0] current_pixel,

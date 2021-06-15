@@ -55,7 +55,7 @@ module update_routine_t #
 	input [12:0] do_base_addr_3,
 	input [11:0] dt_size,
 	input [11:0] dt_base_addr, // == 2
-	input [19:0] song_length,
+	input [19:0] song_length, // 暂时不使用。
 
 	// 键盘。
 	input [3:0] is_key_down,
@@ -164,10 +164,10 @@ module update_routine_t #
 		.do_b_data_out(do_b_data_out),
 		.do_b_en(do_1_b_en),
 
-		.db_size(db_size_0),
-		.db_base_addr(db_base_addr_0),
-		.do_size(do_size_0),
-		.do_base_addr(do_base_addr_0),
+		.db_size(db_size_1),
+		.db_base_addr(db_base_addr_1),
+		.do_size(do_size_1),
+		.do_base_addr(do_base_addr_1),
 
 		.is_key_down(is_key_down[1]),
 		.is_key_changed(is_key_changed[1]),
@@ -209,10 +209,10 @@ module update_routine_t #
 		.do_b_data_out(do_b_data_out),
 		.do_b_en(do_2_b_en),
 
-		.db_size(db_size_0),
-		.db_base_addr(db_base_addr_0),
-		.do_size(do_size_0),
-		.do_base_addr(do_base_addr_0),
+		.db_size(db_size_2),
+		.db_base_addr(db_base_addr_2),
+		.do_size(do_size_2),
+		.do_base_addr(do_base_addr_2),
 
 		.is_key_down(is_key_down[2]),
 		.is_key_changed(is_key_changed[2]),
@@ -254,10 +254,10 @@ module update_routine_t #
 		.do_b_data_out(do_b_data_out),
 		.do_b_en(do_3_b_en),
 
-		.db_size(db_size_0),
-		.db_base_addr(db_base_addr_0),
-		.do_size(do_size_0),
-		.do_base_addr(do_base_addr_0),
+		.db_size(db_size_3),
+		.db_base_addr(db_base_addr_3),
+		.do_size(do_size_3),
+		.do_base_addr(do_base_addr_3),
 
 		.is_key_down(is_key_down[2]),
 		.is_key_changed(is_key_changed[2]),
@@ -287,6 +287,13 @@ module update_routine_t #
 
 		.dt_size(dt_size),
 		.dt_base_addr(dt_base_addr),
+
+		.is_game_over(is_game_over),
+		.is_miss(is_miss),
+		.is_bad(is_bad),
+		.is_good(is_good),
+		.is_great(is_great),
+		.is_perfect(is_perfect),
 
 		.current_time(current_time),
 		.current_pixel(current_pixel),
