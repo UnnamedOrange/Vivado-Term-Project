@@ -7,6 +7,7 @@
 /// <version>
 /// 0.0.1 (UnnamedOrange and Jack-Lyu) : First commit.
 /// 0.0.2 (Jack-Lyu) : 成了。
+/// 0.0.3 (UnnamedOrange and Jack-Lyu) : 修复键盘 CHANGE 持续时间错误的问题。
 /// </version>
 
 `timescale 1ns / 1ps
@@ -36,6 +37,35 @@ module keyboard_t #
 	reg [3:0] n_down;
 	reg [3:0] change;
 	reg [3:0] n_change;
+
+	parameter change_period = 100000;
+	reg [16:0] change_counter[3:0];
+	always @(posedge CLK) begin : b1
+		integer i;
+
+		if (reset) begin
+			for (i = 0; i < 4; i = i + 1)
+				change_counter[i] <= 0;
+		end
+		else begin
+			for (i = 0; i < 4; i = i + 1) begin
+				if (change[i])
+					change_counter[i] <= change_period - 1;
+				else begin
+					if (change_counter[i] > 0)
+						change_counter[i] <= change_counter[i] - 1;
+				end
+			end
+		end
+	end
+
+	reg [3:0] true_change;
+	always @(*) begin : b2
+		integer i;
+
+		for (i = 0; i < 4; i = i + 1)
+			true_change[i] = change_counter[i] != 0;
+	end
 
 	PS2scan u1(
 		.clk(clk),
@@ -79,6 +109,6 @@ module keyboard_t #
 	end
 
 	assign DOWN = down;
-	assign CHANGE = change;
+	assign CHANGE = true_change;
 
 endmodule
