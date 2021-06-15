@@ -97,17 +97,265 @@ module draw_controller_t
 
 	// 乒乓。
 	reg ping_pong;
+	reg [31:0] saved_current_pixel[0:1];
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
 			ping_pong <= 0;
+			saved_current_pixel[0] <= 0;
+			saved_current_pixel[1] <= 0;
 		end
 		else begin
-			if (sig_on)
-				ping_pong = !ping_pong;
+			if (sig_on) begin
+				ping_pong <= !ping_pong;
+				saved_current_pixel[ping_pong] <= current_pixel;
+			end
 		end
 	end
 
-	// TODO: 列管理器。
+	// 列管理器。
+	wire sig_refresh_on[0:3][0:1];
+	wire sig_refresh_done[0:3][0:1];
+	wire sig_next_line[0:3][0:1];
+	wire [12:0] do_cc_b_addr[0:3][0:1];
+	wire do_cc_b_en[0:3][0:1];
+	wire [12:0] dp_cc_b_addr[0:3][0:1];
+	wire dp_cc_b_en[0:3][0:1];
+	wire is_click[0:3][0:1];
+	wire is_slide_begin[0:3][0:1];
+	wire is_slide_end[0:3][0:1];
+	wire [7:0] x_idx[0:3][0:1];
+
+	column_controller_t cc_00 (
+		.sig_refresh_on(sig_refresh_on[0][0]),
+		.sig_refresh_done(sig_refresh_done[0][0]),
+		.sig_next_line(sig_next_line[0][0]),
+
+		.do_b_addr(do_cc_b_addr[0][0]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[0][0]),
+
+		.dp_b_addr(dp_cc_b_addr[0][0]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[0][0]),
+
+		.do_size(do_size_0),
+		.do_base_addr(do_base_addr_0),
+		.dp_size(dp_size_0),
+		.dp_base_addr(dp_base_addr_0),
+
+		.current_pixel(saved_current_pixel[0]),
+
+		.is_click(is_click[0][0]),
+		.is_slide_begin(is_slide_begin[0][0]),
+		.is_slide_end(is_slide_end[0][0]),
+		.x_idx(x_idx[0][0]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	column_controller_t cc_01 (
+		.sig_refresh_on(sig_refresh_on[0][1]),
+		.sig_refresh_done(sig_refresh_done[0][1]),
+		.sig_next_line(sig_next_line[0][1]),
+
+		.do_b_addr(do_cc_b_addr[0][1]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[0][1]),
+
+		.dp_b_addr(dp_cc_b_addr[0][1]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[0][1]),
+
+		.do_size(do_size_0),
+		.do_base_addr(do_base_addr_0),
+		.dp_size(dp_size_0),
+		.dp_base_addr(dp_base_addr_0),
+
+		.current_pixel(saved_current_pixel[1]),
+
+		.is_click(is_click[0][1]),
+		.is_slide_begin(is_slide_begin[0][1]),
+		.is_slide_end(is_slide_end[0][1]),
+		.x_idx(x_idx[0][1]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	column_controller_t cc_10 (
+		.sig_refresh_on(sig_refresh_on[1][0]),
+		.sig_refresh_done(sig_refresh_done[1][0]),
+		.sig_next_line(sig_next_line[1][0]),
+
+		.do_b_addr(do_cc_b_addr[1][0]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[1][0]),
+
+		.dp_b_addr(dp_cc_b_addr[1][0]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[1][0]),
+
+		.do_size(do_size_1),
+		.do_base_addr(do_base_addr_1),
+		.dp_size(dp_size_1),
+		.dp_base_addr(dp_base_addr_1),
+
+		.current_pixel(saved_current_pixel[0]),
+
+		.is_click(is_click[1][0]),
+		.is_slide_begin(is_slide_begin[1][0]),
+		.is_slide_end(is_slide_end[1][0]),
+		.x_idx(x_idx[1][0]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	column_controller_t cc_11 (
+		.sig_refresh_on(sig_refresh_on[1][1]),
+		.sig_refresh_done(sig_refresh_done[1][1]),
+		.sig_next_line(sig_next_line[1][1]),
+
+		.do_b_addr(do_cc_b_addr[1][1]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[1][1]),
+
+		.dp_b_addr(dp_cc_b_addr[1][1]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[1][1]),
+
+		.do_size(do_size_1),
+		.do_base_addr(do_base_addr_1),
+		.dp_size(dp_size_1),
+		.dp_base_addr(dp_base_addr_1),
+
+		.current_pixel(saved_current_pixel[1]),
+
+		.is_click(is_click[1][1]),
+		.is_slide_begin(is_slide_begin[1][1]),
+		.is_slide_end(is_slide_end[1][1]),
+		.x_idx(x_idx[1][1]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	column_controller_t cc_20 (
+		.sig_refresh_on(sig_refresh_on[2][0]),
+		.sig_refresh_done(sig_refresh_done[2][0]),
+		.sig_next_line(sig_next_line[2][0]),
+
+		.do_b_addr(do_cc_b_addr[2][0]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[2][0]),
+
+		.dp_b_addr(dp_cc_b_addr[2][0]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[2][0]),
+
+		.do_size(do_size_2),
+		.do_base_addr(do_base_addr_2),
+		.dp_size(dp_size_2),
+		.dp_base_addr(dp_base_addr_2),
+
+		.current_pixel(saved_current_pixel[0]),
+
+		.is_click(is_click[2][0]),
+		.is_slide_begin(is_slide_begin[2][0]),
+		.is_slide_end(is_slide_end[2][0]),
+		.x_idx(x_idx[2][0]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	column_controller_t cc_21 (
+		.sig_refresh_on(sig_refresh_on[2][1]),
+		.sig_refresh_done(sig_refresh_done[2][1]),
+		.sig_next_line(sig_next_line[2][1]),
+
+		.do_b_addr(do_cc_b_addr[2][1]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[2][1]),
+
+		.dp_b_addr(dp_cc_b_addr[2][1]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[2][1]),
+
+		.do_size(do_size_2),
+		.do_base_addr(do_base_addr_2),
+		.dp_size(dp_size_2),
+		.dp_base_addr(dp_base_addr_2),
+
+		.current_pixel(saved_current_pixel[1]),
+
+		.is_click(is_click[2][1]),
+		.is_slide_begin(is_slide_begin[2][1]),
+		.is_slide_end(is_slide_end[2][1]),
+		.x_idx(x_idx[2][1]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	column_controller_t cc_30 (
+		.sig_refresh_on(sig_refresh_on[3][0]),
+		.sig_refresh_done(sig_refresh_done[3][0]),
+		.sig_next_line(sig_next_line[3][0]),
+
+		.do_b_addr(do_cc_b_addr[3][0]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[3][0]),
+
+		.dp_b_addr(dp_cc_b_addr[3][0]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[3][0]),
+
+		.do_size(do_size_3),
+		.do_base_addr(do_base_addr_3),
+		.dp_size(dp_size_3),
+		.dp_base_addr(dp_base_addr_3),
+
+		.current_pixel(saved_current_pixel[0]),
+
+		.is_click(is_click[3][0]),
+		.is_slide_begin(is_slide_begin[3][0]),
+		.is_slide_end(is_slide_end[3][0]),
+		.x_idx(x_idx[3][0]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	column_controller_t cc_31 (
+		.sig_refresh_on(sig_refresh_on[3][1]),
+		.sig_refresh_done(sig_refresh_done[3][1]),
+		.sig_next_line(sig_next_line[3][1]),
+
+		.do_b_addr(do_cc_b_addr[3][1]),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_cc_b_en[3][1]),
+
+		.dp_b_addr(dp_cc_b_addr[3][1]),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_cc_b_en[3][1]),
+
+		.do_size(do_size_3),
+		.do_base_addr(do_base_addr_3),
+		.dp_size(dp_size_3),
+		.dp_base_addr(dp_base_addr_3),
+
+		.current_pixel(saved_current_pixel[1]),
+
+		.is_click(is_click[3][1]),
+		.is_slide_begin(is_slide_begin[3][1]),
+		.is_slide_end(is_slide_end[3][1]),
+		.x_idx(x_idx[3][1]),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
 
 	// 颜色输出。
 	reg [1:0] pat;
