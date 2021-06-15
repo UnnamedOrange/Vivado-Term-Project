@@ -32,9 +32,9 @@ module update_routine_t #
 	input [3:0] do_b_data_out,
 	output reg do_b_en,
 
-	output reg [11:0] dt_b_addr,
+	output [11:0] dt_b_addr,
 	input [31:0] dt_b_data_out,
-	output reg dt_b_en,
+	output dt_b_en,
 
 	// 数量与基地址。
 	input [12:0] db_size_0,
@@ -70,9 +70,6 @@ module update_routine_t #
 	input CLK
 );
 
-	// 变量。
-	wire [11:0] current_speed;
-
 	// 状态定义。
 	localparam [state_width - 1 : 0] // 使用 BCD 码进行编码。
 		s_init               = 4'd0,       // 复位。
@@ -107,8 +104,6 @@ module update_routine_t #
 	wire do_0_a_en_w;
 	wire [12:0] do_0_b_addr;
 	wire do_0_b_en;
-	wire [11:0] dt_0_b_addr;
-	wire dt_0_b_en;
 	update_single_track_t update_single_track_0 (
 		.sig_on(sig_update_0_on),
 		.sig_done(sig_update_0_done),
@@ -154,8 +149,6 @@ module update_routine_t #
 	wire do_1_a_en_w;
 	wire [12:0] do_1_b_addr;
 	wire do_1_b_en;
-	wire [11:0] dt_1_b_addr;
-	wire dt_1_b_en;
 	update_single_track_t update_single_track_1 (
 		.sig_on(sig_update_1_on),
 		.sig_done(sig_update_1_done),
@@ -201,8 +194,6 @@ module update_routine_t #
 	wire do_2_a_en_w;
 	wire [12:0] do_2_b_addr;
 	wire do_2_b_en;
-	wire [11:0] dt_2_b_addr;
-	wire dt_2_b_en;
 	update_single_track_t update_single_track_2 (
 		.sig_on(sig_update_2_on),
 		.sig_done(sig_update_2_done),
@@ -248,8 +239,6 @@ module update_routine_t #
 	wire do_3_a_en_w;
 	wire [12:0] do_3_b_addr;
 	wire do_3_b_en;
-	wire [11:0] dt_3_b_addr;
-	wire dt_3_b_en;
 	update_single_track_t update_single_track_3 (
 		.sig_on(sig_update_3_on),
 		.sig_done(sig_update_3_done),
@@ -288,6 +277,23 @@ module update_routine_t #
 
 	wire sig_update_others_on;
 	wire sig_update_others_done;
+	update_others_t update_others_t(
+		.sig_on(sig_update_others_on),
+		.sig_done(sig_update_others_done),
+
+		.dt_b_addr(dt_b_addr),
+		.dt_b_data_out(dt_b_data_out),
+		.dt_b_en(dt_b_en),
+
+		.dt_size(dt_size),
+		.dt_base_addr(dt_base_addr),
+
+		.current_time(current_time),
+		.current_pixel(current_pixel),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
 
 	// 内存接口选通。
 	always @(*) begin
@@ -298,8 +304,6 @@ module update_routine_t #
 		do_a_en_w = 0;
 		do_b_addr = 0;
 		do_b_en = 0;
-		dt_b_addr = 0;
-		dt_b_en = 0;
 		case (state)
 			s_update_0, s_w_update_0: begin
 				db_b_addr = db_0_b_addr;
@@ -309,8 +313,6 @@ module update_routine_t #
 				do_a_en_w = do_0_a_en_w;
 				do_b_addr = do_0_b_addr;
 				do_b_en = do_0_b_en;
-				dt_b_addr = dt_0_b_addr;
-				dt_b_en = dt_0_b_en;
 			end
 			s_update_1, s_w_update_1: begin
 				db_b_addr = db_1_b_addr;
@@ -320,8 +322,6 @@ module update_routine_t #
 				do_a_en_w = do_1_a_en_w;
 				do_b_addr = do_1_b_addr;
 				do_b_en = do_1_b_en;
-				dt_b_addr = dt_1_b_addr;
-				dt_b_en = dt_1_b_en;
 			end
 			s_update_2, s_w_update_2: begin
 				db_b_addr = db_2_b_addr;
@@ -331,8 +331,6 @@ module update_routine_t #
 				do_a_en_w = do_2_a_en_w;
 				do_b_addr = do_2_b_addr;
 				do_b_en = do_2_b_en;
-				dt_b_addr = dt_2_b_addr;
-				dt_b_en = dt_2_b_en;
 			end
 			s_update_3, s_w_update_3: begin
 				db_b_addr = db_3_b_addr;
@@ -342,8 +340,6 @@ module update_routine_t #
 				do_a_en_w = do_3_a_en_w;
 				do_b_addr = do_3_b_addr;
 				do_b_en = do_3_b_en;
-				dt_b_addr = dt_3_b_addr;
-				dt_b_en = dt_3_b_en;
 			end
 		endcase
 	end

@@ -656,7 +656,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e6f72e2d</spirit:value>
+            <spirit:value>07de3e85</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -672,7 +672,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e6f72e2d</spirit:value>
+            <spirit:value>07de3e85</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1793,6 +1793,11 @@
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
       </spirit:file>
       <spirit:file>
+        <spirit:name>src/update_others.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
         <spirit:name>src/update_routine.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
@@ -1818,6 +1823,11 @@
       </spirit:file>
       <spirit:file>
         <spirit:name>src/song_data_loader.v</spirit:name>
+        <spirit:fileType>verilogSource</spirit:fileType>
+        <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>src/update_others.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
       </spirit:file>
@@ -1910,12 +1920,12 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:core_t:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-15T03:15:32Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-15T03:29:22Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="58f0cbe7"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="7a72cc42"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="94994cc9"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="ee7280c1"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="2e192b62"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="5a11f6da"/>
