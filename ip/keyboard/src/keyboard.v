@@ -8,6 +8,7 @@
 /// 0.0.1 (UnnamedOrange and Jack-Lyu) : First commit.
 /// 0.0.2 (Jack-Lyu) : 成了。
 /// 0.0.3 (UnnamedOrange and Jack-Lyu) : 修复键盘 CHANGE 持续时间错误的问题。
+/// 0.0.4 (Jack-Lyu) : 修复键盘重复击键的问题。
 /// </version>
 
 `timescale 1ns / 1ps
@@ -102,30 +103,30 @@ module keyboard_t #
 			case(keycode[7:0])
 				key_0: begin
 					if(!n_down[0])
-						n_change[0] = 1; 
-					else 
-						n_change[0] = 0; 
+						n_change[0] = 1;
+					else
+						n_change[0] = 0;
 					n_down[0] = 1 ;
 				end
 				key_1: begin
 					if(!n_down[1])
-						n_change[1] = 1; 
-					else 
-						n_change[1] = 0; 
+						n_change[1] = 1;
+					else
+						n_change[1] = 0;
 					n_down[1] = 1 ;
 				end
 				key_2: begin
 					if(!n_down[2])
-						n_change[2] = 1; 
-					else 
-						n_change[2] = 0; 
+						n_change[2] = 1;
+					else
+						n_change[2] = 0;
 					n_down[2] = 1 ;
 				end
 				key_3: begin
 					if(!n_down[3])
-						n_change[3] = 1; 
-					else 
-						n_change[3] = 0; 
+						n_change[3] = 1;
+					else
+						n_change[3] = 0;
 					n_down[3] = 1 ;
 				end
 			endcase

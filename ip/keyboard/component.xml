@@ -66,7 +66,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>bbb29ff2</spirit:value>
+            <spirit:value>9234a536</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -82,7 +82,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>bbb29ff2</spirit:value>
+            <spirit:value>9234a536</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -225,7 +225,7 @@
       <spirit:file>
         <spirit:name>src/keyboard.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_1c545df5</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_ea3b9fa1</spirit:userFileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
@@ -291,16 +291,16 @@
       </xilinx:taxonomies>
       <xilinx:displayName>keyboard_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>2</xilinx:coreRevision>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:keyboard_t:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-15T14:56:50Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-15T22:58:19Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="927e3eda"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="3ebc3af0"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="1fa21eac"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="619e5509"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="d1dc0797"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="cd18c9b1"/>
