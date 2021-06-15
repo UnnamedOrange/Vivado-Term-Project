@@ -100,10 +100,34 @@ module keyboard_t #
 		end
 		else begin
 			case(keycode[7:0])
-				key_0: begin n_down[0] = 1 ; n_change[0] = 1; end
-				key_1: begin n_down[1] = 1 ; n_change[1] = 1; end
-				key_2: begin n_down[2] = 1 ; n_change[2] = 1; end
-				key_3: begin n_down[3] = 1 ; n_change[3] = 1; end
+				key_0: begin
+					if(!n_down[0])
+						n_change[0] = 1; 
+					else 
+						n_change[0] = 0; 
+					n_down[0] = 1 ;
+				end
+				key_1: begin
+					if(!n_down[1])
+						n_change[1] = 1; 
+					else 
+						n_change[1] = 0; 
+					n_down[1] = 1 ;
+				end
+				key_2: begin
+					if(!n_down[2])
+						n_change[2] = 1; 
+					else 
+						n_change[2] = 0; 
+					n_down[2] = 1 ;
+				end
+				key_3: begin
+					if(!n_down[3])
+						n_change[3] = 1; 
+					else 
+						n_change[3] = 0; 
+					n_down[3] = 1 ;
+				end
 			endcase
 		end
 	end

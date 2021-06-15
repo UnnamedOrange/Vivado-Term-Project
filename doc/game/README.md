@@ -28,9 +28,9 @@
 ```c++
 void on_update()
 {
-	if (没有下一个对象时间点) // 打完了
+	if (没有下一个对象时间点) // 打完了   在update_signle_track里面实现，需要维护一个内部变量i即要访问第i个对象时间点，每次利用connect_BRAM访问一个对象时间点后i+1 。打完后sig_done=1。single_track_judge 和 connect_BRAM 停止运行
 		return;
-	if (事件发生)
+	if (事件发生)//在single_track_judge里面实现 ，上面的
 	{
 		if (按下事件)
 		{
