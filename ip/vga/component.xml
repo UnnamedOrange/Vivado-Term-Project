@@ -72,7 +72,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>50b3a87e</spirit:value>
+            <spirit:value>009ca1ab</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -88,7 +88,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>50b3a87e</spirit:value>
+            <spirit:value>009ca1ab</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -336,7 +336,7 @@
       <spirit:file>
         <spirit:name>src/vga_top.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_f8ae7d05</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_7a968f06</spirit:userFileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
         <spirit:logicalName>xil_defaultlib</spirit:logicalName>
       </spirit:file>
@@ -394,16 +394,16 @@
       </xilinx:taxonomies>
       <xilinx:displayName>vga_v1_0</xilinx:displayName>
       <xilinx:definitionSource>package_project</xilinx:definitionSource>
-      <xilinx:coreRevision>2</xilinx:coreRevision>
+      <xilinx:coreRevision>3</xilinx:coreRevision>
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:vga:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-14T16:03:20Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-15T11:40:11Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="aedc1724"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="6812dc69"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="db3dd3d6"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="3b140280"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="c356b2fa"/>
     </xilinx:packagingInfo>
