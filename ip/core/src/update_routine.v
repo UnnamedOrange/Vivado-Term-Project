@@ -55,7 +55,7 @@ module update_routine_t #
 	input [12:0] do_base_addr_3,
 	input [11:0] dt_size,
 	input [11:0] dt_base_addr, // == 2
-	input [19:0] song_length, // 暂时不使用。
+	input [19:0] song_length,
 
 	// 键盘。
 	input [3:0] is_key_down,
@@ -71,7 +71,7 @@ module update_routine_t #
 );
 
 	// 状态定义。
-	localparam [state_width - 1 : 0] // 使用 BCD 码进行编码。
+	localparam [state_width - 1 : 0]
 		s_init               = 4'd0,       // 复位。
 		s_update_0           = 4'd1,       // 更新第一条轨道。
 		s_w_update_0         = 4'd2,       // 等待更新第一条轨道。
@@ -289,11 +289,13 @@ module update_routine_t #
 		.dt_base_addr(dt_base_addr),
 
 		.is_game_over(is_game_over),
+		// .comb(), // TODO
 		.is_miss(is_miss),
 		.is_bad(is_bad),
 		.is_good(is_good),
 		.is_great(is_great),
 		.is_perfect(is_perfect),
+		.song_length(song_length),
 
 		.current_time(current_time),
 		.current_pixel(current_pixel),
