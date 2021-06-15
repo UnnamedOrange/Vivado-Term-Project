@@ -11,7 +11,11 @@
 
 `timescale 1ns / 1ps
 
-module draw_controller_t
+module draw_controller_t #
+(
+	// 内部参数。
+	parameter state_width = 4
+)
 (
 	// 控制。
 	input sig_on,
@@ -100,7 +104,7 @@ module draw_controller_t
 	assign vga_reset = !is_working;
 
 	// 乒乓。
-	reg ping_pong;
+	reg ping_pong; // 更新 ping_pong 的，显示 !ping_pong 的。
 	reg [31:0] saved_current_pixel[0:1];
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
@@ -111,7 +115,7 @@ module draw_controller_t
 		else begin
 			if (sig_on) begin
 				ping_pong <= !ping_pong;
-				saved_current_pixel[ping_pong] <= current_pixel;
+				saved_current_pixel[!ping_pong] <= current_pixel; // 注意是 !ping_pong，因为非阻塞。
 			end
 		end
 	end
@@ -360,6 +364,70 @@ module draw_controller_t
 		.RESET_L(RESET_L),
 		.CLK(CLK)
 	);
+
+	// 状态定义。
+	localparam [state_width - 1 : 0]
+		s_init           = 4'h0, // 等待。
+		s_refresh_0      = 4'h1, // 刷新第一个。
+		s_w_refresh_0    = 4'h2, // 等待刷新第一个。
+		s_refresh_1      = 4'h3, // 刷新第二个。
+		s_w_refresh_1    = 4'h4, // 等待刷新第二个。
+		s_refresh_2      = 4'h5, // 刷新第三个。
+		s_w_refresh_2    = 4'h6, // 等待刷新第三个。
+		s_refresh_3      = 4'h7, // 刷新第四个。
+		s_w_refresh_3    = 4'h8, // 等待刷新第四个。
+		s_done           = 4'hf, // 完成。
+		s_unused = 4'hf;
+	reg [state_width - 1 : 0] state, n_state;
+
+	// 特征方程。
+	always @(posedge CLK) begin
+		if (!RESET_L) begin
+			state <= s_init;
+		end
+		else begin
+			state <= n_state;
+		end
+	end
+
+	// 激励方程。
+	always @(*) begin
+		case (state)
+			s_init:
+				n_state = sig_on ? s_refresh_0 : s_init;
+			s_refresh_0:
+				n_state = s_w_refresh_0;
+			s_w_refresh_0:
+				n_state = sig_refresh_done[0][ping_pong] ? s_refresh_1 : s_w_refresh_0;
+			s_refresh_1:
+				n_state = s_w_refresh_1;
+			s_w_refresh_1:
+				n_state = sig_refresh_done[1][ping_pong] ? s_refresh_2 : s_w_refresh_1;
+			s_refresh_2:
+				n_state = s_w_refresh_2;
+			s_w_refresh_2:
+				n_state = sig_refresh_done[2][ping_pong] ? s_refresh_3 : s_w_refresh_2;
+			s_refresh_3:
+				n_state = s_w_refresh_3;
+			s_w_refresh_3:
+				n_state = sig_refresh_done[3][ping_pong] ? s_done : s_w_refresh_3;
+			s_done:
+				n_state = s_init;
+			default:
+				n_state = s_init;
+		endcase
+	end
+
+	// 输出方程。
+	assign sig_done = state == s_done;
+	assign sig_refresh_on[0][0] = state == s_refresh_0 && !ping_pong;
+	assign sig_refresh_on[1][0] = state == s_refresh_1 && !ping_pong;
+	assign sig_refresh_on[2][0] = state == s_refresh_2 && !ping_pong;
+	assign sig_refresh_on[3][0] = state == s_refresh_3 && !ping_pong;
+	assign sig_refresh_on[0][1] = state == s_refresh_0 && ping_pong;
+	assign sig_refresh_on[1][1] = state == s_refresh_1 && ping_pong;
+	assign sig_refresh_on[2][1] = state == s_refresh_2 && ping_pong;
+	assign sig_refresh_on[3][1] = state == s_refresh_3 && ping_pong;
 
 	// 颜色输出。
 	reg [1:0] pat;
