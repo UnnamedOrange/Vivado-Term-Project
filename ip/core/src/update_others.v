@@ -31,7 +31,7 @@ module update_others_t #
 
 	// 游戏状态。
 	input [3:0] is_game_over,
-	input [7:0] comb,
+	input [7:0] is_combo,
 	input [3:0] is_miss,
 	input [3:0] is_bad,
 	input [3:0] is_good,
@@ -42,6 +42,13 @@ module update_others_t #
 	// 需要作为输出的变量。
 	output reg [19:0] current_time,
 	output reg [31:0] current_pixel,
+
+	output reg [15:0] miss,
+	output reg [15:0] bad,
+	output reg [15:0] good,
+	output reg [15:0] great,
+	output reg [15:0] perfect,
+	output reg [15:0] combo,
 
 	// 复位与时钟。
 	input RESET_L,
@@ -58,6 +65,7 @@ module update_others_t #
 		s_update_speed             = 4'd1,       // 更新速度。
 		s_w_update_speed           = 4'd2,       // 等待更新速度。
 		s_update_time_and_pixel    = 4'd3,       // 更新时间和像素。
+		s_update_score             = 4'd4,       // 更新分数。
 		s_done                     = 4'b1111,    // 完成。
 		s_unused = 4'b1111;
 	reg [state_width - 1 : 0] state, n_state;
@@ -119,6 +127,110 @@ module update_others_t #
 		end
 	end
 
+	// 更新分数。
+	reg [15:0] next_miss;
+	reg [15:0] next_bad;
+	reg [15:0] next_good;
+	reg [15:0] next_great;
+	reg [15:0] next_perfect;
+	reg [15:0] next_combo;
+	always @(posedge CLK) begin
+		if (!RESET_L) begin
+			miss <= 0;
+			bad <= 0;
+			good <= 0;
+			great <= 0;
+			perfect <= 0;
+			combo <= 0;
+		end
+		else begin
+			if (state == s_update_score) begin
+				miss <= next_miss;
+				bad <= next_bad;
+				good <= next_good;
+				great <= next_great;
+				perfect <= next_perfect;
+				combo <= next_combo;
+			end
+		end
+	end
+
+	always @(*) begin : score_excitation
+		integer i, j;
+
+		next_miss = miss;
+		next_bad = bad;
+		next_good = good;
+		next_great = great;
+		next_perfect = perfect;
+		for (i = 0; i < 4; i = i + 1) begin
+			next_miss = next_miss + is_miss[i];
+			for (j = 0; j < 4; j = j + 1) begin
+				if (next_miss[j * 4 +: 4] >= 10) begin
+					next_miss[j * 4 +: 4] = 0;
+					if (j + 1 < 4)
+						next_miss[(j + 1) * 4 +: 4] = next_miss[(j + 1) * 4 +: 4] + 1;
+				end
+			end
+		end
+		for (i = 0; i < 4; i = i + 1) begin
+			next_bad = next_bad + is_bad[i];
+			for (j = 0; j < 4; j = j + 1) begin
+				if (next_bad[j * 4 +: 4] >= 10) begin
+					next_bad[j * 4 +: 4] = 0;
+					if (j + 1 < 4)
+						next_bad[(j + 1) * 4 +: 4] = next_bad[(j + 1) * 4 +: 4] + 1;
+				end
+			end
+		end
+		for (i = 0; i < 4; i = i + 1) begin
+			next_good = next_good + is_good[i];
+			for (j = 0; j < 4; j = j + 1) begin
+				if (next_good[j * 4 +: 4] >= 10) begin
+					next_good[j * 4 +: 4] = 0;
+					if (j + 1 < 4)
+						next_good[(j + 1) * 4 +: 4] = next_good[(j + 1) * 4 +: 4] + 1;
+				end
+			end
+		end
+		for (i = 0; i < 4; i = i + 1) begin
+			next_great = next_great + is_great[i];
+			for (j = 0; j < 4; j = j + 1) begin
+				if (next_great[j * 4 +: 4] >= 10) begin
+					next_great[j * 4 +: 4] = 0;
+					if (j + 1 < 4)
+						next_great[(j + 1) * 4 +: 4] = next_great[(j + 1) * 4 +: 4] + 1;
+				end
+			end
+		end
+		for (i = 0; i < 4; i = i + 1) begin
+			next_perfect = next_perfect + is_perfect[i];
+			for (j = 0; j < 4; j = j + 1) begin
+				if (next_perfect[j * 4 +: 4] >= 10) begin
+					next_perfect[j * 4 +: 4] = 0;
+					if (j + 1 < 4)
+						next_perfect[(j + 1) * 4 +: 4] = next_perfect[(j + 1) * 4 +: 4] + 1;
+				end
+			end
+		end
+
+		next_combo = combo;
+		for (i = 0; i < 4; i = i + 1)
+			if (is_combo[i] == 2'b10)
+				next_combo = 0;
+		for (i = 0; i < 4; i = i + 1) begin
+			if (is_combo[i] == 2'b01)
+				next_combo = next_combo + 1;
+			for (j = 0; j < 4; j = j + 1) begin
+				if (next_combo[j * 4 +: 4] >= 10) begin
+					next_combo[j * 4 +: 4] = 0;
+					if (j + 1 < 4)
+						next_combo[(j + 1) * 4 +: 4] = next_combo[(j + 1) * 4 +: 4] + 1;
+				end
+			end
+		end
+	end
+
 	// 特征方程。
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
@@ -139,6 +251,8 @@ module update_others_t #
 			s_w_update_speed:
 				n_state = sig_update_speed_done ? s_update_time_and_pixel : s_w_update_speed;
 			s_update_time_and_pixel:
+				n_state = s_update_score;
+			s_update_score:
 				n_state = s_done;
 			s_done:
 				n_state = s_init;

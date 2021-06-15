@@ -425,6 +425,12 @@ module core_t #
 	wire dt_update_b_en;
 	wire [19:0] current_time;
 	wire [31:0] current_pixel;
+	wire [15:0] miss;
+	wire [15:0] bad;
+	wire [15:0] good;
+	wire [15:0] great;
+	wire [15:0] perfect;
+	wire [15:0] combo;
 	update_routine_t update_routine
 	(
 		.sig_on(sig_update_on),
@@ -470,6 +476,13 @@ module core_t #
 
 		.current_time(current_time),
 		.current_pixel(current_pixel),
+
+		.miss(miss),
+		.bad(bad),
+		.good(good),
+		.great(great),
+		.perfect(perfect),
+		.combo(combo),
 
 		.RESET_L(RESET_L),
 		.CLK(CLK)

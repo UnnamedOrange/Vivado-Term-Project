@@ -65,6 +65,13 @@ module update_routine_t #
 	output [19:0] current_time,
 	output [31:0] current_pixel,
 
+	output [15:0] miss,
+	output [15:0] bad,
+	output [15:0] good,
+	output [15:0] great,
+	output [15:0] perfect,
+	output [15:0] combo,
+
 	// ∏¥Œª”Î ±÷”°£
 	input RESET_L,
 	input CLK
@@ -289,7 +296,7 @@ module update_routine_t #
 		.dt_base_addr(dt_base_addr),
 
 		.is_game_over(is_game_over),
-		// .comb(), // TODO
+		// .is_combo(), // TODO
 		.is_miss(is_miss),
 		.is_bad(is_bad),
 		.is_good(is_good),
@@ -299,6 +306,13 @@ module update_routine_t #
 
 		.current_time(current_time),
 		.current_pixel(current_pixel),
+
+		.miss(miss),
+		.bad(bad),
+		.good(good),
+		.great(great),
+		.perfect(perfect),
+		.combo(combo),
 
 		.RESET_L(RESET_L),
 		.CLK(CLK)
