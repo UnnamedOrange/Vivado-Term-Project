@@ -3,9 +3,9 @@
 
 /// <projectname>mania-to-go</projectname>
 /// <modulename>update_single_track_t</modulename>
-/// <filedescription>å•æ¡è½¨é“ update ç®¡ç†å™¨ã€‚</filedescription>
+/// <filedescription>µ¥Ìõ¹ìµÀ update ¹ÜÀíÆ÷¡£</filedescription>
 /// <version>
-/// 0.0.1 (UnnamedOrange) : å®šä¹‰è¾“å…¥è¾“å‡ºã€‚
+/// 0.0.1 (UnnamedOrange) : ¶¨ÒåÊäÈëÊä³ö¡£
 /// </version>
 
 `timescale 1ns / 1ps
@@ -15,17 +15,17 @@ module update_single_track_t #
 	parameter __unused = 0
 )
 (
-	// æ§åˆ¶ã€‚
-	input sig_on,       // æ”¶åˆ° sig_on æ—¶å¼€å§‹å·¥ä½œã€‚
-	output sig_done,    // å·¥ä½œç»“æŸåå‘é€ sig_doneã€‚
+	// ¿ØÖÆ¡£
+	input sig_on,       // ÊÕµ½ sig_on Ê±¿ªÊ¼¹¤×÷¡£
+	output sig_done,    // ¹¤×÷½áÊøºó·¢ËÍ sig_done¡£
 
-	// BRAMã€‚ç«¯å£ a æ˜¯å†™ç«¯å£ï¼Œç«¯å£ b æ˜¯è¯»ç«¯å£ã€‚
-	// beatmapï¼ˆå¯¹è±¡æ—¶é—´ç‚¹ï¼‰
+	// BRAM¡£¶Ë¿Ú a ÊÇĞ´¶Ë¿Ú£¬¶Ë¿Ú b ÊÇ¶Á¶Ë¿Ú¡£
+	// beatmap£¨¶ÔÏóÊ±¼äµã£©
 	output [12:0] db_b_addr,
 	input [23:0] db_b_data_out,
 	output db_b_en,
 
-	// objectï¼ˆå¯¹è±¡ï¼‰
+	// object£¨¶ÔÏó£©
 	output [11:0] do_a_addr,
 	output [7:0] do_a_data_in,
 	output do_a_en_w,
@@ -33,28 +33,28 @@ module update_single_track_t #
 	input [3:0] do_b_data_out,
 	output do_b_en,
 
-	// æ•°é‡ä¸åŸºåœ°å€ã€‚
-	input [12:0] db_size,         // å¯¹è±¡æ—¶é—´ç‚¹çš„æ•°é‡ã€‚ç”¨äºåˆ¤æ–­â€œæ²¡æœ‰ä¸‹ä¸€ä¸ªå¯¹è±¡æ—¶é—´ç‚¹â€ã€‚
-	input [12:0] db_base_addr,    // å¯¹è±¡æ—¶é—´ç‚¹åŸºåœ°å€ã€‚ç”¨ db_base_addr + i è®¿é—®ç¬¬ i ä¸ªå¯¹è±¡æ—¶é—´ç‚¹ï¼Œä¸‹æ ‡ä» 0 å¼€å§‹ã€‚
-	input [12:0] do_size,         // å¯¹è±¡çš„æ•°é‡ã€‚
-	input [12:0] do_base_addr,    // å¯¹è±¡åŸºåœ°å€ã€‚ç”¨ do_base_addr + i è®¿é—®ç¬¬ i ä¸ªå¯¹è±¡ï¼Œä¸‹æ ‡ä» 0 å¼€å§‹ã€‚æ³¨æ„å†™å›å»çš„æ—¶å€™ä½å®½ç¿»å€ï¼Œåœ°å€ä½å°‘ä¸€ä½ã€‚
+	// ÊıÁ¿Óë»ùµØÖ·¡£
+	input [12:0] db_size,         // ¶ÔÏóÊ±¼äµãµÄÊıÁ¿¡£ÓÃÓÚÅĞ¶Ï¡°Ã»ÓĞÏÂÒ»¸ö¶ÔÏóÊ±¼äµã¡±¡£
+	input [12:0] db_base_addr,    // ¶ÔÏóÊ±¼äµã»ùµØÖ·¡£ÓÃ db_base_addr + i ·ÃÎÊµÚ i ¸ö¶ÔÏóÊ±¼äµã£¬ÏÂ±ê´Ó 0 ¿ªÊ¼¡£
+	input [12:0] do_size,         // ¶ÔÏóµÄÊıÁ¿¡£
+	input [12:0] do_base_addr,    // ¶ÔÏó»ùµØÖ·¡£ÓÃ do_base_addr + i ·ÃÎÊµÚ i ¸ö¶ÔÏó£¬ÏÂ±ê´Ó 0 ¿ªÊ¼¡£×¢ÒâĞ´»ØÈ¥µÄÊ±ºòÎ»¿í·­±¶£¬µØÖ·Î»ÉÙÒ»Î»¡£
 
-	// é”®ç›˜ã€‚
-	input is_key_down,       // æ˜¯å¦æŒ‰ä¸‹é”®ç›˜ã€‚
-	input is_key_changed,    // ç”¨äºåˆ¤æ–­â€œäº‹ä»¶å‘ç”Ÿâ€ã€‚
+	// ¼üÅÌ¡£
+	input is_key_down,       // ÊÇ·ñ°´ÏÂ¼üÅÌ¡£
+	input is_key_changed,    // ÓÃÓÚÅĞ¶Ï¡°ÊÂ¼ş·¢Éú¡±¡£
 
-	// é¢å¤–è¾“å…¥ã€‚
-	input [19:0] current_time, // å½“å‰æ—¶é—´ï¼Œå•ä½ä¸ºæ¯«ç§’ã€‚ç”¨äºâ€œæ›´æ–°æˆç»©â€ã€‚
+	// ¶îÍâÊäÈë¡£
+	input [19:0] current_time, // µ±Ç°Ê±¼ä£¬µ¥Î»ÎªºÁÃë¡£ÓÃÓÚ¡°¸üĞÂ³É¼¨¡±¡£
 
-	// é¢å¤–è¾“å‡ºã€‚
-	output is_game_over, // æ˜¯å¦â€œæ‰“å®Œäº†â€ã€‚
+	// ¶îÍâÊä³ö¡£
+	output is_game_over, // ÊÇ·ñ¡°´òÍêÁË¡±¡£
 	output is_miss,
 	output is_bad,
 	output is_good,
 	output is_great,
 	output is_perfect,
 
-	// å¤ä½ä¸æ—¶é’Ÿã€‚
+	// ¸´Î»ÓëÊ±ÖÓ¡£
 	input RESET_L,
 	input CLK
 );
