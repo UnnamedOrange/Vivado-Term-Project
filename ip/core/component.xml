@@ -640,7 +640,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>80351470</spirit:value>
+            <spirit:value>3a340525</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -656,7 +656,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>0279cb39</spirit:value>
+            <spirit:value>2cd7e106</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -672,7 +672,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>0279cb39</spirit:value>
+            <spirit:value>2cd7e106</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1755,6 +1755,11 @@
         <spirit:displayName>Draw Period</spirit:displayName>
         <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.draw_period">1680000</spirit:value>
       </spirit:modelParameter>
+      <spirit:modelParameter spirit:dataType="integer">
+        <spirit:name>play_delay</spirit:name>
+        <spirit:displayName>Play Delay</spirit:displayName>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.play_delay">66150</spirit:value>
+      </spirit:modelParameter>
     </spirit:modelParameters>
   </spirit:model>
   <spirit:choices>
@@ -1771,7 +1776,7 @@
       <spirit:file>
         <spirit:name>xgui/core_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_80351470</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_3a340525</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1795,7 +1800,7 @@
       <spirit:file>
         <spirit:name>src/core.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_a84c700a</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_33cdb968</spirit:userFileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -1873,6 +1878,11 @@
       <spirit:displayName>Draw Period</spirit:displayName>
       <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.draw_period">1680000</spirit:value>
     </spirit:parameter>
+    <spirit:parameter>
+      <spirit:name>play_delay</spirit:name>
+      <spirit:displayName>Play Delay</spirit:displayName>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.play_delay">66150</spirit:value>
+    </spirit:parameter>
   </spirit:parameters>
   <spirit:vendorExtensions>
     <xilinx:coreExtensions>
@@ -1890,15 +1900,15 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:core_t:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-13T08:34:14Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-15T02:24:31Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="58f0cbe7"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="46365de1"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="48469684"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="ee7280c1"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="c33ea7b9"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="0a0104a5"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="2e192b62"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="5a11f6da"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>

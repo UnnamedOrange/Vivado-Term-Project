@@ -3,6 +3,8 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "Component_Name"
   set song_data_width [ipgui::add_param $IPINST -name "song_data_width" -widget comboBox]
   set_property tooltip {音频位宽。} ${song_data_width}
+  set play_delay [ipgui::add_param $IPINST -name "play_delay"]
+  set_property tooltip {开始播放音乐的延时，单位为 44100 分之一秒。} ${play_delay}
 
 }
 
@@ -21,6 +23,15 @@ proc update_PARAM_VALUE.draw_period { PARAM_VALUE.draw_period } {
 
 proc validate_PARAM_VALUE.draw_period { PARAM_VALUE.draw_period } {
 	# Procedure called to validate draw_period
+	return true
+}
+
+proc update_PARAM_VALUE.play_delay { PARAM_VALUE.play_delay } {
+	# Procedure called to update play_delay when any of the dependent parameters in the arguments change
+}
+
+proc validate_PARAM_VALUE.play_delay { PARAM_VALUE.play_delay } {
+	# Procedure called to validate play_delay
 	return true
 }
 
@@ -103,5 +114,10 @@ proc update_MODELPARAM_VALUE.audio_period { MODELPARAM_VALUE.audio_period PARAM_
 proc update_MODELPARAM_VALUE.draw_period { MODELPARAM_VALUE.draw_period PARAM_VALUE.draw_period } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.draw_period}] ${MODELPARAM_VALUE.draw_period}
+}
+
+proc update_MODELPARAM_VALUE.play_delay { MODELPARAM_VALUE.play_delay PARAM_VALUE.play_delay } {
+	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
+	set_property value [get_property value ${PARAM_VALUE.play_delay}] ${MODELPARAM_VALUE.play_delay}
 }
 
