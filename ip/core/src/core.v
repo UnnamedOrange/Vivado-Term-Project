@@ -80,10 +80,10 @@ module core_t #
 	output reg [15:0] ds_a_data_in,
 	output reg ds_a_en_w,
 
-	output reg [14:0] ds_b_addr,
+	output [14:0] ds_b_addr,
 	output ds_b_clk,
 	input [15:0] ds_b_data_out,
-	output reg ds_b_en,
+	output ds_b_en,
 
 	// 选歌开关。
 	input [7:0] song_selection, // 假设不变。
@@ -120,7 +120,13 @@ module core_t #
 	output AUDIO_EN,
 
 	// VGA 模块。
-	output [0:0] DATA_TODO, // TODO
+	output vga_reset,
+	output [3:0] vga_r,
+	output [3:0] vga_g,
+	output [3:0] vga_b,
+	input [9:0] vga_x, // 行。
+	input [9:0] vga_y, // 列。
+	input vga_request,
 
 	// 复位与时钟。
 	input RESET_L,
@@ -488,6 +494,61 @@ module core_t #
 		.CLK(CLK)
 	);
 
+	// draw_controller。
+	wire sig_draw_on;
+	wire [12:0] do_draw_b_addr;
+	wire do_draw_b_en;
+	wire [12:0] dp_draw_b_addr;
+	wire dp_draw_b_en;
+	draw_controller_t draw_controller (
+		.sig_on(sig_draw_on),
+		// .sig_done(),
+
+		.do_b_addr(do_draw_b_addr),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_draw_b_en),
+
+		.dp_b_addr(dp_draw_b_addr),
+		.dp_b_data_out(dp_b_data_out),
+		.dp_b_en(dp_draw_b_en),
+
+		.ds_b_addr(ds_b_addr),
+		.ds_b_data_out(ds_b_data_out),
+		.ds_b_en(ds_b_en),
+
+		.do_size_0(do_size[0]),
+		.do_size_1(do_size[1]),
+		.do_size_2(do_size[2]),
+		.do_size_3(do_size[3]),
+		.do_base_addr_0(do_base_addr[0]),
+		.do_base_addr_1(do_base_addr[1]),
+		.do_base_addr_2(do_base_addr[2]),
+		.do_base_addr_3(do_base_addr[3]),
+		.dp_size_0(dp_size[0]),
+		.dp_size_1(dp_size[1]),
+		.dp_size_2(dp_size[2]),
+		.dp_size_3(dp_size[3]),
+		.dp_base_addr_0(dp_base_addr[0]),
+		.dp_base_addr_1(dp_base_addr[1]),
+		.dp_base_addr_2(dp_base_addr[2]),
+		.dp_base_addr_3(dp_base_addr[3]),
+
+		.is_key_down(IS_KEY_DOWN),
+
+		.current_pixel(current_pixel),
+
+		.vga_reset(vga_reset),
+		.vga_r(vga_r),
+		.vga_g(vga_g),
+		.vga_b(vga_b),
+		.vga_x(vga_x),
+		.vga_y(vga_y),
+		.vga_request(vga_request),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
 	// get_base_addr。选通内存。
 	wire sig_get_base_addr_0_on;
 	reg sig_get_base_addr_0_done;
@@ -591,8 +652,12 @@ module core_t #
 			do_a_en_w = do_update_a_en_w;
 			do_a_addr = do_update_a_addr;
 			do_a_data_in = do_update_a_data_in;
+			do_b_addr = do_update_b_en;
 			do_b_addr = do_update_b_addr;
-			do_b_en = do_update_b_en;
+			if (!do_update_b_en && do_draw_b_en) begin
+				do_b_en = do_draw_b_en;
+				do_b_addr = do_draw_b_addr;
+			end
 		end
 	end
 
@@ -668,7 +733,8 @@ module core_t #
 			dp_b_addr = dp_init_b_addr;
 		end
 		else if (state == s_system_clock_on) begin
-			// TODO
+			dp_b_en = dp_draw_b_en;
+			dp_b_addr = dp_draw_b_addr;
 		end
 	end
 
@@ -793,16 +859,11 @@ module core_t #
 		ds_a_en_w = 0;
 		ds_a_addr = 0;
 		ds_a_data_in = 0;
-		ds_b_en = 0;
-		ds_b_addr = 0;
 
 		if (state == s_load_skin || state == s_w_load_skin) begin
 			ds_a_addr = ds_pre_a_addr;
 			ds_a_en_w = ds_pre_a_en_w;
 			ds_a_data_in = ds_pre_a_data_in;
-		end
-		else begin
-			// TODO
 		end
 	end
 
@@ -846,6 +907,22 @@ module core_t #
 				audio_clock == audio_period - 1 &&
 				delay_counter == play_delay &&
 				state == s_system_clock_on;
+		end
+	end
+
+	// draw 始终。
+	reg [31:0] draw_counter;
+	always @(posedge CLK) begin
+		if (!RESET_L) begin
+			draw_counter <= 0;
+		end
+		else begin
+			if (state == s_system_clock_on || state == s_system_clock_pause) begin
+				if (draw_counter >= draw_period - 1)
+					draw_counter <= 0;
+				else
+					draw_counter <= draw_counter + 1;
+			end
 		end
 	end
 
@@ -946,5 +1023,8 @@ module core_t #
 
 	// update。
 	assign sig_update_on = state == s_system_clock_on && update_clock == update_period - 1;
+
+	// draw。
+	assign sig_draw_on = (state == s_system_clock_on || state == s_system_clock_pause) && draw_counter == draw_period - 1;
 
 endmodule
