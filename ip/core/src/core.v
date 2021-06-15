@@ -42,15 +42,35 @@ module core_t #
 	output reg db_b_en,
 
 	// .object (do) 对应 BRAM。
-	output reg [11:0] do_a_addr,
-	output do_a_clk,
-	output reg [7:0] do_a_data_in,
-	output reg do_a_en_w,
+	output reg [11:0] do_0_a_addr,
+	output do_0_a_clk,
+	output reg [7:0] do_0_a_data_in,
+	output reg do_0_a_en_w,
 
-	output reg [12:0] do_b_addr,
-	output do_b_clk,
-	input [3:0] do_b_data_out,
-	output reg do_b_en,
+	output reg [12:0] do_0_b_addr,
+	output do_0_b_clk,
+	input [3:0] do_0_b_data_out,
+	output reg do_0_b_en,
+
+	output reg [11:0] do_1_a_addr,
+	output do_1_a_clk,
+	output reg [7:0] do_1_a_data_in,
+	output reg do_1_a_en_w,
+
+	output reg [12:0] do_1_b_addr,
+	output do_1_b_clk,
+	input [3:0] do_1_b_data_out,
+	output reg do_1_b_en,
+
+	output reg [11:0] do_2_a_addr,
+	output do_2_a_clk,
+	output reg [7:0] do_2_a_data_in,
+	output reg do_2_a_en_w,
+
+	output reg [12:0] do_2_b_addr,
+	output do_2_b_clk,
+	input [3:0] do_2_b_data_out,
+	output reg do_2_b_en,
 
 	// .pixel (dp) 对应 BRAM。
 	output reg [12:0] dp_a_addr,
@@ -180,8 +200,12 @@ module core_t #
 	// BRAM 时钟。
 	assign db_a_clk = CLK;
 	assign db_b_clk = CLK;
-	assign do_a_clk = CLK;
-	assign do_b_clk = CLK;
+	assign do_0_a_clk = CLK;
+	assign do_0_b_clk = CLK;
+	assign do_1_a_clk = CLK;
+	assign do_1_b_clk = CLK;
+	assign do_2_a_clk = CLK;
+	assign do_2_b_clk = CLK;
 	assign dp_a_clk = CLK;
 	assign dp_b_clk = CLK;
 	assign dt_a_clk = CLK;
@@ -450,7 +474,7 @@ module core_t #
 		.do_a_data_in(do_update_a_data_in),
 		.do_a_en_w(do_update_a_en_w),
 		.do_b_addr(do_update_b_addr),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_0_b_data_out),
 		.do_b_en(do_update_b_en),
 
 		.dt_b_addr(dt_update_b_addr),
@@ -498,15 +522,21 @@ module core_t #
 	wire sig_draw_on;
 	wire [12:0] do_draw_b_addr;
 	wire do_draw_b_en;
+	wire [12:0] do_pong_b_addr;
+	wire do_pong_b_en;
 	wire [12:0] dp_draw_b_addr;
 	wire dp_draw_b_en;
 	draw_controller_t draw_controller (
 		.sig_on(sig_draw_on),
 		// .sig_done(),
 
-		.do_b_addr(do_draw_b_addr),
-		.do_b_data_out(do_b_data_out),
-		.do_b_en(do_draw_b_en),
+		.do_1_b_addr(do_draw_b_addr),
+		.do_1_b_data_out(do_1_b_data_out),
+		.do_1_b_en(do_draw_b_en),
+
+		.do_2_b_addr(do_pong_b_addr),
+		.do_2_b_data_out(do_2_b_data_out),
+		.do_2_b_en(do_pong_b_en),
 
 		.dp_b_addr(dp_draw_b_addr),
 		.dp_b_data_out(dp_b_data_out),
@@ -633,31 +663,53 @@ module core_t #
 	reg do_init_b_en;
 	reg [11:0] do_init_b_addr;
 	always @(*) begin
-		do_a_addr = 0;
-		do_a_data_in = 0;
-		do_a_en_w = 0;
-		do_b_addr = 0;
-		do_b_en = 0;
+		do_0_a_addr = 0;
+		do_0_a_data_in = 0;
+		do_0_a_en_w = 0;
+		do_0_b_addr = 0;
+		do_0_b_en = 0;
+		do_1_a_addr = 0;
+		do_1_a_data_in = 0;
+		do_1_a_en_w = 0;
+		do_1_b_addr = 0;
+		do_1_b_en = 0;
+		do_2_a_addr = 0;
+		do_2_a_data_in = 0;
+		do_2_a_en_w = 0;
+		do_2_b_addr = 0;
+		do_2_b_en = 0;
 
 		if (state == s_load_beatmap_1 || state == s_w_load_beatmap_1) begin
-			do_a_en_w = do_pre_a_en_w;
-			do_a_addr = do_pre_a_addr;
-			do_a_data_in = do_pre_a_data_in;
+			do_0_a_en_w = do_pre_a_en_w;
+			do_0_a_addr = do_pre_a_addr;
+			do_0_a_data_in = do_pre_a_data_in;
+			do_1_a_en_w = do_pre_a_en_w;
+			do_1_a_addr = do_pre_a_addr;
+			do_1_a_data_in = do_pre_a_data_in;
+			do_2_a_en_w = do_pre_a_en_w;
+			do_2_a_addr = do_pre_a_addr;
+			do_2_a_data_in = do_pre_a_data_in;
 		end
 		else if (state == s_get_base_addr_1 || state == s_w_get_base_addr_1) begin
-			do_b_en = do_init_b_en;
-			do_b_addr = do_init_b_addr;
+			do_0_b_en = do_init_b_en;
+			do_0_b_addr = do_init_b_addr;
 		end
 		else if (state == s_system_clock_on) begin
-			do_a_en_w = do_update_a_en_w;
-			do_a_addr = do_update_a_addr;
-			do_a_data_in = do_update_a_data_in;
-			do_b_addr = do_update_b_en;
-			do_b_addr = do_update_b_addr;
-			if (!do_update_b_en && do_draw_b_en) begin
-				do_b_en = do_draw_b_en;
-				do_b_addr = do_draw_b_addr;
-			end
+			do_0_a_en_w = do_update_a_en_w;
+			do_0_a_addr = do_update_a_addr;
+			do_0_a_data_in = do_update_a_data_in;
+			do_1_a_en_w = do_update_a_en_w;
+			do_1_a_addr = do_update_a_addr;
+			do_1_a_data_in = do_update_a_data_in;
+			do_2_a_en_w = do_update_a_en_w;
+			do_2_a_addr = do_update_a_addr;
+			do_2_a_data_in = do_update_a_data_in;
+			do_0_b_en = do_update_b_en;
+			do_0_b_addr = do_update_b_addr;
+			do_1_b_en = do_draw_b_en;
+			do_1_b_addr = do_draw_b_addr;
+			do_2_b_en = do_pong_b_en;
+			do_2_b_addr = do_pong_b_addr;
 		end
 	end
 
@@ -693,7 +745,7 @@ module core_t #
 					do_init_b_en <= 1;
 				end
 				else if (pat == 3) begin
-					do_size[which[1:0]][part * 4 +: 4] <= do_b_data_out;
+					do_size[which[1:0]][part * 4 +: 4] <= do_0_b_data_out;
 					part <= part + 1;
 					do_init_b_en <= 0;
 					if (part == 2'b11) begin

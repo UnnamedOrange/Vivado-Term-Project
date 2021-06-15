@@ -18,9 +18,13 @@ module draw_controller_t
 	output sig_done,
 
 	// BRAM¡£
-	output reg [12:0] do_b_addr,
-	input [3:0] do_b_data_out,
-	output reg do_b_en,
+	output reg [12:0] do_1_b_addr,
+	input [3:0] do_1_b_data_out,
+	output reg do_1_b_en,
+
+	output reg [12:0] do_2_b_addr,
+	input [3:0] do_2_b_data_out,
+	output reg do_2_b_en,
 
 	output reg [12:0] dp_b_addr,
 	input [31:0] dp_b_data_out,
@@ -131,7 +135,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[0][0]),
 
 		.do_b_addr(do_cc_b_addr[0][0]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_1_b_data_out),
 		.do_b_en(do_cc_b_en[0][0]),
 
 		.dp_b_addr(dp_cc_b_addr[0][0]),
@@ -160,7 +164,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[0][1]),
 
 		.do_b_addr(do_cc_b_addr[0][1]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_2_b_data_out),
 		.do_b_en(do_cc_b_en[0][1]),
 
 		.dp_b_addr(dp_cc_b_addr[0][1]),
@@ -189,7 +193,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[1][0]),
 
 		.do_b_addr(do_cc_b_addr[1][0]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_1_b_data_out),
 		.do_b_en(do_cc_b_en[1][0]),
 
 		.dp_b_addr(dp_cc_b_addr[1][0]),
@@ -218,7 +222,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[1][1]),
 
 		.do_b_addr(do_cc_b_addr[1][1]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_2_b_data_out),
 		.do_b_en(do_cc_b_en[1][1]),
 
 		.dp_b_addr(dp_cc_b_addr[1][1]),
@@ -247,7 +251,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[2][0]),
 
 		.do_b_addr(do_cc_b_addr[2][0]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_1_b_data_out),
 		.do_b_en(do_cc_b_en[2][0]),
 
 		.dp_b_addr(dp_cc_b_addr[2][0]),
@@ -276,7 +280,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[2][1]),
 
 		.do_b_addr(do_cc_b_addr[2][1]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_2_b_data_out),
 		.do_b_en(do_cc_b_en[2][1]),
 
 		.dp_b_addr(dp_cc_b_addr[2][1]),
@@ -305,7 +309,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[3][0]),
 
 		.do_b_addr(do_cc_b_addr[3][0]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_1_b_data_out),
 		.do_b_en(do_cc_b_en[3][0]),
 
 		.dp_b_addr(dp_cc_b_addr[3][0]),
@@ -334,7 +338,7 @@ module draw_controller_t
 		.sig_next_line(sig_next_line[3][1]),
 
 		.do_b_addr(do_cc_b_addr[3][1]),
-		.do_b_data_out(do_b_data_out),
+		.do_b_data_out(do_2_b_data_out),
 		.do_b_en(do_cc_b_en[3][1]),
 
 		.dp_b_addr(dp_cc_b_addr[3][1]),
