@@ -59,7 +59,8 @@ module column_controller_t #
 		s_refresh_first     = 8'h02, // 第一次读入。
 		s_w_refresh_first   = 8'h03, // 等待第一次读入。
 		s_refresh_done      = 8'h0f, // 刷新完成。
-		s_next_line_init    = 8'h11, // 切换到下一行。
+		s_next_line         = 8'h11, // 切换到下一行。
+		s_w_next_line       = 8'h12, // 等待切换到下一行。
 		s_unused = 8'hff;
 	reg [state_width - 1 : 0] state, n_state;
 
@@ -67,13 +68,17 @@ module column_controller_t #
 	reg [31:0] internal_current_pixel;
 	reg [12:0] object_idx[0:1];
 	reg [3:0] object_info[0:1];
-	reg [12:0] pixel_idx; // 只保留大的那一个。
+	reg [12:0] pixel_idx; // 只保留大的那一个。等于已经读进来的数量（大的那一个的下标 + 1）。
 	reg [31:0] pixel_val[0:1];
 	reg is_any;
 
 	// 刷新过程。
 	wire sig_refresh_first_on;
 	reg sig_refresh_first_done;
+	reg [12:0] do_refresh_b_addr;
+	reg do_refresh_b_en;
+	reg [12:0] dp_refresh_b_addr;
+	reg dp_refresh_b_en;
 	always @(posedge CLK) begin : refresh_first_t
 		reg working;
 		reg [3:0] which;
@@ -90,10 +95,10 @@ module column_controller_t #
 			pixel_val[1] <= 0;
 			is_any <= 0;
 
-			do_b_addr <= 0;
-			do_b_en <= 0;
-			dp_b_addr <= 0;
-			dp_b_en <= 0;
+			do_refresh_b_addr <= 0;
+			do_refresh_b_en <= 0;
+			dp_refresh_b_addr <= 0;
+			dp_refresh_b_en <= 0;
 
 			working <= 0;
 			which <= 0;
@@ -111,12 +116,12 @@ module column_controller_t #
 				if (pat == 0) begin
 					case (which)
 						0: begin
-							dp_b_addr <= dp_base_addr + pixel_idx;
-							dp_b_en <= 1;
+							dp_refresh_b_addr <= dp_base_addr + pixel_idx;
+							dp_refresh_b_en <= 1;
 						end
 						1: begin
-							do_b_addr <= do_base_addr + object_idx[1];
-							do_b_en <= 1;
+							do_refresh_b_addr <= do_base_addr + object_idx[1];
+							do_refresh_b_en <= 1;
 						end
 						2: begin
 							; // 不做。
@@ -139,8 +144,8 @@ module column_controller_t #
 							else
 								object_idx[1] <= object_idx[1] + 1;
 
-							if (pixel_val[1] >= internal_current_pixel || pixel_idx >= dp_size) begin
-								; // 结束。
+							if (pixel_val[1] >= internal_current_pixel) begin // 注意此处 pixel_idx 已加。
+								;
 							end
 							else begin
 								is_any <= 1;
@@ -170,6 +175,107 @@ module column_controller_t #
 		end
 	end
 
+	// 下一行。
+	wire sig_next_line_on;
+	reg sig_next_line_done;
+	reg [12:0] do_next_line_b_addr;
+	reg do_next_line_b_en;
+	reg [12:0] dp_next_line_b_addr;
+	reg dp_next_line_b_en;
+	always @(posedge CLK) begin : next_line_t
+		reg working;
+		reg [3:0] which;
+		reg [1:0] pat;
+
+		if (!RESET_L) begin
+			do_next_line_b_addr <= 0;
+			do_next_line_b_en <= 0;
+			dp_next_line_b_addr <= 0;
+			dp_next_line_b_en <= 0;
+
+			working <= 0;
+			which <= 0;
+			pat <= 0;
+			sig_next_line_done <= 0;
+		end
+		else begin
+			if (!working) begin
+				if (sig_next_line_on) begin
+					internal_current_pixel <= internal_current_pixel - 256;
+					working <= 1;
+				end
+			end
+			else begin
+				if (pat == 0) begin
+					case (which)
+						0: begin
+							if (is_any && pixel_val[0] >= internal_current_pixel) begin
+								is_any <= pixel_idx > 2;
+								pixel_val[1] <= pixel_val[0];
+								object_idx[1] <= object_idx[0];
+								object_info[1] <= object_info[0];
+
+								pixel_idx <= pixel_idx - 1;
+								object_idx[0] <= object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
+								do_next_line_b_addr <= do_base_addr + object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
+							end
+							else
+								do_next_line_b_addr <= do_base_addr + object_idx[0];
+
+							do_next_line_b_en <= 1;
+						end
+						1: begin
+							dp_next_line_b_addr <= dp_base_addr + pixel_idx - 1;
+							dp_next_line_b_en <= 1;
+						end
+					endcase
+				end
+				else if (pat == 3) begin
+					case (which)
+						0: begin
+							object_info[0] <= do_b_data_out;
+							do_b_en <= 0;
+						end
+						1: begin
+							pixel_val[0] <= dp_b_data_out;
+							dp_b_en <= 0;
+						end
+					endcase
+
+					if (which < 1)
+						which <= which + 1;
+					else begin
+						which <= 0;
+						working <= 0;
+					end
+				end
+				pat <= pat + 1;
+			end
+
+			sig_next_line_done <= working && which == 1 && pat == 2'b11;
+		end
+	end
+
+	// 选通。
+	always @(*) begin
+		do_b_addr = 0;
+		do_b_en = 0;
+		dp_b_addr = 0;
+		dp_b_en = 0;
+		if (state == s_refresh_first || state == s_w_refresh_first) begin
+			do_b_addr = do_refresh_b_addr;
+			do_b_en = do_refresh_b_en;
+			dp_b_addr = dp_refresh_b_addr;
+			dp_b_en = dp_refresh_b_en;
+		end
+		else if (state == s_next_line || state == s_w_next_line) begin
+			do_b_addr = do_next_line_b_addr;
+			do_b_en = do_next_line_b_en;
+			dp_b_addr = dp_next_line_b_addr;
+			dp_b_en = dp_next_line_b_en;
+		end
+	end
+
 	// 特征方程。
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
@@ -187,7 +293,7 @@ module column_controller_t #
 				if (sig_refresh_on)
 					n_state = s_refresh_init;
 				else if (sig_next_line)
-					n_state = s_next_line_init;
+					n_state = s_next_line;
 				else
 					n_state = s_init;
 
@@ -198,6 +304,11 @@ module column_controller_t #
 			s_refresh_done:
 				n_state = s_init;
 
+			s_next_line:
+				n_state = s_w_next_line;
+			s_w_next_line:
+				n_state = sig_next_line_done ? s_init : s_w_next_line;
+
 			default:
 				n_state = s_init;
 		endcase
@@ -207,6 +318,7 @@ module column_controller_t #
 	assign sig_refresh_done = state == s_refresh_done;
 
 	assign sig_refresh_first_on = state == s_refresh_first;
+	assign sig_next_line_on = state == s_next_line;
 
 	assign is_click         = is_any && !object_info[0][1] && !object_info[0][0] && (internal_current_pixel - pixel_val[0]) < (36 << 8);
 	assign is_slide_begin   = is_any && !object_info[0][1] && object_info[0][0] && (internal_current_pixel - pixel_val[0]) < (18 << 8) && (object_idx[0] == object_idx[1] && pixel_idx != dp_size);
