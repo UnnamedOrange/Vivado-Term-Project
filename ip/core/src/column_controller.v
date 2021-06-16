@@ -236,6 +236,8 @@ module column_controller_t #
 				else
 					n_state = s_init;
 
+			s_refresh_init:
+				n_state = s_refresh_first;
 			s_refresh_first:
 				n_state = s_w_refresh_first;
 			s_w_refresh_first:
