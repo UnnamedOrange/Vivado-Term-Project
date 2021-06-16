@@ -490,6 +490,15 @@ module draw_controller_t #
 	assign sig_refresh_on[2][1] = state == s_refresh_2 && ping_pong;
 	assign sig_refresh_on[3][1] = state == s_refresh_3 && ping_pong;
 
+	assign sig_next_line[0][0] = vga_y == 260 && ping_pong;
+	assign sig_next_line[1][0] = vga_y == 320 && ping_pong;
+	assign sig_next_line[2][0] = vga_y == 380 && ping_pong;
+	assign sig_next_line[3][0] = vga_y == 440 && ping_pong;
+	assign sig_next_line[0][1] = vga_y == 260 && !ping_pong;
+	assign sig_next_line[1][1] = vga_y == 320 && !ping_pong;
+	assign sig_next_line[2][1] = vga_y == 380 && !ping_pong;
+	assign sig_next_line[3][1] = vga_y == 440 && !ping_pong;
+
 	// ÑÕÉ«Êä³ö¡£
 	reg [1:0] pat;
 	always @(posedge CLK) begin
