@@ -31,7 +31,7 @@ module column_controller_t #
 	output reg dp_b_en,
 
 	// 数量与基地址。
-	input [12:0] do_size,
+	input [12:0] do_size, // 未使用。
 	input [12:0] do_base_addr,
 	input [12:0] dp_size,
 	input [12:0] dp_base_addr,
