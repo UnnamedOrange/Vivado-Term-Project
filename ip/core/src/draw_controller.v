@@ -552,6 +552,8 @@ module draw_controller_t #
 						else begin // 按键指示。
 							if (is_key_down[0])
 								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 200);
+							else
+								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 200);
 						end
 					end
 					else if (260 <= vga_y && vga_y < 320) begin // 第二列。
