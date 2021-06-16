@@ -595,9 +595,9 @@ module draw_controller_t #
 					vga_g <= ds_b_data_out[7:4];
 					vga_b <= ds_b_data_out[11:8];
 					ds_b_en <= 0;
+					working <= 0;
 				end
 				pat <= pat + 1;
-				working <= 0;
 			end
 		end
 	end
