@@ -131,6 +131,8 @@ module draw_controller_t #
 	wire is_click[0:3][0:1];
 	wire is_slide_begin[0:3][0:1];
 	wire is_slide_end[0:3][0:1];
+	wire is_slide_space[0:3][0:1];
+	wire is_discarded[0:3][0:1];
 	wire [7:0] x_idx[0:3][0:1];
 
 	column_controller_t cc_00 (
@@ -156,6 +158,8 @@ module draw_controller_t #
 		.is_click(is_click[0][0]),
 		.is_slide_begin(is_slide_begin[0][0]),
 		.is_slide_end(is_slide_end[0][0]),
+		.is_slide_space(is_slide_space[0][0]),
+		.is_discarded(is_discarded[0][0]),
 		.x_idx(x_idx[0][0]),
 
 		.RESET_L(RESET_L),
@@ -185,6 +189,8 @@ module draw_controller_t #
 		.is_click(is_click[0][1]),
 		.is_slide_begin(is_slide_begin[0][1]),
 		.is_slide_end(is_slide_end[0][1]),
+		.is_slide_space(is_slide_space[0][1]),
+		.is_discarded(is_discarded[0][1]),
 		.x_idx(x_idx[0][1]),
 
 		.RESET_L(RESET_L),
@@ -214,6 +220,8 @@ module draw_controller_t #
 		.is_click(is_click[1][0]),
 		.is_slide_begin(is_slide_begin[1][0]),
 		.is_slide_end(is_slide_end[1][0]),
+		.is_slide_space(is_slide_space[1][0]),
+		.is_discarded(is_discarded[1][0]),
 		.x_idx(x_idx[1][0]),
 
 		.RESET_L(RESET_L),
@@ -243,6 +251,8 @@ module draw_controller_t #
 		.is_click(is_click[1][1]),
 		.is_slide_begin(is_slide_begin[1][1]),
 		.is_slide_end(is_slide_end[1][1]),
+		.is_slide_space(is_slide_space[1][1]),
+		.is_discarded(is_discarded[1][1]),
 		.x_idx(x_idx[1][1]),
 
 		.RESET_L(RESET_L),
@@ -272,6 +282,8 @@ module draw_controller_t #
 		.is_click(is_click[2][0]),
 		.is_slide_begin(is_slide_begin[2][0]),
 		.is_slide_end(is_slide_end[2][0]),
+		.is_slide_space(is_slide_space[2][0]),
+		.is_discarded(is_discarded[2][0]),
 		.x_idx(x_idx[2][0]),
 
 		.RESET_L(RESET_L),
@@ -301,6 +313,8 @@ module draw_controller_t #
 		.is_click(is_click[2][1]),
 		.is_slide_begin(is_slide_begin[2][1]),
 		.is_slide_end(is_slide_end[2][1]),
+		.is_slide_space(is_slide_space[2][1]),
+		.is_discarded(is_discarded[2][1]),
 		.x_idx(x_idx[2][1]),
 
 		.RESET_L(RESET_L),
@@ -330,6 +344,8 @@ module draw_controller_t #
 		.is_click(is_click[3][0]),
 		.is_slide_begin(is_slide_begin[3][0]),
 		.is_slide_end(is_slide_end[3][0]),
+		.is_slide_space(is_slide_space[3][0]),
+		.is_discarded(is_discarded[3][0]),
 		.x_idx(x_idx[3][0]),
 
 		.RESET_L(RESET_L),
@@ -359,6 +375,8 @@ module draw_controller_t #
 		.is_click(is_click[3][1]),
 		.is_slide_begin(is_slide_begin[3][1]),
 		.is_slide_end(is_slide_end[3][1]),
+		.is_slide_space(is_slide_space[3][1]),
+		.is_discarded(is_discarded[3][1]),
 		.x_idx(x_idx[3][1]),
 
 		.RESET_L(RESET_L),
