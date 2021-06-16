@@ -561,7 +561,10 @@ module draw_controller_t #
 
 						end
 						else begin // 按键指示。
-
+							if (is_key_down[1])
+								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 260);
+							else
+								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 260);
 						end
 					end
 					else if (320 <= vga_y && vga_y < 380) begin // 第三列。
@@ -569,7 +572,10 @@ module draw_controller_t #
 
 						end
 						else begin // 按键指示。
-
+							if (is_key_down[2])
+								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 320);
+							else
+								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 320);
 						end
 					end
 					else if (380 <= vga_y && vga_y < 440) begin // 第四列。
@@ -577,7 +583,10 @@ module draw_controller_t #
 
 						end
 						else begin // 按键指示。
-
+							if (is_key_down[3])
+								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 380);
+							else
+								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 380);
 						end
 					end
 					else begin // TODO: 其他位置。
