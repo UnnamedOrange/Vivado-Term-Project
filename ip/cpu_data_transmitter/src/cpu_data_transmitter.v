@@ -10,6 +10,7 @@
 /// 0.0.3 (UnnamedOrange) : 增加一些调试用输出。
 /// 0.0.4 (UnnamedOrange) : 回退到无缓冲区的模式。使用新的编码。
 /// 0.0.5 (UnnamedOrange) : 将控制信号的输出改为同步的。
+/// 0.0.6 (UnnamedOrange) : 禁止在 RESTART 前读取，以加快启动速度。
 /// </version>
 
 `timescale 1 ns / 1 ps
@@ -40,14 +41,17 @@ module cpu_data_transmitter #
 );
 
 	reg [27:0] progress;
+	reg has_restarted;
 
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
 			progress <= 0;
 			DATA_READY <= 0;
 			TRANSMIT_FINISHED <= 0;
+			has_restarted <= 0;
 		end
 		else begin
+			has_restarted <= has_restarted || RESTART;
 			DATA_READY <= REGISTER_IN_3[31] && progress < REGISTER_IN_3[27:0];
 			TRANSMIT_FINISHED <= REGISTER_IN_3[28];
 			if (REGISTER_IN_3[31])
@@ -61,6 +65,6 @@ module cpu_data_transmitter #
 	assign REGISTER_OUT_0 = 0;
 	assign REGISTER_OUT_1 = 0;
 	assign REGISTER_OUT_2 = 0;
-	assign REGISTER_OUT_3 = { RESTART, REQUEST_DATA, 14'b0, INIT_AUX_INFO, INIT_INDEX };
+	assign REGISTER_OUT_3 = { RESTART, REQUEST_DATA && has_restarted, 14'b0, INIT_AUX_INFO, INIT_INDEX };
 
 endmodule
