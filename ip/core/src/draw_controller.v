@@ -557,8 +557,20 @@ module draw_controller_t #
 						end
 					end
 					else if (260 <= vga_y && vga_y < 320) begin // 第二列。
-						if (vga_x < 480) begin // 轨道。
-
+						if (vga_x < 420) begin // 轨道。
+							if (is_click[1][!ping_pong])
+								ds_b_addr <= base_addr_click + x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+							else if (is_slide_begin[1][!ping_pong])
+								ds_b_addr <= (is_discarded[1][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+									+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+							else if (is_slide_end[1][!ping_pong])
+								ds_b_addr <= (is_discarded[1][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+									+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+							else if (is_slide_space[1][!ping_pong])
+								ds_b_addr <= (is_discarded[1][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+									+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+							else
+								ds_b_addr <= 0;
 						end
 						else begin // 按键指示。
 							if (is_key_down[1])
@@ -568,8 +580,20 @@ module draw_controller_t #
 						end
 					end
 					else if (320 <= vga_y && vga_y < 380) begin // 第三列。
-						if (vga_x < 480) begin // 轨道。
-
+						if (vga_x < 420) begin // 轨道。
+							if (is_click[2][!ping_pong])
+								ds_b_addr <= base_addr_click + x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+							else if (is_slide_begin[2][!ping_pong])
+								ds_b_addr <= (is_discarded[2][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+									+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+							else if (is_slide_end[2][!ping_pong])
+								ds_b_addr <= (is_discarded[2][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+									+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+							else if (is_slide_space[2][!ping_pong])
+								ds_b_addr <= (is_discarded[2][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+									+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+							else
+								ds_b_addr <= 0;
 						end
 						else begin // 按键指示。
 							if (is_key_down[2])
@@ -579,8 +603,20 @@ module draw_controller_t #
 						end
 					end
 					else if (380 <= vga_y && vga_y < 440) begin // 第四列。
-						if (vga_x < 480) begin // 轨道。
-
+						if (vga_x < 420) begin // 轨道。
+							if (is_click[3][!ping_pong])
+								ds_b_addr <= base_addr_click + x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+							else if (is_slide_begin[3][!ping_pong])
+								ds_b_addr <= (is_discarded[3][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+									+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+							else if (is_slide_end[3][!ping_pong])
+								ds_b_addr <= (is_discarded[3][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+									+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+							else if (is_slide_space[3][!ping_pong])
+								ds_b_addr <= (is_discarded[3][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+									+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+							else
+								ds_b_addr <= 0;
 						end
 						else begin // 按键指示。
 							if (is_key_down[3])
