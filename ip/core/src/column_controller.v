@@ -72,13 +72,13 @@ module column_controller_t #
 	reg [31:0] pixel_val[0:1];
 	reg is_any;
 
-	// 刷新过程。
+	// 刷新过程、下一行。
 	wire sig_refresh_first_on;
 	reg sig_refresh_first_done;
-	reg [12:0] do_refresh_b_addr;
-	reg do_refresh_b_en;
-	reg [12:0] dp_refresh_b_addr;
-	reg dp_refresh_b_en;
+
+	wire sig_next_line_on;
+	reg sig_next_line_done;
+
 	always @(posedge CLK) begin : refresh_first_t
 		reg working;
 		reg [3:0] which;
@@ -95,36 +95,64 @@ module column_controller_t #
 			pixel_val[1] <= 0;
 			is_any <= 0;
 
-			do_refresh_b_addr <= 0;
-			do_refresh_b_en <= 0;
-			dp_refresh_b_addr <= 0;
-			dp_refresh_b_en <= 0;
+			do_b_addr <= 0;
+			do_b_en <= 0;
+			dp_b_addr <= 0;
+			dp_b_en <= 0;
 
 			working <= 0;
 			which <= 0;
 			pat <= 0;
 			sig_refresh_first_done <= 0;
+			sig_next_line_done <= 0;
 		end
 		else begin
 			if (!working) begin
 				if (sig_refresh_first_on) begin
 					internal_current_pixel <= current_pixel + (480 << 8);
 					working <= 1;
+					which <= 0;
+				end
+				else if (sig_next_line_on) begin
+					internal_current_pixel <= internal_current_pixel - 256;
+					working <= 1;
+					which <= 3;
 				end
 			end
 			else begin
 				if (pat == 0) begin
 					case (which)
 						0: begin
-							dp_refresh_b_addr <= dp_base_addr + pixel_idx;
-							dp_refresh_b_en <= 1;
+							dp_b_addr <= dp_base_addr + pixel_idx;
+							dp_b_en <= 1;
 						end
 						1: begin
-							do_refresh_b_addr <= do_base_addr + object_idx[1];
-							do_refresh_b_en <= 1;
+							do_b_addr <= do_base_addr + object_idx[1];
+							do_b_en <= 1;
 						end
 						2: begin
 							; // 不做。
+						end
+
+						3: begin
+							if (is_any && pixel_val[0] >= internal_current_pixel) begin
+								is_any <= pixel_idx > 2;
+								pixel_val[1] <= pixel_val[0];
+								object_idx[1] <= object_idx[0];
+								object_info[1] <= object_info[0];
+
+								pixel_idx <= pixel_idx - 1;
+								object_idx[0] <= object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
+								do_b_addr <= do_base_addr + object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
+							end
+							else
+								do_b_addr <= do_base_addr + object_idx[0];
+
+							do_b_en <= 1;
+						end
+						4: begin
+							dp_b_addr <= dp_base_addr + pixel_idx - 1;
+							dp_b_en <= 1;
 						end
 					endcase
 				end
@@ -157,13 +185,24 @@ module column_controller_t #
 						2: begin
 							; // 不做。
 						end
+
+						3: begin
+							object_info[0] <= do_b_data_out;
+							do_b_en <= 0;
+						end
+						4: begin
+							pixel_val[0] <= dp_b_data_out;
+							dp_b_en <= 0;
+						end
 					endcase
 
 					if (which < 1 || which == 1 && (pixel_val[1] >= internal_current_pixel || pixel_idx >= dp_size))
 						which <= which + 1;
 					else if (which == 1 && !(pixel_val[1] >= internal_current_pixel || pixel_idx >= dp_size))
 						which <= 0;
-					else begin
+					else if (which < 4)
+						which <= which + 1;
+					else if (which == 2 || which == 4) begin
 						which <= 0;
 						working <= 0;
 					end
@@ -172,107 +211,7 @@ module column_controller_t #
 			end
 
 			sig_refresh_first_done <= working && which == 2 && pat == 2'b11;
-		end
-	end
-
-	// 下一行。
-	wire sig_next_line_on;
-	reg sig_next_line_done;
-	reg [12:0] do_next_line_b_addr;
-	reg do_next_line_b_en;
-	reg [12:0] dp_next_line_b_addr;
-	reg dp_next_line_b_en;
-	always @(posedge CLK) begin : next_line_t
-		reg working;
-		reg [3:0] which;
-		reg [1:0] pat;
-
-		if (!RESET_L) begin
-			do_next_line_b_addr <= 0;
-			do_next_line_b_en <= 0;
-			dp_next_line_b_addr <= 0;
-			dp_next_line_b_en <= 0;
-
-			working <= 0;
-			which <= 0;
-			pat <= 0;
-			sig_next_line_done <= 0;
-		end
-		else begin
-			if (!working) begin
-				if (sig_next_line_on) begin
-					internal_current_pixel <= internal_current_pixel - 256;
-					working <= 1;
-				end
-			end
-			else begin
-				if (pat == 0) begin
-					case (which)
-						0: begin
-							if (is_any && pixel_val[0] >= internal_current_pixel) begin
-								is_any <= pixel_idx > 2;
-								pixel_val[1] <= pixel_val[0];
-								object_idx[1] <= object_idx[0];
-								object_info[1] <= object_info[0];
-
-								pixel_idx <= pixel_idx - 1;
-								object_idx[0] <= object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
-								do_next_line_b_addr <= do_base_addr + object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
-							end
-							else
-								do_next_line_b_addr <= do_base_addr + object_idx[0];
-
-							do_next_line_b_en <= 1;
-						end
-						1: begin
-							dp_next_line_b_addr <= dp_base_addr + pixel_idx - 1;
-							dp_next_line_b_en <= 1;
-						end
-					endcase
-				end
-				else if (pat == 3) begin
-					case (which)
-						0: begin
-							object_info[0] <= do_b_data_out;
-							do_b_en <= 0;
-						end
-						1: begin
-							pixel_val[0] <= dp_b_data_out;
-							dp_b_en <= 0;
-						end
-					endcase
-
-					if (which < 1)
-						which <= which + 1;
-					else begin
-						which <= 0;
-						working <= 0;
-					end
-				end
-				pat <= pat + 1;
-			end
-
-			sig_next_line_done <= working && which == 1 && pat == 2'b11;
-		end
-	end
-
-	// 选通。
-	always @(*) begin
-		do_b_addr = 0;
-		do_b_en = 0;
-		dp_b_addr = 0;
-		dp_b_en = 0;
-		if (state == s_refresh_first || state == s_w_refresh_first) begin
-			do_b_addr = do_refresh_b_addr;
-			do_b_en = do_refresh_b_en;
-			dp_b_addr = dp_refresh_b_addr;
-			dp_b_en = dp_refresh_b_en;
-		end
-		else if (state == s_next_line || state == s_w_next_line) begin
-			do_b_addr = do_next_line_b_addr;
-			do_b_en = do_next_line_b_en;
-			dp_b_addr = dp_next_line_b_addr;
-			dp_b_en = dp_next_line_b_en;
+			sig_next_line_done <= working && which == 4 && pat == 2'b11;
 		end
 	end
 
