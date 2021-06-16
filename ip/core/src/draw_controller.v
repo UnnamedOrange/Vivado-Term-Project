@@ -500,12 +500,29 @@ module draw_controller_t #
 	assign sig_next_line[3][1] = vga_y == 440 && !ping_pong;
 
 	// 颜色输出。
+	parameter [14:0]
+		base_addr_click                  = 12480,
+		base_addr_slide_begin            = 14640,
+		base_addr_slide_begin_discarded  = 15720,
+		base_addr_slide_end              = 16800,
+		base_addr_slide_end_discarded    = 17880,
+		base_addr_slide_space            = 18960,
+		base_addr_slide_space_discarded  = 19020,
+		base_addr_down_button            = 19080,
+		base_addr_up_button              = 22680;
+
+	reg working;
 	reg [1:0] pat;
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
 			vga_r <= 0;
 			vga_g <= 0;
 			vga_b <= 0;
+
+			ds_b_addr <= 0;
+			ds_b_en <= 0;
+
+			working <= 0;
 			pat <= 0;
 		end
 		else begin
@@ -517,11 +534,24 @@ module draw_controller_t #
 				end
 				else begin // 正式开始显示图像。
 					if (200 <= vga_y && vga_y < 260) begin // 第一列。
-						if (vga_x < 480) begin // 轨道。
-
+						if (vga_x < 420) begin // 轨道。
+							if (is_click[0][!ping_pong])
+								ds_b_addr <= base_addr_click + x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+							else if (is_slide_begin[0][!ping_pong])
+								ds_b_addr <= (is_discarded[0][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+									+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+							else if (is_slide_end[0][!ping_pong])
+								ds_b_addr <= (is_discarded[0][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+									+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+							else if (is_slide_space[0][!ping_pong])
+								ds_b_addr <= (is_discarded[0][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+									+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+							else
+								ds_b_addr <= 0;
 						end
 						else begin // 按键指示。
-
+							if (is_key_down[0])
+								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 200);
 						end
 					end
 					else if (260 <= vga_y && vga_y < 320) begin // 第二列。
@@ -549,12 +579,23 @@ module draw_controller_t #
 						end
 					end
 					else begin // TODO: 其他位置。
-
+						ds_b_addr <= 0;
 					end
+
+					ds_b_en <= 1;
+					working <= 1;
+					pat <= 1;
 				end
 			end
-			else begin // 读取内存的后续事宜。
-
+			if (working) begin // 读取内存的后续事宜。
+				if (pat == 3) begin
+					vga_r <= ds_b_data_out[3:0];
+					vga_g <= ds_b_data_out[7:4];
+					vga_b <= ds_b_data_out[11:8];
+					ds_b_en <= 0;
+				end
+				pat <= pat + 1;
+				working <= 0;
 			end
 		end
 	end
