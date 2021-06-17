@@ -20,7 +20,7 @@ if __name__ == '__main__':
     print('报告：歌曲长度为 %d 毫秒' % length_in_milli)
 
     # 解析 osu 谱面文件。
-    with open('beatmap.osu', 'r') as file:
+    with open('beatmap.osu', 'r', encoding='utf8') as file:
         lines = file.read().split('\n')
     print('报告：谱面文件共 %d 行' % len(lines))
 
