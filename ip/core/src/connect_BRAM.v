@@ -120,7 +120,7 @@ module connect_BRAM(
                             next_state = Over;
                         end
                         else begin
-                            next_state = Read;
+                            next_state = Write;
                         end
                     end
                 end
@@ -137,11 +137,11 @@ module connect_BRAM(
                         next_state = NextR;
                     end
                     else begin
-                        next_state = Write;
+                        next_state = Done;
                     end
                 end
                 Write:begin
-                    next_state = Done;
+                    next_state = Read;
                 end
                 Done:begin
                 	next_state = Idle;
@@ -196,6 +196,10 @@ module connect_BRAM(
     end
 //Write 
     always @ (posedge clk) begin
+    	if( cnt_object == 0 && !start_end ) begin
+    		
+    	end
+    	else
     	if( begin_write ) begin
     	//写入，但是在object写入之前要注意先读出其相邻的一位数据再写入
     	//注意面条的object是一个object
@@ -215,45 +219,56 @@ module connect_BRAM(
     end
 
 	always @(*) begin
-		case(curr_state)
-			Over:begin
-				game_over = 1;
-			end
-			Idle: begin
-				begin_write = 0;
-				begin_read = 0;
-				game_over = 0;
-				connect_done = 0;
-			end
-			Read:begin
-				begin_read = 1 ;
-				begin_write = 0;
-			end
-			NextR:begin
-				begin_read = 1 ;
-				begin_write = 0;
-			end
-			Write:begin
-				begin_read = 0 ;
-				begin_write = 1;
-			end
-			Done:begin
-				begin_read = 0 ;
-				begin_write = 0;
-				connect_done = 1;
-				cnt_beatmap <= cnt_beatmap + 1 ;
-				if( This_object[0] == 1 & start_end == 0)//为面条开始
-					cnt_object <= cnt_object;
-				else
-					cnt_object <= cnt_object + 1;
-			end
-			default:begin
-				begin_write = 0;
-				begin_read = 0;
-				game_over = 0;
-				connect_done = 0;
-			end
-		endcase
+		if (rst) begin
+			cnt_beatmap <= 0;
+            cnt_object <= 0;
+            begin_write = 0;
+			begin_read = 0;
+			game_over = 0;
+			connect_done = 0;
+			en_w_object <= 0;
+		end
+		else begin
+			case(curr_state)
+				Over:begin
+					game_over = 1;
+				end
+				Idle: begin
+					begin_write = 0;
+					begin_read = 0;
+					game_over = 0;
+					connect_done = 0;
+				end
+				Read:begin
+					begin_read = 1 ;
+					begin_write = 0;
+				end
+				NextR:begin
+					begin_read = 1 ;
+					begin_write = 0;
+				end
+				Write:begin
+					begin_read = 0 ;
+					begin_write = 1;
+					cnt_beatmap <= cnt_beatmap + 1 ;
+					if( This_object[0] == 1 & start_end == 0)//为面条开始
+						cnt_object <= cnt_object;
+					else
+						cnt_object <= cnt_object + 1;
+				end
+				Done:begin
+					begin_read = 0 ;
+					begin_write = 0;
+					connect_done = 1;
+				end
+				default:begin
+					begin_write = 0;
+					begin_read = 0;
+					game_over = 0;
+					connect_done = 0;
+				end
+			endcase
+		end
 	end
 	
 	
