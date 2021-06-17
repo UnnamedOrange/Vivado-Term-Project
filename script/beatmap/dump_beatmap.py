@@ -16,7 +16,7 @@ g_pixel_final = None
 if __name__ == '__main__':
     sound, sample_rate = librosa.load('audio.mp3', 44100)
     length_in_milli = sound.shape[0] * 1000 // 44100
-    length_in_milli += g_delay # 为歌曲加上延时。
+    length_in_milli += g_delay  # 为歌曲加上延时。
     print('报告：歌曲长度为 %d 毫秒' % length_in_milli)
 
     # 解析 osu 谱面文件。
@@ -164,13 +164,16 @@ if __name__ == '__main__':
         for i in range(length_in_milli + 1):
             if i == g_original_object[col][current_beatmap_idx][0]:
                 g_pixel.append(current_pos)
+                if len(g_pixel) > 1 and g_pixel[-2] > g_pixel[-1]:
+                    print('警告：pixel 出现非单调现象')
                 if not g_original_object[col][current_beatmap_idx][1]:
                     if current_beatmap_idx + 1 < len(g_original_object[col]):
                         current_beatmap_idx += 1
                     else:
                         break
             elif i and i == g_original_object[col][current_beatmap_idx][1]:
-                g_pixel.append(current_pos)
+                g_pixel.append(
+                    max(g_pixel[-1] + (18 << 8), current_pos - (18 << 8)))
                 if current_beatmap_idx + 1 < len(g_original_object[col]):
                     current_beatmap_idx += 1
                 else:
