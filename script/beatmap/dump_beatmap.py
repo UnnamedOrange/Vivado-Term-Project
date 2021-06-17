@@ -5,7 +5,7 @@ import numpy as np
 import librosa
 
 g_delay = 1500  # 所有时间点延时指定时间。
-g_basic_timing = 109  # 基础速度。
+g_basic_timing = 273  # 基础速度。
 g_timing = []  # [时间点, 速度]
 g_timing_final = None
 g_original_object = [[] for _ in range(4)]  # [起始, 结束（没有就是空）]
@@ -16,6 +16,7 @@ g_pixel_final = None
 if __name__ == '__main__':
     sound, sample_rate = librosa.load('audio.mp3', 44100)
     length_in_milli = sound.shape[0] * 1000 // 44100
+    length_in_milli += g_delay # 为歌曲加上延时。
     print('报告：歌曲长度为 %d 毫秒' % length_in_milli)
 
     # 解析 osu 谱面文件。
@@ -80,7 +81,7 @@ if __name__ == '__main__':
     # 构建 timing。
     g_timing_final = []
     g_timing_final.append(len(g_timing))
-    g_timing_final.append(length_in_milli + g_delay)  # 为歌曲长度加上延时。
+    g_timing_final.append(length_in_milli)
     for i in range(len(g_timing)):
         g_timing_final.append((g_timing[i][1] << 20) + g_timing[i][0])
     g_timing_final = b''.join(x.to_bytes(
