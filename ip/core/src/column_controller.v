@@ -71,6 +71,7 @@ module column_controller_t #
 	reg [12:0] pixel_idx; // 只保留大的那一个。等于已经读进来的数量（大的那一个的下标 + 1）。
 	reg [31:0] pixel_val[0:1];
 	reg is_any;
+	reg is_end;
 
 	// 刷新过程、下一行。
 	wire sig_refresh_first_on;
@@ -94,6 +95,7 @@ module column_controller_t #
 			pixel_val[0] <= 0;
 			pixel_val[1] <= 0;
 			is_any <= 0;
+			is_end <= 0;
 
 			do_b_addr <= 0;
 			do_b_en <= 0;
@@ -123,12 +125,17 @@ module column_controller_t #
 				if (pat == 0) begin
 					case (which)
 						0: begin
-							dp_b_addr <= dp_base_addr + pixel_idx;
-							dp_b_en <= 1;
+							object_info[0] <= object_info[1];
+							object_idx[0] <= object_idx[1];
+							object_idx[1] <= object_idx[1] + (pixel_idx != 0 && !(object_info[1][0] && (!is_any || object_idx[0] != object_idx[1])));
+							do_b_addr <= do_base_addr + object_idx[1] + (pixel_idx != 0 && !(object_info[1][0] && (!is_any || object_idx[0] != object_idx[1])));
+							do_b_en <= 1;
 						end
 						1: begin
-							do_b_addr <= do_base_addr + object_idx[1];
-							do_b_en <= 1;
+							pixel_val[0] <= pixel_val[1];
+							pixel_idx <= pixel_idx + 1;
+							dp_b_addr <= dp_base_addr + pixel_idx;
+							dp_b_en <= 1;
 						end
 						2: begin
 							; // 不做。
@@ -136,14 +143,15 @@ module column_controller_t #
 
 						3: begin
 							if (is_any && pixel_val[0] >= internal_current_pixel) begin
+								is_end <= 0;
 								is_any <= pixel_idx > 2;
 								pixel_val[1] <= pixel_val[0];
 								object_idx[1] <= object_idx[0];
 								object_info[1] <= object_info[0];
 
 								pixel_idx <= pixel_idx - 1;
-								object_idx[0] <= object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
-								do_b_addr <= do_base_addr + object_idx[0] - (is_any && object_info[0][0] && (pixel_idx == dp_size || object_idx[0] != object_idx[1]));
+								object_idx[0] <= object_idx[0] - (object_idx[0] > 0 && !(object_info[0][0] && object_idx[0] != object_idx[1])); // is_end 可省略。
+								do_b_addr <= do_base_addr + object_idx[0] - (object_idx[0] > 0 && !(object_info[0][0] && object_idx[0] != object_idx[1]));
 							end
 							else
 								do_b_addr <= do_base_addr + object_idx[0];
@@ -159,28 +167,16 @@ module column_controller_t #
 				else if (pat == 3) begin
 					case (which)
 						0: begin
-							pixel_val[1] <= dp_b_data_out;
-							dp_b_en <= 0;
-							pixel_idx <= pixel_idx + 1;
-						end
-						1: begin
 							object_info[1] <= do_b_data_out;
 							do_b_en <= 0;
-							if ((!is_any || object_idx[0] != object_idx[1]) && object_info[1][0]) begin
-								; // 不走。
-							end
-							else
-								object_idx[1] <= object_idx[1] + 1;
-
-							if (pixel_val[1] >= internal_current_pixel) begin // 注意此处 pixel_idx 已加。
-								;
-							end
-							else begin
+						end
+						1: begin
+							pixel_val[1] <= dp_b_data_out;
+							dp_b_en <= 0;
+							if (pixel_idx >= 2)
 								is_any <= 1;
-								pixel_val[0] <= pixel_val[1];
-								object_idx[0] <= object_idx[1];
-								object_info[0] <= object_info[1];
-							end
+							if (pixel_idx > dp_size)
+								is_end <= 1;
 						end
 						2: begin
 							; // 不做。
@@ -196,9 +192,9 @@ module column_controller_t #
 						end
 					endcase
 
-					if (which < 1 || which == 1 && (pixel_val[1] >= internal_current_pixel || pixel_idx >= dp_size))
+					if (which < 1 || which == 1 && (pixel_val[1] >= internal_current_pixel || is_end))
 						which <= which + 1;
-					else if (which == 1 && !(pixel_val[1] >= internal_current_pixel || pixel_idx >= dp_size))
+					else if (which == 1 && !(pixel_val[1] >= internal_current_pixel || is_end))
 						which <= 0;
 					else if (which < 4)
 						which <= which + 1;
@@ -262,9 +258,9 @@ module column_controller_t #
 	assign sig_next_line_on = state == s_next_line;
 
 	assign is_click         = is_any && !object_info[0][1] && !object_info[0][0] && (internal_current_pixel - pixel_val[0]) < (36 << 8);
-	assign is_slide_begin   = is_any && !object_info[0][1] && object_info[0][0] && (internal_current_pixel - pixel_val[0]) < (18 << 8) && (object_idx[0] == object_idx[1] && pixel_idx != dp_size);
-	assign is_slide_end     = is_any && !object_info[0][1] && object_info[0][0] && (internal_current_pixel - pixel_val[0]) < (18 << 8) && !(object_idx[0] == object_idx[1] && pixel_idx != dp_size);
-	assign is_slide_space   = is_any && !object_info[0][1] && object_info[0][0] && (internal_current_pixel - pixel_val[0]) >= (18 << 8) && (object_idx[0] == object_idx[1] && pixel_idx != dp_size);
+	assign is_slide_begin   = is_any && !object_info[0][1] && object_info[0][0] && (internal_current_pixel - pixel_val[0]) < (18 << 8) && (object_idx[0] == object_idx[1] && !is_end);
+	assign is_slide_end     = is_any && !object_info[0][1] && object_info[0][0] && (internal_current_pixel - pixel_val[0]) < (18 << 8) && !(object_idx[0] == object_idx[1] && !is_end);
+	assign is_slide_space   = is_any && !object_info[0][1] && object_info[0][0] && (internal_current_pixel - pixel_val[0]) >= (18 << 8) && (object_idx[0] == object_idx[1] && !is_end);
 	assign is_discarded     = is_any && !object_info[0][1] && object_info[0][0] && object_info[0][2];
 
 	always @(*) begin
