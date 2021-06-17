@@ -67,23 +67,26 @@ module update_single_track_t #
 	always @ (posedge CLK)
 		reset <= RESET_L;
 
+	wire [23:0] nextt;
+	wire [3:0] nexto;
+	wire [3:0] out_object;
 	
 	connect_BRAM u0 (.clk(CLK),.rst(reset),
 	.update(update),.next_time(nextt),.next_object(nexto),
-	.get_time(db_b_data_out),.get_object(do_b_data_out),.over(gameover),
-	.db_size(db_size),.db_base_addr(db_base_addr),
+	.get_time(db_b_data_out),.get_object(do_b_data_out),.is_game_over(gameover),
+	.db_size(db_size),.db_base_addr(db_base_addr),.out_object(out_object),
 	.db_b_addr(db_b_addr),.db_b_en(db_b_en),.do_size(do_size),.do_base_addr(do_base_addr),
 	.do_a_addr(do_a_addr),.do_a_data_in(do_a_data_in),.do_a_en_w(do_a_en_w),.do_b_addr(do_b_addr),.do_b_en(do_b_en),
-	.start_end(start_end),.connect_done(Connect_done)
+	.start_end(start_end),.Connect_done(Connect_done)
 	);
 	
 	single_track_judge u1 (.clk(CLK),.rst(reset),.sig_on(sig_on),
 	.is_key_down(is_key_down),.is_key_changed(is_key_changed),
 	.current_time(current_time),
-	.next_time(nextt),.next_object(nexto),
+	.next_time(nextt),.next_object(nexto),.out_object(out_object),
 	.done(sig_done),.over(gameover),.comb(comb),.update(update),
 	.is_game_over(is_game_over),.is_miss(is_miss),.is_bad(is_bad),.is_good(is_good),.is_great(is_great),.is_perfect(is_perfect),
-	.start_end(start_end),.Connect_done(connect_done)
+	.start_end(start_end),.Connect_done(Connect_done)
 	);
 	
 

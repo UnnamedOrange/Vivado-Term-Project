@@ -51,10 +51,26 @@ module single_track_judge(
     
     reg Start_End=0;//为1代表next_time为面条start,为0代表next_time为面条end
     assign start_end = Start_End;
-    always @(next_time) begin
-    	if (next_object[0])
-    		Start_End = Start_End + 1 ;
+    reg pulsed;
+    always @(posedge clk) begin
+    	if(rst) begin
+    		pulsed <= 0;
+    		Start_End <= 0;
+    	end
+    	else begin
+    		if(next_object[0]) begin
+				if ( Connect_done & !pulsed ) begin
+					pulsed <= 1;
+					Start_End <= Start_End + 1 ;
+				end
+				else if( done ) begin
+					pulsed <= 0;
+				end
+    		end
+    	end
     end
+    
+    
     
     reg work;
     reg [3:0] curr_state;
@@ -68,14 +84,13 @@ module single_track_judge(
     	else
     		curr_state <= next_state;
     end
-    
     always @(posedge clk) begin
     	if(Connect_done) begin
     		work <= 1;
-    	end
-    	work <= 0;
+    	end	
+    	else
+    		work <= 0;
     end
-    
     always @ (*) begin
     	if(!sig_on)
     		next_state = Idle ;
@@ -187,9 +202,13 @@ module single_track_judge(
     		Is_good=0     ;  
     		Is_great=0    ;  
     		Is_perfect=0  ;  
+    		Out_object =0 ;
     	end
     	else begin
     		Out_object=next_object;
+    		Comb=0        ;
+    		Update=0      ;
+    		DONE=0        ;
     		Is_game_over=0;
     		Is_miss=0     ;
     		Is_bad=0      ;  
@@ -211,13 +230,11 @@ module single_track_judge(
 					Comb = 2'b00;
 					DONE = 1    ;
 					Update=0    ;
-					work=0      ;
 				end
 				Disappear: begin
 					Comb = 2'b01;
 					DONE = 1    ;
 					Update=1    ;
-					work=0      ;
 					Out_object[1]=1;
 					if( delta_time < tperfect )
 						Is_perfect = 1 ;
@@ -236,13 +253,11 @@ module single_track_judge(
 					Update=1    ;
 					Out_object[2]=1;
 					Is_miss = 1 ;
-					work=0      ;
 				end
 				None: begin
 					Comb = 2'b01;
 					DONE = 1    ;
 					Update=1    ;
-					work=0      ;
 					if( delta_time < tperfect )
 						Is_perfect = 1 ;
 					else if( delta_time < tgreat )
@@ -258,20 +273,18 @@ module single_track_judge(
 					Comb = 2'b10;
 					DONE = 1    ;
 					Update=1    ;
-					work=0      ;
 					Out_object[1]=1;
 				end
 				default: begin
 					Comb = 2'b00;
 					DONE = 0    ;
 					Update=0    ;
-					work=0      ;
 				end
 			endcase
 		end
     end
     assign update = Update;
-    assign out_object = out_object;
+    assign out_object = Out_object;
     assign comb = Comb;
     assign done = DONE;
     assign is_game_over = Is_game_over;

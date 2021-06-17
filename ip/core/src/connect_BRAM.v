@@ -19,6 +19,7 @@ module connect_BRAM(
 	
 	input [23:0] get_time,
 	input [3:0] get_object,
+	input [3:0] out_object,
 	//用于判定是否gameover
 	input [12:0] db_size,       
 	input [12:0] db_base_addr,  
@@ -69,12 +70,12 @@ module connect_BRAM(
 	assign do_b_en = en_r_object;
 	assign do_a_en_w = en_w_object;
 	
-    parameter Idle = 4'b00;
-    parameter Write = 4'b01;
-    parameter Read = 4'b10;
-    parameter Over = 4'b11;
-    parameter NextR = 4'b100;
-    parameter Done = 4'b101;
+    parameter Idle =  4'b0000;
+    parameter Write = 4'b0001;
+    parameter Read =  4'b0010;
+    parameter Over =  4'b0011;
+    parameter NextR = 4'b0100;
+    parameter Done =  4'b0101;
     
     reg begin_write;
     reg begin_read;
@@ -91,8 +92,8 @@ module connect_BRAM(
     end
     
 //状态机
-    reg [1:0] curr_state;
-    reg [1:0] next_state;
+    reg [3:0] curr_state;
+    reg [3:0] next_state;
     reg Reading;
     always @ (posedge clk) begin
         if(rst) begin
@@ -157,8 +158,13 @@ module connect_BRAM(
         if (rst) begin
             pat <= 0;
             Reading <= 0;
-            cnt_beatmap <= 0;
-            cnt_object <= 0;
+            This_object <= 0;
+            This_time <= 0;
+            addr_r_time<=0;
+            en_r_time<=0;
+            en_r_object<=0;
+            addr_r_object<=0;
+            PON_object<=0;
         end
         else begin
             if (!Reading) begin
@@ -196,6 +202,9 @@ module connect_BRAM(
     end
 //Write 
     always @ (posedge clk) begin
+    	if(rst) begin
+    		en_w_object <= 0;
+    	end
     	if( cnt_object == 0 && !start_end ) begin
     		
     	end
@@ -205,13 +214,20 @@ module connect_BRAM(
     	//注意面条的object是一个object
     	//目前读入的object地址为addr_r_object，是四位数据的地址，要写入八位数据的地址的话需要再把相邻的地址读进来
     		if( visiting_object[0] ) begin//和上一个一起写这个做高位
-				Object_w = {This_object , PON_object};
+				Object_w = {out_object , PON_object};
             end
             else begin//和下一个一起写这个做低位
-                Object_w = {PON_object , This_object};
+                Object_w = {PON_object , out_object};
             end
     		addr_w_object <= visiting_object[12:1] ;
     		en_w_object <= 1;
+    		
+    		
+    		cnt_beatmap <= cnt_beatmap + 1 ;
+			if( This_object[0] == 1 & start_end == 0)//为面条开始
+				cnt_object <= cnt_object;
+			else
+			cnt_object <= cnt_object + 1;
     	end
     	else begin
     		en_w_object <= 0;
@@ -220,18 +236,18 @@ module connect_BRAM(
 
 	always @(*) begin
 		if (rst) begin
-			cnt_beatmap <= 0;
-            cnt_object <= 0;
             begin_write = 0;
 			begin_read = 0;
 			game_over = 0;
 			connect_done = 0;
-			en_w_object <= 0;
 		end
 		else begin
 			case(curr_state)
 				Over:begin
 					game_over = 1;
+					begin_write = 0;
+					begin_read = 0;
+					connect_done = 0;
 				end
 				Idle: begin
 					begin_write = 0;
@@ -242,24 +258,26 @@ module connect_BRAM(
 				Read:begin
 					begin_read = 1 ;
 					begin_write = 0;
+					game_over = 0;
+					connect_done = 0;
 				end
 				NextR:begin
 					begin_read = 1 ;
 					begin_write = 0;
+					game_over = 0;
+					connect_done = 0;
 				end
 				Write:begin
 					begin_read = 0 ;
 					begin_write = 1;
-					cnt_beatmap <= cnt_beatmap + 1 ;
-					if( This_object[0] == 1 & start_end == 0)//为面条开始
-						cnt_object <= cnt_object;
-					else
-						cnt_object <= cnt_object + 1;
+					game_over = 0;
+					connect_done = 0;
 				end
 				Done:begin
 					begin_read = 0 ;
 					begin_write = 0;
 					connect_done = 1;
+					game_over = 0;
 				end
 				default:begin
 					begin_write = 0;
