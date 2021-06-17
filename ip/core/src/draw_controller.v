@@ -488,6 +488,11 @@ module draw_controller_t #
 
 	// 颜色输出。
 	parameter [14:0]
+		base_addr_perfect                = 4800,
+		base_addr_great                  = 6336,
+		base_addr_good                   = 7872,
+		base_addr_bad                    = 9408,
+		base_addr_miss                   = 10944,
 		base_addr_click                  = 12480,
 		base_addr_slide_begin            = 14640,
 		base_addr_slide_begin_discarded  = 15720,
@@ -497,6 +502,20 @@ module draw_controller_t #
 		base_addr_slide_space_discarded  = 19020,
 		base_addr_down_button            = 19080,
 		base_addr_up_button              = 22680;
+	parameter [9:0]
+		cx_sign = 24,
+		cy_sign = 64;
+	parameter [9:0]
+		x_p  = 396,
+		y_p  = 453,
+		x_gr = 356,
+		y_gr = 453,
+		x_go = 316,
+		y_go = 453,
+		x_b  = 276,
+		y_b  = 453,
+		x_m  = 236,
+		y_m  = 453;
 
 	reg working;
 	reg [1:0] pat;
@@ -612,8 +631,24 @@ module draw_controller_t #
 								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 380);
 						end
 					end
-					else begin // TODO: 其他位置。
-						ds_b_addr <= 0;
+					else begin // 其他图像。
+						if (x_p <= vga_x && vga_x < x_p + cx_sign &&
+							y_p <= vga_y && vga_y < y_p + cy_sign)
+							ds_b_addr <= base_addr_perfect + (vga_x - x_p) * cy_sign + (vga_y - y_p); // 计分处的 perfect。
+						else if (x_gr <= vga_x && vga_x < x_gr + cx_sign &&
+							y_gr <= vga_y && vga_y < y_gr + cy_sign)
+							ds_b_addr <= base_addr_great + (vga_x - x_gr) * cy_sign + (vga_y - y_gr); // 计分处的 great。
+						else if (x_go <= vga_x && vga_x < x_go + cx_sign &&
+							y_go <= vga_y && vga_y < y_go + cy_sign)
+							ds_b_addr <= base_addr_good + (vga_x - x_go) * cy_sign + (vga_y - y_go); // 计分处的 good。
+						else if (x_b <= vga_x && vga_x < x_b + cx_sign &&
+							y_b <= vga_y && vga_y < y_b + cy_sign)
+							ds_b_addr <= base_addr_bad + (vga_x - x_b) * cy_sign + (vga_y - y_b); // 计分处的 bad。
+						else if (x_m <= vga_x && vga_x < x_m + cx_sign &&
+							y_m <= vga_y && vga_y < y_m + cy_sign)
+							ds_b_addr <= base_addr_miss + (vga_x - x_m) * cy_sign + (vga_y - y_m); // 计分处的 miss。
+						else
+							ds_b_addr <= 0;
 					end
 
 					ds_b_en <= 1;
