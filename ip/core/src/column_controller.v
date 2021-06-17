@@ -6,6 +6,7 @@
 /// <filedescription>每列轨道数据的提供者。</filedescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange) : First commit.
+/// 0.0.2 (UnnamedOrange) : 代码非常稳定，不要随便乱动（有判定的情况待测试）。
 /// </version>
 
 `timescale 1ns / 1ps
@@ -192,9 +193,9 @@ module column_controller_t #
 						end
 					endcase
 
-					if (which < 1 || which == 1 && (pixel_val[1] > internal_current_pixel || is_end))
+					if (which < 1 || which == 1 && (pixel_val[1] > internal_current_pixel || pixel_idx > dp_size)) // is_end 在此处还没有更新。
 						which <= which + 1;
-					else if (which == 1 && !(pixel_val[1] > internal_current_pixel || is_end))
+					else if (which == 1 && !(pixel_val[1] > internal_current_pixel || pixel_idx > dp_size))
 						which <= 0;
 					else if (which < 4)
 						which <= which + 1;
