@@ -146,27 +146,14 @@ module draw_controller_t #
 		dp_b_addr = 0;
 		dp_b_en = 0;
 
-		if (state == s_refresh_0 || state == s_w_refresh_0) begin
-			do_1_b_addr = do_cc_b_addr[0][ping_pong];
-			do_1_b_en = do_cc_b_en[0][ping_pong];
-		end
-		else if (state == s_refresh_1 || state == s_w_refresh_1) begin
-			do_1_b_addr = do_cc_b_addr[1][ping_pong];
-			do_1_b_en = do_cc_b_en[1][ping_pong];
-		end
-		else if (state == s_refresh_2 || state == s_w_refresh_2) begin
-			do_1_b_addr = do_cc_b_addr[2][ping_pong];
-			do_1_b_en = do_cc_b_en[2][ping_pong];
-		end
-		else if (state == s_refresh_3 || state == s_w_refresh_3) begin
-			do_1_b_addr = do_cc_b_addr[3][ping_pong];
-			do_1_b_en = do_cc_b_en[3][ping_pong];
-		end
-
 		for (i = 0; i < 4; i = i + 1) begin
-			if (do_cc_b_en[i][!ping_pong]) begin
-				do_2_b_addr = do_cc_b_addr[i][!ping_pong];
-				do_2_b_en = do_cc_b_en[i][!ping_pong];
+			if (do_cc_b_en[i][0]) begin
+				do_1_b_addr = do_cc_b_addr[i][0];
+				do_1_b_en = do_cc_b_en[i][0];
+			end
+			if (do_cc_b_en[i][1]) begin
+				do_2_b_addr = do_cc_b_addr[i][1];
+				do_2_b_en = do_cc_b_en[i][1];
 			end
 		end
 		for (j = 0; j < 2; j = j + 1)
