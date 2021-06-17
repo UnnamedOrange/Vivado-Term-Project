@@ -631,24 +631,23 @@ module draw_controller_t #
 								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 380);
 						end
 					end
-					else begin // 其他图像。
-						if (x_p <= vga_x && vga_x < x_p + cx_sign &&
+					else if (x_p <= vga_x && vga_x < x_p + cx_sign &&
 							y_p <= vga_y && vga_y < y_p + cy_sign)
-							ds_b_addr <= base_addr_perfect + (vga_x - x_p) * cy_sign + (vga_y - y_p); // 计分处的 perfect。
-						else if (x_gr <= vga_x && vga_x < x_gr + cx_sign &&
+						ds_b_addr <= base_addr_perfect + (vga_x - x_p) * cy_sign + (vga_y - y_p); // 计分处的 perfect。
+					else if (x_gr <= vga_x && vga_x < x_gr + cx_sign &&
 							y_gr <= vga_y && vga_y < y_gr + cy_sign)
-							ds_b_addr <= base_addr_great + (vga_x - x_gr) * cy_sign + (vga_y - y_gr); // 计分处的 great。
-						else if (x_go <= vga_x && vga_x < x_go + cx_sign &&
+						ds_b_addr <= base_addr_great + (vga_x - x_gr) * cy_sign + (vga_y - y_gr); // 计分处的 great。
+					else if (x_go <= vga_x && vga_x < x_go + cx_sign &&
 							y_go <= vga_y && vga_y < y_go + cy_sign)
-							ds_b_addr <= base_addr_good + (vga_x - x_go) * cy_sign + (vga_y - y_go); // 计分处的 good。
-						else if (x_b <= vga_x && vga_x < x_b + cx_sign &&
+						ds_b_addr <= base_addr_good + (vga_x - x_go) * cy_sign + (vga_y - y_go); // 计分处的 good。
+					else if (x_b <= vga_x && vga_x < x_b + cx_sign &&
 							y_b <= vga_y && vga_y < y_b + cy_sign)
-							ds_b_addr <= base_addr_bad + (vga_x - x_b) * cy_sign + (vga_y - y_b); // 计分处的 bad。
-						else if (x_m <= vga_x && vga_x < x_m + cx_sign &&
+						ds_b_addr <= base_addr_bad + (vga_x - x_b) * cy_sign + (vga_y - y_b); // 计分处的 bad。
+					else if (x_m <= vga_x && vga_x < x_m + cx_sign &&
 							y_m <= vga_y && vga_y < y_m + cy_sign)
-							ds_b_addr <= base_addr_miss + (vga_x - x_m) * cy_sign + (vga_y - y_m); // 计分处的 miss。
-						else
-							ds_b_addr <= 0;
+						ds_b_addr <= base_addr_miss + (vga_x - x_m) * cy_sign + (vga_y - y_m); // 计分处的 miss。
+					else begin : digit_t
+						ds_b_addr <= 0; // 待验证的写法。
 					end
 
 					ds_b_en <= 1;
