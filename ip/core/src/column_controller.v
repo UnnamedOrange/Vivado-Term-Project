@@ -142,7 +142,7 @@ module column_controller_t #
 						end
 
 						3: begin
-							if (is_any && pixel_val[0] >= internal_current_pixel) begin
+							if (is_any && pixel_val[0] > internal_current_pixel) begin
 								is_end <= 0;
 								is_any <= pixel_idx > 2;
 								pixel_val[1] <= pixel_val[0];
@@ -159,7 +159,7 @@ module column_controller_t #
 							do_b_en <= 1;
 						end
 						4: begin
-							dp_b_addr <= dp_base_addr + pixel_idx - 1;
+							dp_b_addr <= dp_base_addr + pixel_idx - 2;
 							dp_b_en <= 1;
 						end
 					endcase
@@ -192,9 +192,9 @@ module column_controller_t #
 						end
 					endcase
 
-					if (which < 1 || which == 1 && (pixel_val[1] >= internal_current_pixel || is_end))
+					if (which < 1 || which == 1 && (pixel_val[1] > internal_current_pixel || is_end))
 						which <= which + 1;
-					else if (which == 1 && !(pixel_val[1] >= internal_current_pixel || is_end))
+					else if (which == 1 && !(pixel_val[1] > internal_current_pixel || is_end))
 						which <= 0;
 					else if (which < 4)
 						which <= which + 1;
