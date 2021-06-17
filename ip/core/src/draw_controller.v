@@ -532,6 +532,143 @@ module draw_controller_t #
 		y_d = y_p + cy_sign + 10,
 		y_d_interval = 3;
 
+	always @(*) begin
+		ds_b_addr = 0;
+		if (200 <= vga_y && vga_y < 260) begin // 第一列。
+			if (vga_x < 420) begin // 轨道。
+				if (is_click[0][!ping_pong])
+					ds_b_addr = base_addr_click + x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+				else if (is_slide_begin[0][!ping_pong])
+					ds_b_addr = (is_discarded[0][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+						+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+				else if (is_slide_end[0][!ping_pong])
+					ds_b_addr = (is_discarded[0][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+						+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+				else if (is_slide_space[0][!ping_pong])
+					ds_b_addr = (is_discarded[0][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+						+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
+			end
+			else begin // 按键指示。
+				if (is_key_down[0])
+					ds_b_addr = base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 200);
+				else
+					ds_b_addr = base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 200);
+			end
+		end
+		else if (260 <= vga_y && vga_y < 320) begin // 第二列。
+			if (vga_x < 420) begin // 轨道。
+				if (is_click[1][!ping_pong])
+					ds_b_addr = base_addr_click + x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+				else if (is_slide_begin[1][!ping_pong])
+					ds_b_addr = (is_discarded[1][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+						+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+				else if (is_slide_end[1][!ping_pong])
+					ds_b_addr = (is_discarded[1][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+						+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+				else if (is_slide_space[1][!ping_pong])
+					ds_b_addr = (is_discarded[1][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+						+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
+			end
+			else begin // 按键指示。
+				if (is_key_down[1])
+					ds_b_addr = base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 260);
+				else
+					ds_b_addr = base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 260);
+			end
+		end
+		else if (320 <= vga_y && vga_y < 380) begin // 第三列。
+			if (vga_x < 420) begin // 轨道。
+				if (is_click[2][!ping_pong])
+					ds_b_addr = base_addr_click + x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+				else if (is_slide_begin[2][!ping_pong])
+					ds_b_addr = (is_discarded[2][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+						+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+				else if (is_slide_end[2][!ping_pong])
+					ds_b_addr = (is_discarded[2][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+						+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+				else if (is_slide_space[2][!ping_pong])
+					ds_b_addr = (is_discarded[2][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+						+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
+			end
+			else begin // 按键指示。
+				if (is_key_down[2])
+					ds_b_addr = base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 320);
+				else
+					ds_b_addr = base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 320);
+			end
+		end
+		else if (380 <= vga_y && vga_y < 440) begin // 第四列。
+			if (vga_x < 420) begin // 轨道。
+				if (is_click[3][!ping_pong])
+					ds_b_addr = base_addr_click + x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+				else if (is_slide_begin[3][!ping_pong])
+					ds_b_addr = (is_discarded[3][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+						+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+				else if (is_slide_end[3][!ping_pong])
+					ds_b_addr = (is_discarded[3][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+						+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+				else if (is_slide_space[3][!ping_pong])
+					ds_b_addr = (is_discarded[3][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+						+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
+			end
+			else begin // 按键指示。
+				if (is_key_down[3])
+					ds_b_addr = base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 380);
+				else
+					ds_b_addr = base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 380);
+			end
+		end
+		else if (x_p <= vga_x && vga_x < x_p + cx_sign &&
+				y_p <= vga_y && vga_y < y_p + cy_sign)
+			ds_b_addr = base_addr_perfect + (vga_x - x_p) * cy_sign + (vga_y - y_p); // 计分处的 perfect。
+		else if (x_gr <= vga_x && vga_x < x_gr + cx_sign &&
+				y_gr <= vga_y && vga_y < y_gr + cy_sign)
+			ds_b_addr = base_addr_great + (vga_x - x_gr) * cy_sign + (vga_y - y_gr); // 计分处的 great。
+		else if (x_go <= vga_x && vga_x < x_go + cx_sign &&
+				y_go <= vga_y && vga_y < y_go + cy_sign)
+			ds_b_addr = base_addr_good + (vga_x - x_go) * cy_sign + (vga_y - y_go); // 计分处的 good。
+		else if (x_b <= vga_x && vga_x < x_b + cx_sign &&
+				y_b <= vga_y && vga_y < y_b + cy_sign)
+			ds_b_addr = base_addr_bad + (vga_x - x_b) * cy_sign + (vga_y - y_b); // 计分处的 bad。
+		else if (x_m <= vga_x && vga_x < x_m + cx_sign &&
+				y_m <= vga_y && vga_y < y_m + cy_sign)
+			ds_b_addr = base_addr_miss + (vga_x - x_m) * cy_sign + (vga_y - y_m); // 计分处的 miss。
+		else begin : digit_t
+			integer i;
+
+			for (i = 0; i < 4; i = i + 1) begin
+				if (x_p <= vga_x && vga_x < x_p + cx_digit &&
+					y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
+					ds_b_addr = perfect[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_p) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
+			end
+			for (i = 0; i < 4; i = i + 1) begin
+				if (x_gr <= vga_x && vga_x < x_gr + cx_digit &&
+					y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
+					ds_b_addr = great[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_gr) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
+			end
+			for (i = 0; i < 4; i = i + 1) begin
+				if (x_go <= vga_x && vga_x < x_go + cx_digit &&
+					y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
+					ds_b_addr = good[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_go) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
+			end
+			for (i = 0; i < 4; i = i + 1) begin
+				if (x_b <= vga_x && vga_x < x_b + cx_digit &&
+					y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
+					ds_b_addr = bad[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_b) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
+			end
+			for (i = 0; i < 4; i = i + 1) begin
+				if (x_m <= vga_x && vga_x < x_m + cx_digit &&
+					y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
+					ds_b_addr = miss[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_m) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
+			end
+			for (i = 0; i < 4; i = i + 1) begin
+				if (x_combo <= vga_x && vga_x < x_combo + cx_digit &&
+					y_combo + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_combo + i * (y_d_interval + cy_digit) + cy_digit)
+					ds_b_addr = combo[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_combo) * cy_digit + (vga_y - (y_combo + i * (y_d_interval + cy_digit)));
+			end
+		end
+	end
+
 	reg working;
 	reg [1:0] pat;
 	always @(posedge CLK) begin
@@ -540,7 +677,6 @@ module draw_controller_t #
 			vga_g <= 0;
 			vga_b <= 0;
 
-			ds_b_addr <= 0;
 			ds_b_en <= 0;
 
 			working <= 0;
@@ -554,149 +690,6 @@ module draw_controller_t #
 					vga_b <= 0;
 				end
 				else begin // 正式开始显示图像。
-					if (200 <= vga_y && vga_y < 260) begin // 第一列。
-						if (vga_x < 420) begin // 轨道。
-							if (is_click[0][!ping_pong])
-								ds_b_addr <= base_addr_click + x_idx[0][!ping_pong] * 60 + (vga_y - 200);
-							else if (is_slide_begin[0][!ping_pong])
-								ds_b_addr <= (is_discarded[0][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
-									+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
-							else if (is_slide_end[0][!ping_pong])
-								ds_b_addr <= (is_discarded[0][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
-									+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
-							else if (is_slide_space[0][!ping_pong])
-								ds_b_addr <= (is_discarded[0][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
-									+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
-							else
-								ds_b_addr <= 0;
-						end
-						else begin // 按键指示。
-							if (is_key_down[0])
-								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 200);
-							else
-								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 200);
-						end
-					end
-					else if (260 <= vga_y && vga_y < 320) begin // 第二列。
-						if (vga_x < 420) begin // 轨道。
-							if (is_click[1][!ping_pong])
-								ds_b_addr <= base_addr_click + x_idx[1][!ping_pong] * 60 + (vga_y - 260);
-							else if (is_slide_begin[1][!ping_pong])
-								ds_b_addr <= (is_discarded[1][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
-									+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
-							else if (is_slide_end[1][!ping_pong])
-								ds_b_addr <= (is_discarded[1][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
-									+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
-							else if (is_slide_space[1][!ping_pong])
-								ds_b_addr <= (is_discarded[1][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
-									+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
-							else
-								ds_b_addr <= 0;
-						end
-						else begin // 按键指示。
-							if (is_key_down[1])
-								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 260);
-							else
-								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 260);
-						end
-					end
-					else if (320 <= vga_y && vga_y < 380) begin // 第三列。
-						if (vga_x < 420) begin // 轨道。
-							if (is_click[2][!ping_pong])
-								ds_b_addr <= base_addr_click + x_idx[2][!ping_pong] * 60 + (vga_y - 320);
-							else if (is_slide_begin[2][!ping_pong])
-								ds_b_addr <= (is_discarded[2][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
-									+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
-							else if (is_slide_end[2][!ping_pong])
-								ds_b_addr <= (is_discarded[2][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
-									+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
-							else if (is_slide_space[2][!ping_pong])
-								ds_b_addr <= (is_discarded[2][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
-									+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
-							else
-								ds_b_addr <= 0;
-						end
-						else begin // 按键指示。
-							if (is_key_down[2])
-								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 320);
-							else
-								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 320);
-						end
-					end
-					else if (380 <= vga_y && vga_y < 440) begin // 第四列。
-						if (vga_x < 420) begin // 轨道。
-							if (is_click[3][!ping_pong])
-								ds_b_addr <= base_addr_click + x_idx[3][!ping_pong] * 60 + (vga_y - 380);
-							else if (is_slide_begin[3][!ping_pong])
-								ds_b_addr <= (is_discarded[3][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
-									+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
-							else if (is_slide_end[3][!ping_pong])
-								ds_b_addr <= (is_discarded[3][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
-									+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
-							else if (is_slide_space[3][!ping_pong])
-								ds_b_addr <= (is_discarded[3][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
-									+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
-							else
-								ds_b_addr <= 0;
-						end
-						else begin // 按键指示。
-							if (is_key_down[3])
-								ds_b_addr <= base_addr_down_button + (vga_x - 420) * 60 + (vga_y - 380);
-							else
-								ds_b_addr <= base_addr_up_button + (vga_x - 420) * 60 + (vga_y - 380);
-						end
-					end
-					else if (x_p <= vga_x && vga_x < x_p + cx_sign &&
-							y_p <= vga_y && vga_y < y_p + cy_sign)
-						ds_b_addr <= base_addr_perfect + (vga_x - x_p) * cy_sign + (vga_y - y_p); // 计分处的 perfect。
-					else if (x_gr <= vga_x && vga_x < x_gr + cx_sign &&
-							y_gr <= vga_y && vga_y < y_gr + cy_sign)
-						ds_b_addr <= base_addr_great + (vga_x - x_gr) * cy_sign + (vga_y - y_gr); // 计分处的 great。
-					else if (x_go <= vga_x && vga_x < x_go + cx_sign &&
-							y_go <= vga_y && vga_y < y_go + cy_sign)
-						ds_b_addr <= base_addr_good + (vga_x - x_go) * cy_sign + (vga_y - y_go); // 计分处的 good。
-					else if (x_b <= vga_x && vga_x < x_b + cx_sign &&
-							y_b <= vga_y && vga_y < y_b + cy_sign)
-						ds_b_addr <= base_addr_bad + (vga_x - x_b) * cy_sign + (vga_y - y_b); // 计分处的 bad。
-					else if (x_m <= vga_x && vga_x < x_m + cx_sign &&
-							y_m <= vga_y && vga_y < y_m + cy_sign)
-						ds_b_addr <= base_addr_miss + (vga_x - x_m) * cy_sign + (vga_y - y_m); // 计分处的 miss。
-					else begin : digit_t
-						integer i;
-
-						ds_b_addr <= 0; // 待验证的写法。
-						for (i = 0; i < 4; i = i + 1) begin
-							if (x_p <= vga_x && vga_x < x_p + cx_digit &&
-								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
-								ds_b_addr <= perfect[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_p) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
-						end
-						for (i = 0; i < 4; i = i + 1) begin
-							if (x_gr <= vga_x && vga_x < x_gr + cx_digit &&
-								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
-								ds_b_addr <= great[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_gr) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
-						end
-						for (i = 0; i < 4; i = i + 1) begin
-							if (x_go <= vga_x && vga_x < x_go + cx_digit &&
-								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
-								ds_b_addr <= good[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_go) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
-						end
-						for (i = 0; i < 4; i = i + 1) begin
-							if (x_b <= vga_x && vga_x < x_b + cx_digit &&
-								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
-								ds_b_addr <= bad[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_b) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
-						end
-						for (i = 0; i < 4; i = i + 1) begin
-							if (x_m <= vga_x && vga_x < x_m + cx_digit &&
-								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
-								ds_b_addr <= miss[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_m) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
-						end
-						for (i = 0; i < 4; i = i + 1) begin
-							if (x_combo <= vga_x && vga_x < x_combo + cx_digit &&
-								y_combo + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_combo + i * (y_d_interval + cy_digit) + cy_digit)
-								ds_b_addr <= combo[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_combo) * cy_digit + (vga_y - (y_combo + i * (y_d_interval + cy_digit)));
-						end
-					end
-
 					ds_b_en <= 1;
 					working <= 1;
 					pat <= 1;
