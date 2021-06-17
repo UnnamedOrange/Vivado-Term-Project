@@ -22,7 +22,7 @@ module core_t #
 	parameter update_period = system_clock / 1000,
 	parameter audio_period = system_clock / 44100,
 	parameter draw_period = 800 * 525 * 4,
-	parameter play_delay = 44100 * 3 / 2,
+	parameter play_delay = 44100 * 5 / 2,
 	parameter state_width = 16
 )
 (

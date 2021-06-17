@@ -4,7 +4,7 @@
 import numpy as np
 import librosa
 
-g_delay = 1500  # 所有时间点延时指定时间。
+g_delay = 2500  # 所有时间点延时指定时间。
 g_basic_timing = 273  # 基础速度。
 g_timing = []  # [时间点, 速度]
 g_timing_final = None
