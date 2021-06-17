@@ -567,6 +567,12 @@ module core_t #
 
 		.current_pixel(current_pixel),
 
+		.miss(miss),
+		.bad(bad),
+		.good(good),
+		.great(great),
+		.perfect(perfect),
+
 		.vga_reset(vga_reset),
 		.vga_r(vga_r),
 		.vga_g(vga_g),
