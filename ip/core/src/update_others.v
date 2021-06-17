@@ -216,10 +216,10 @@ module update_others_t #
 
 		next_combo = combo;
 		for (i = 0; i < 4; i = i + 1)
-			if (is_combo[i] == 2'b10)
+			if (is_combo[i * 2 +: 2] == 2'b10)
 				next_combo = 0;
 		for (i = 0; i < 4; i = i + 1) begin
-			if (is_combo[i] == 2'b01)
+			if (is_combo[i * 2 +: 2] == 2'b01)
 				next_combo = next_combo + 1;
 			for (j = 0; j < 4; j = j + 1) begin
 				if (next_combo[j * 4 +: 4] >= 10) begin

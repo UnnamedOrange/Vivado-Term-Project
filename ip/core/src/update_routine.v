@@ -101,6 +101,7 @@ module update_routine_t #
 	wire [3:0] is_good;
 	wire [3:0] is_great;
 	wire [3:0] is_perfect;
+	wire [7:0] is_combo;
 
 	wire sig_update_0_on;
 	wire sig_update_0_done;
@@ -137,6 +138,7 @@ module update_routine_t #
 		.current_time(current_time),
 
 		.is_game_over(is_game_over[0]),
+		.comb(is_combo[1:0]),
 		.is_miss(is_miss[0]),
 		.is_bad(is_bad[0]),
 		.is_good(is_good[0]),
@@ -182,6 +184,7 @@ module update_routine_t #
 		.current_time(current_time),
 
 		.is_game_over(is_game_over[1]),
+		.comb(is_combo[3:2]),
 		.is_miss(is_miss[1]),
 		.is_bad(is_bad[1]),
 		.is_good(is_good[1]),
@@ -227,6 +230,7 @@ module update_routine_t #
 		.current_time(current_time),
 
 		.is_game_over(is_game_over[2]),
+		.comb(is_combo[5:4]),
 		.is_miss(is_miss[2]),
 		.is_bad(is_bad[2]),
 		.is_good(is_good[2]),
@@ -272,6 +276,7 @@ module update_routine_t #
 		.current_time(current_time),
 
 		.is_game_over(is_game_over[3]),
+		.comb(is_combo[7:6]),
 		.is_miss(is_miss[3]),
 		.is_bad(is_bad[3]),
 		.is_good(is_good[3]),
@@ -296,7 +301,7 @@ module update_routine_t #
 		.dt_base_addr(dt_base_addr),
 
 		.is_game_over(is_game_over),
-		// .is_combo(), // TODO
+		.is_combo(is_combo),
 		.is_miss(is_miss),
 		.is_bad(is_bad),
 		.is_good(is_good),

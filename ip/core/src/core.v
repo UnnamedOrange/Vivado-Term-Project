@@ -572,6 +572,7 @@ module core_t #
 		.good(good),
 		.great(great),
 		.perfect(perfect),
+		.combo(combo),
 
 		.vga_reset(vga_reset),
 		.vga_r(vga_r),
