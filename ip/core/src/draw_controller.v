@@ -68,6 +68,7 @@ module draw_controller_t #
 	input [15:0] good,
 	input [15:0] great,
 	input [15:0] perfect,
+	input [15:0] combo,
 
 	// VGA。
 	output vga_reset,
@@ -526,6 +527,8 @@ module draw_controller_t #
 		y_m  = 453;
 
 	parameter [9:0]
+		x_combo = 396,
+		y_combo = 98,
 		y_d = y_p + cy_sign + 10,
 		y_d_interval = 3;
 
@@ -663,29 +666,34 @@ module draw_controller_t #
 
 						ds_b_addr <= 0; // 待验证的写法。
 						for (i = 0; i < 4; i = i + 1) begin
-							if (x_p <= vga_x && vga_x < x_p + cx_sign &&
+							if (x_p <= vga_x && vga_x < x_p + cx_digit &&
 								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
 								ds_b_addr <= perfect[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_p) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
 						end
 						for (i = 0; i < 4; i = i + 1) begin
-							if (x_gr <= vga_x && vga_x < x_gr + cx_sign &&
+							if (x_gr <= vga_x && vga_x < x_gr + cx_digit &&
 								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
 								ds_b_addr <= great[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_gr) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
 						end
 						for (i = 0; i < 4; i = i + 1) begin
-							if (x_go <= vga_x && vga_x < x_go + cx_sign &&
+							if (x_go <= vga_x && vga_x < x_go + cx_digit &&
 								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
 								ds_b_addr <= good[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_go) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
 						end
 						for (i = 0; i < 4; i = i + 1) begin
-							if (x_b <= vga_x && vga_x < x_b + cx_sign &&
+							if (x_b <= vga_x && vga_x < x_b + cx_digit &&
 								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
 								ds_b_addr <= bad[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_b) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
 						end
 						for (i = 0; i < 4; i = i + 1) begin
-							if (x_m <= vga_x && vga_x < x_m + cx_sign &&
+							if (x_m <= vga_x && vga_x < x_m + cx_digit &&
 								y_d + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_d + i * (y_d_interval + cy_digit) + cy_digit)
 								ds_b_addr <= miss[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_m) * cy_digit + (vga_y - (y_d + i * (y_d_interval + cy_digit)));
+						end
+						for (i = 0; i < 4; i = i + 1) begin
+							if (x_combo <= vga_x && vga_x < x_combo + cx_digit &&
+								y_combo + i * (y_d_interval + cy_digit) <= vga_y && vga_y < y_combo + i * (y_d_interval + cy_digit) + cy_digit)
+								ds_b_addr <= combo[(3 - i) * 4 +: 4] * size_digit + (vga_x - x_combo) * cy_digit + (vga_y - (y_combo + i * (y_d_interval + cy_digit)));
 						end
 					end
 
