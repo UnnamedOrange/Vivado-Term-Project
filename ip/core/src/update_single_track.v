@@ -63,11 +63,9 @@ module update_single_track_t #
 	input CLK
 );
 	
-	reg reset;
+	wire reset;
+	assign reset = !RESET_L;
 	
-	always @ (posedge CLK)
-		reset <= ~RESET_L;
-
 	reg Sig_done;
 	assign sig_done= Sig_done;
 	reg [12:0] addr_r_time;
@@ -165,7 +163,7 @@ module update_single_track_t #
 				Good <= 1;
 			else if(bad)
 				Bad <= 1;
-			else if(Miss)
+			else if(miss)
 				Miss <= 1;
 			if(Comb > 0)
 				Combe <= Comb;
@@ -478,7 +476,7 @@ module update_single_track_t #
 					PON_object_read = do_b_data_out;//注意要将其锁存到PON_object中
                 	time_r_en = 0;
 				end
-				Done:;//啥都不做
+				Done:miss = 1;//啥都不做
 				Disappear:begin
 					plus_flag=1;
 					Comb = 2'b01;
@@ -526,6 +524,7 @@ module update_single_track_t #
 					Comb = 2'b10;
 					plus_flag=1;
 					disappear =1;
+					miss = 1;
 				end
 				Write:begin
 					write = 1;
