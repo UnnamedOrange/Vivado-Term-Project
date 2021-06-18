@@ -50,6 +50,8 @@ module update_others_t #
 	output reg [15:0] perfect,
 	output reg [15:0] combo,
 
+	output reg [3:0] current_score, // 0 为空，然后依次是 perfect, great, good, bad, miss。
+
 	// 复位与时钟。
 	input RESET_L,
 	input CLK
@@ -134,6 +136,9 @@ module update_others_t #
 	reg [15:0] next_great;
 	reg [15:0] next_perfect;
 	reg [15:0] next_combo;
+	reg [3:0] next_current_score;
+	reg [15:0] score_counter;
+	reg [15:0] next_score_counter;
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
 			miss <= 0;
@@ -142,6 +147,8 @@ module update_others_t #
 			great <= 0;
 			perfect <= 0;
 			combo <= 0;
+			current_score <= 0;
+			score_counter <= 0;
 		end
 		else begin
 			if (state == s_update_score) begin
@@ -151,6 +158,8 @@ module update_others_t #
 				great <= next_great;
 				perfect <= next_perfect;
 				combo <= next_combo;
+				current_score <= next_current_score;
+				score_counter <= next_score_counter;
 			end
 		end
 	end
@@ -229,6 +238,36 @@ module update_others_t #
 				end
 			end
 		end
+
+		next_current_score = current_score;
+		next_score_counter = score_counter ? score_counter - 1 : 0;
+		for (i = 0; i < 4; i = i + 1)
+			if (is_perfect[i]) begin
+				next_current_score = 1;
+				next_score_counter = 250;
+			end
+		for (i = 0; i < 4; i = i + 1)
+			if (is_great[i]) begin
+				next_current_score = 2;
+				next_score_counter = 250;
+			end
+		for (i = 0; i < 4; i = i + 1)
+			if (is_good[i]) begin
+				next_current_score = 3;
+				next_score_counter = 250;
+			end
+		for (i = 0; i < 4; i = i + 1)
+			if (is_bad[i]) begin
+				next_current_score = 4;
+				next_score_counter = 250;
+			end
+		for (i = 0; i < 4; i = i + 1)
+			if (is_miss[i]) begin
+				next_current_score = 5;
+				next_score_counter = 250;
+			end
+		if (next_score_counter == 0)
+			next_current_score = 0;
 	end
 
 	// 特征方程。

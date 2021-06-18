@@ -461,6 +461,7 @@ module core_t #
 	wire [15:0] great;
 	wire [15:0] perfect;
 	wire [15:0] combo;
+	wire [3:0] current_score;
 	update_routine_t update_routine
 	(
 		.sig_on(sig_update_on),
@@ -513,6 +514,7 @@ module core_t #
 		.great(great),
 		.perfect(perfect),
 		.combo(combo),
+		.current_score(current_score),
 
 		.RESET_L(RESET_L),
 		.CLK(CLK)
@@ -520,6 +522,7 @@ module core_t #
 
 	// draw_controller°£
 	wire sig_draw_on;
+	wire sig_draw_done; // ±£¡Ù°£
 	wire [12:0] do_draw_b_addr;
 	wire do_draw_b_en;
 	wire [12:0] do_pong_b_addr;
@@ -528,7 +531,7 @@ module core_t #
 	wire dp_draw_b_en;
 	draw_controller_t draw_controller (
 		.sig_on(sig_draw_on),
-		// .sig_done(),
+		.sig_done(sig_draw_done),
 
 		.do_1_b_addr(do_draw_b_addr),
 		.do_1_b_data_out(do_1_b_data_out),
@@ -573,6 +576,7 @@ module core_t #
 		.great(great),
 		.perfect(perfect),
 		.combo(combo),
+		.current_score(current_score),
 
 		.vga_reset(vga_reset),
 		.vga_r(vga_r),

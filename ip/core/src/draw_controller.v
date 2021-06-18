@@ -69,6 +69,7 @@ module draw_controller_t #
 	input [15:0] great,
 	input [15:0] perfect,
 	input [15:0] combo,
+	input [3:0] current_score,
 
 	// VGA。
 	output vga_reset,
@@ -515,6 +516,8 @@ module draw_controller_t #
 		cx_digit = 24,
 		cy_digit = 20;
 	parameter [9:0]
+		x_s  = 356,
+		y_s  = 123,
 		x_p  = 396,
 		y_p  = 453,
 		x_gr = 356,
@@ -633,6 +636,23 @@ module draw_controller_t #
 		else if (x_m <= vga_x && vga_x < x_m + cx_sign &&
 				y_m <= vga_y && vga_y < y_m + cy_sign)
 			ds_b_addr = base_addr_miss + (vga_x - x_m) * cy_sign + (vga_y - y_m); // 计分处的 miss。
+		else if (x_s <= vga_x && vga_x < x_s + cx_sign &&
+				y_s <= vga_y && vga_y < y_s + cy_sign) begin // 当前评价。
+			case (current_score)
+				1:
+					ds_b_addr = base_addr_perfect + (vga_x - x_s) * cy_sign + (vga_y - y_s);
+				2:
+					ds_b_addr = base_addr_great + (vga_x - x_s) * cy_sign + (vga_y - y_s);
+				3:
+					ds_b_addr = base_addr_good + (vga_x - x_s) * cy_sign + (vga_y - y_s);
+				4:
+					ds_b_addr = base_addr_bad + (vga_x - x_s) * cy_sign + (vga_y - y_s);
+				5:
+					ds_b_addr = base_addr_miss + (vga_x - x_s) * cy_sign + (vga_y - y_s);
+				default:
+					ds_b_addr = 0;
+			endcase
+		end
 		else begin : digit_t
 			integer i;
 

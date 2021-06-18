@@ -71,6 +71,7 @@ module update_routine_t #
 	output [15:0] great,
 	output [15:0] perfect,
 	output [15:0] combo,
+	output [3:0] current_score,
 
 	// ∏¥Œª”Î ±÷”°£
 	input RESET_L,
@@ -318,6 +319,7 @@ module update_routine_t #
 		.great(great),
 		.perfect(perfect),
 		.combo(combo),
+		.current_score(current_score),
 
 		.RESET_L(RESET_L),
 		.CLK(CLK)
