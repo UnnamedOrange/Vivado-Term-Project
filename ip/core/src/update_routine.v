@@ -270,8 +270,8 @@ module update_routine_t #
 		.do_size(do_size_3),
 		.do_base_addr(do_base_addr_3),
 
-		.is_key_down(is_key_down[2]),
-		.is_key_changed(is_key_changed[2]),
+		.is_key_down(is_key_down[3]),
+		.is_key_changed(is_key_changed[3]),
 
 		.current_time(current_time),
 
