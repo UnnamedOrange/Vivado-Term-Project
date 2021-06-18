@@ -29,7 +29,7 @@ module time_judge_t #
 	output reg in_great,
 	output reg in_good,
 	output reg in_bad,
-	output reg in_miss
+	output reg in_miss // 只有早到 miss，没有晚到 miss。
 );
 
 	wire [19:0] true_time;
@@ -69,8 +69,8 @@ module time_judge_t #
 				in_good = 1;
 			else if (true_time - object_time <= t_bad)
 				in_bad = 1;
-			else if (true_time - object_time <= t_miss)
-				in_miss = 1;
+			// else if (true_time - object_time <= t_miss)
+			// 	in_miss = 1;
 			else
 				too_late = 1;
 		end

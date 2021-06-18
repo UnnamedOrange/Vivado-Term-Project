@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 // Copyright (c) UnnamedOrange and Jack-Lyu. Licensed under the MIT License.
 // See the LICENSE file in the repository root for full license text.
 
@@ -8,541 +6,448 @@
 /// <filedescription>单条轨道 update 管理器。</filedescription>
 /// <version>
 /// 0.0.1 (UnnamedOrange) : 定义输入输出。
-/// 0.0.2 (Jack-Lyu) : 模块完成，待验证。
-/// 0.0.3(Jack-Lyu) : 尝试解决不输出sig_done的问题。
+/// 0.0.2 (UnnamedOrange) : 代码非常稳定，不要随便修改。
+/// </version>
 
 `timescale 1ns / 1ps
 
 module update_single_track_t #
 (
-	parameter __unused = 0
+	// 内部参数。
+	parameter state_width = 8
 )
 (
 	// 控制。
 	input sig_on,       // 收到 sig_on 时开始工作。
-	output sig_done,    // 工作结束后发送 sig_done。
+	output reg sig_done,    // 工作结束后发送 sig_done。
 
 	// BRAM。端口 a 是写端口，端口 b 是读端口。
 	// beatmap（对象时间点）
-	output [12:0] db_b_addr,
+	output reg [12:0] db_b_addr,
 	input [23:0] db_b_data_out,
-	output db_b_en,
+	output reg db_b_en,
 
 	// object（对象）
 	output [11:0] do_a_addr,
 	output [7:0] do_a_data_in,
 	output do_a_en_w,
-	output [12:0] do_b_addr,
+	output reg [12:0] do_b_addr,
 	input [3:0] do_b_data_out,
-	output do_b_en,
+	output reg do_b_en,
 
 	// 数量与基地址。
-	input [12:0] db_size,         // 对象时间点的数量。用于判断"没有下一个对象时间点"。
+	input [12:0] db_size,         // 对象时间点的数量。用于判断“没有下一个对象时间点”。
 	input [12:0] db_base_addr,    // 对象时间点基地址。用 db_base_addr + i 访问第 i 个对象时间点，下标从 0 开始。
 	input [12:0] do_size,         // 对象的数量。
 	input [12:0] do_base_addr,    // 对象基地址。用 do_base_addr + i 访问第 i 个对象，下标从 0 开始。注意写回去的时候位宽翻倍，地址位少一位。
 
 	// 键盘。
 	input is_key_down,       // 是否按下键盘。
-	input is_key_changed,    // 用于判断"事件发生"。
+	input is_key_changed,    // 用于判断“事件发生”。
 
 	// 额外输入。
-	input [19:0] current_time, // 当前时间，单位为毫秒。用于"更新成绩"。
+	input [19:0] current_time, // 当前时间，单位为毫秒。用于“更新成绩”。
 
 	// 额外输出。
-	output is_game_over, // 是否"打完了"。
-	output [1:0] comb,
-	output is_miss,
-	output is_bad,
-	output is_good,
-	output is_great,
-	output is_perfect,
+	output is_game_over, // 是否“打完了”。
+	output reg [1:0] comb,
+	output reg is_miss,
+	output reg is_bad,
+	output reg is_good,
+	output reg is_great,
+	output reg is_perfect,
 
 	// 复位与时钟。
 	input RESET_L,
 	input CLK
 );
-	
-	wire reset;
-	assign reset = !RESET_L;
-	
-	reg Sig_done;
-	assign sig_done= Sig_done;
-	reg [12:0] addr_r_time;
-	assign db_b_addr = addr_r_time;
-	reg time_r_en;
-	assign db_b_en = time_r_en;
-	reg [11:0] addr_r_object;
-	assign do_a_addr = addr_r_object;
-	reg object_r_en;
-	assign do_b_en = object_r_en ;	
-	reg [7:0] object_write;
-	assign do_a_data_in = object_write;
-	reg object_w_en;
-	assign do_a_en_w = object_w_en ;
-	reg [12:0] addr_w_object;
-	assign do_b_addr = addr_w_object;
-	reg game_over;
-	assign is_game_over = Gameover;
-	reg [1:0] Comb;
-	assign comb = Combe;
-	reg miss;
-	assign is_miss = Miss ;
-	reg bad;
-	assign is_bad = Bad;
-	reg good;
-	assign is_good = Good;
-	reg great ;
-	assign is_great = Great;
-	reg perfect;
-	assign is_perfect = Perfect;
-	
-	
-	reg [1:0] Combe;
-	reg Gameover;
-	reg Miss;
-	reg Bad;
-	reg Good;
-	reg Great;
-	reg Perfect;
 
-	reg [19:0] delta_time;
-	reg [23:0] beatmap;
-	reg [23:0] beatmap_read;
-	reg [3:0] PON_object;
-	reg [3:0] PON_object_read;
-	reg [3:0] object;
-	reg [3:0] object_read;
-	reg Start_End=0;//为1代表next_time为面条start,为0代表next_time为面条end
+	// 维护的信息。
+	reg [12:0] object_idx[0:1];
+	reg [3:0] object_info[0:1];
+	reg [12:0] beatmap_idx;
+	reg [19:0] beatmap_val[0:1];
+	reg is_end;
+	reg is_any;
 
-	reg discard;
-	reg disappear;
+	// 组合变量。
+	wire is_click;
+	assign is_click = !object_info[0][0];
+	wire is_slide_begin;
+	assign is_slide_begin = object_info[0][0] && object_idx[0] == object_idx[1];
+	wire is_slide_end;
+	assign is_slide_end = !is_click && !is_slide_begin;
 
-//address	
-	reg [12:0] cnt_beatmap;
-	reg [12:0] cnt_object;
-	reg plus_flag;
-	reg plus;//代表是否在Made状态使cnt_beatmap   +1
-	reg [12:0] visiting_time;
-	reg [12:0] visiting_object;
-    always @(*) begin
-    	visiting_time = db_base_addr + cnt_beatmap ;
-    	visiting_object =  do_base_addr + cnt_object ;
-    end
+	wire too_early;
+	wire too_late;
+	wire in_perfect;
+	wire in_great;
+	wire in_good;
+	wire in_bad;
+	wire in_miss;
+	time_judge_t time_judge(
+		.current_time(current_time),
+		.object_time(beatmap_val[0]),
 
-	reg write;
-	reg plus_cnt;
-	reg init;
-	
-	always @(posedge CLK) begin
-		if(reset) begin
-			cnt_beatmap <= 0;
-			cnt_object <= 0;
-			Start_End <= 0;
-			Perfect <= 0;
-			Great <= 0;
-			Good <= 0;
-			Bad <= 0;
-			Miss <= 0;
-			Combe <= 0;
-			Gameover <= 0;
-		end
-		else if(init) begin
-			plus <= 0;
-			object <= 0;
-			beatmap <= 0;
-		end
-		else begin
-			if(game_over)
-				Gameover <= 1;
-			else if(perfect)
-				Perfect <= 1;
-			else if(great)
-				Great <= 1;
-			else if(good)
-				Good <= 1;
-			else if(bad)
-				Bad <= 1;
-			else if(miss)
-				Miss <= 1;
-			if(Comb > 0)
-				Combe <= Comb;
-			else 
-				Combe <= Combe;
-			if(plus_cnt)begin
-				cnt_beatmap <= cnt_beatmap + plus;
-				if( object[0] == 1 & Start_End == 0)//为面条开始
-					cnt_object <= cnt_object;
-				else
-					cnt_object <= cnt_object + plus;
-				if(object[0])
-					Start_End = Start_End + 1;
-			end
-			else if(write) begin
-				if( visiting_object[0] ) begin//和上一个一起写这个做高位
-					object_write <= {object , PON_object};
-				end
-				else begin//和下一个一起写这个做低位
-					object_write <= {PON_object , object};
-				end
-				addr_w_object <= visiting_object[12:1] ;
-				object_w_en <= 1;
-			end
-			else begin
-				object_w_en  <= 0;
-				if(plus_flag) begin
-					plus <= 1;
-				end	
-				else if(discard)
-					object[2] <= 1;
-				else if(disappear)
-					object[1] <= 1;
-				else begin
-					if(beatmap_read == 0) begin
-						beatmap <= beatmap ;
-					end
-					else begin
-						beatmap <= beatmap_read;
-					end
-					
-					if(PON_object_read == 0) begin
-						PON_object <= PON_object ;
-					end
-					else begin
-						PON_object <= PON_object_read;
-					end
-					
-					if(object_read == 0) begin
-						object <= object ;
-					end
-					else begin
-						object <= object_read;
-					end
-				end
-			end
-		end
-	end
+		.too_early(too_early),
+		.too_late(too_late),
+		.in_perfect(in_perfect),
+		.in_great(in_great),
+		.in_good(in_good),
+		.in_bad(in_bad),
+		.in_miss(in_miss)
+	);
 
-	
-    parameter tmiss=150;
-    parameter tbad=80;
-    parameter tgood=75;
-    parameter tgreat=50;
-    parameter tperfect=15;
-	
-	
-	
-	parameter Idle       = 4'd0;
-	parameter Read0      = 4'd1;
-	parameter Read1      = 4'd2;
-	parameter Read2      = 4'd3;
-	parameter Read3      = 4'd4;//第一次读取完毕，开始第二次读取
-	parameter Read4      = 4'd5;
-	parameter Read5      = 4'd6;
-	parameter Read6      = 4'd7;//第二次读取完毕
-	parameter Over       = 4'd8;//GameOver,之后rst会复位
-    parameter Write      = 4'd9;//等待事件发生
-    parameter Done       = 4'd10;//非更新结束
-    parameter Disappear  = 4'd11;//方块或面条以消失结束，注意要在此状态改写out_object，comb，并计算评分,更新连击数
-    parameter Discard    = 4'd12;//面条以遗弃结束
-    parameter None       = 4'd13;//面条被按住不会消失也不会遗弃，但是要更新
-    parameter N_Disappear= 4'd14;//方块没有按到以消失结束
-    parameter Made       = 4'd15;//此次状态转移结束，输出done信号
-	
-	reg [3:0] curr_state;
-	reg [3:0] next_state;
-	always @(posedge CLK) begin
-		if(reset) begin
-			curr_state <= Idle;
-		end
-		else begin
-			curr_state <= next_state; 
-		end
-	end
-	
+	// 写回助手。
+	reg sig_write_on;
+	wire sig_write_done; // 未使用。
+	wire [12:0] do_write_b_addr;
+	wire do_write_b_en;
+	write_object_t write_object(
+		.sig_on(sig_write_on),
+		.sig_done(sig_write_done),
+
+		.data_in(object_info[0]),
+		.addr_to_write(do_base_addr + object_idx[0]),
+
+		.do_a_addr(do_a_addr),
+		.do_a_data_in(do_a_data_in),
+		.do_a_en_w(do_a_en_w),
+		.do_b_addr(do_write_b_addr),
+		.do_b_data_out(do_b_data_out),
+		.do_b_en(do_write_b_en),
+
+		.RESET_L(RESET_L),
+		.CLK(CLK)
+	);
+
+	reg [12:0] do_read_b_addr;
+	reg do_read_b_en;
+
+	// 内存选通。
 	always @(*) begin
-		if(reset) begin
-			next_state = Idle;
+		do_b_addr = 0;
+		do_b_en = 0;
+		if (do_write_b_en) begin
+			do_b_addr = do_write_b_addr;
+			do_b_en = do_write_b_en;
 		end
+		else if (do_read_b_en) begin
+			do_b_addr = do_read_b_addr;
+			do_b_en = do_read_b_en;
+		end
+	end
+
+	// which 状态。
+	parameter [state_width - 1 : 0]
+		s_first           = 8'h00, // 首次读入时将前两个读进来（第一个）。
+		s_second          = 8'h01, // 首次读入时将前两个读进来（第二个）。
+		s_0               = 8'h02, // 分支 0。
+		s_1               = 8'h03, // 分支 1。
+		s_2               = 8'h04, // 分支 2。
+		s_3               = 8'h05, // 分支 3。
+		s_4               = 8'h06, // 分支 4。
+		s_5               = 8'h07, // 分支 5。
+		s_6               = 8'h08, // 分支 6。
+		s_7               = 8'h09, // 分支 7。
+		s_w_write_only    = 8'hfb, // 等待写回。
+		s_w_write         = 8'hfc, // 等待写回，之后读。
+		s_read            = 8'hfd, // 更新下一个时间点。
+		s_no_update       = 8'hfe, // 不更新。
+		s_done            = 8'hff, // 完成。
+		s_unused = 8'hff;
+	reg [state_width - 1 : 0] which;
+
+	// 第一步转移。
+	reg [state_width - 1 : 0] step;
+	always @(*) begin
+		step = s_no_update; // 等效于 return 时啥也不做。
+		if (is_end)
+			step = s_no_update;
 		else begin
-			if( cnt_beatmap == db_size ) begin
-				next_state = Over;
-			end
-			else begin
-				case(curr_state)
-					Idle:begin
-						if(sig_on) 
-							next_state = Read0;
+			if (is_key_changed) begin
+				if (is_key_down) begin
+					if (is_click) begin
+						if (too_early)
+							step = s_no_update;
 						else
-							next_state = Idle;
+							step = s_0;
 					end
-					Read0:
-						next_state = Read1;
-					Read1:
-						next_state = Read2;
-					Read2:
-						next_state = Read3;
-					Read3:
-						next_state = Read4;
-					Read4:
-						next_state = Read5;
-					Read5:
-						next_state = Read6;
-					Read6:begin
-    				if(!is_key_changed) begin// 没有事件发生
-    					if(!object[0]) begin//下一个对象是方块
-    						if( current_time > beatmap & current_time - beatmap > tmiss )//太晚
-    							next_state = N_Disappear;
-    						else 
-    							next_state = Done;// 否则啥也不干
-    					end
-    					else begin// 下一个对象是面条
-    						if(Start_End) begin//下一个对象时间点是面条起始
-    							if( current_time > beatmap & current_time - beatmap > tmiss )//太晚
-    								next_state = Discard;
-    							else 
-    								next_state = Done;// 否则啥也不干
-    						end
-    						else begin// 下一个对象时间点是面条终止
-    							if( current_time > beatmap & current_time - beatmap > tmiss )//太晚
-    								next_state = N_Disappear;
-    							else 
-    								next_state = Done;
-    						end
-    					end
-    				end
-    				else if(is_key_down) begin
-    					if(!object[0]) begin//下个对象是方块
-    						if( current_time < beatmap & beatmap - current_time > tmiss ) 
-    							next_state = Done;
-    						else 
-    							next_state = Disappear;
-    					end
-    					else begin//下个对象是面条
-    						if(Start_End) begin//下一个对象时间点是面条起始
-    							if( current_time < beatmap & beatmap - current_time > tmiss )
-    								next_state = Done;
-    							else begin
-    								if(( current_time < beatmap & beatmap - current_time > tbad )|( current_time > beatmap & current_time - beatmap > tbad ))
-    									next_state = Discard;
-    								else
-    									next_state = None;
-    							end
-    						end
-    						else begin
-    							next_state = Done;
-    							//此时面条一定被遗弃，啥也不做。
-    						end
-    					end
-    				end
-    				else begin//放开事件
-    					if(!object[0]) begin//下一个对象是方块
-    						next_state = Done;
-    						// 啥也不做。
-    					end
-    					else begin// 下一个对象是面条
-    						if(Start_End) begin//下一个对象时间点是面条起始
-    							next_state = Done;
-    							// 啥也不做。
-    						end
-    						else begin// 下一个对象时间点是面条终止
-    							if( current_time < beatmap & beatmap - current_time > tmiss ) begin//太早
-    								next_state = Discard;//遗弃面条, 连击数清零;
-    							end
-    							else begin
-    								// 如果面条已被遗弃，更新成绩时最多记 OK。
-    								next_state = Disappear;
-    							end
-    						end
-    					end
-    				end
-    				end
-					Done:
-						next_state = Write; 
-					Disappear:  
-						next_state = Write;
-					Discard:    
-						next_state = Write;
-					None:   
-						next_state = Write;
-					N_Disappear:
-						next_state = Write;
-					Write:
-						next_state = Made;
-					Made://结束状态
-						next_state = Idle;
-					Over:
-						next_state = Over; 		
-					default:
-						next_state = Made;
-				endcase
+					else if (is_slide_begin) begin
+						if (too_early)
+							step = s_no_update;
+						else begin
+							if (in_miss)
+								step = s_1;
+							else
+								step = s_2;
+						end
+					end
+					else // is_slide_end
+						step = s_no_update;
+				end
+				else begin
+					if (is_click)
+						step = s_no_update;
+					else if (is_slide_begin)
+						step = s_no_update;
+					else begin // is_slide_end
+						if (too_early)
+							step = s_3;
+						else
+							step = s_4;
+					end
+				end
+			end
+			else begin // !is_key_changed
+				if (is_click) begin
+					if (too_late)
+						step = s_5;
+				end
+				else if (is_slide_begin) begin
+					if (too_late)
+						step = s_6;
+				end
+				else if (is_slide_end) begin
+					if (too_late)
+						step = s_7;
+				end
 			end
 		end
 	end
-	
-	
-	always @(*) begin
-		if(reset) begin
-			perfect             =0;
-			great               =0;
-			good                =0;
-			bad                 =0;
-			miss                =0;
-			beatmap_read        =0;
-			object_read         =0;
-			time_r_en           =0;
-			object_r_en         =0;
-			addr_r_time         =0;
-			addr_r_object       =0;
-			PON_object_read     =0;
-			plus_flag           =0;
-			Comb                =2'b00;
-			disappear           =0;
-			discard             =0;
-			delta_time          =0;
-			write               =0;
-			plus_cnt            =0;
-			Sig_done            =0;
-			init                =0;
-			game_over           =0;
+
+	// 刷新过程。
+	reg working;
+	reg [1:0] pat;
+	reg [1:0] waiting;
+	always @(posedge CLK) begin
+		if (!RESET_L) begin
+			comb <= 0;
+			is_miss <= 0;
+			is_bad <= 0;
+			is_good <= 0;
+			is_great <= 0;
+			is_perfect <= 0;
+
+			object_idx[0] <= 0;
+			object_idx[1] <= 0;
+			object_info[0] <= 0;
+			object_info[1] <= 0;
+			beatmap_idx <= 0;
+			beatmap_val[0] <= 0;
+			beatmap_val[1] <= 0;
+			is_end <= 0;
+			is_any <= 0;
+
+			db_b_addr <= 0;
+			db_b_en <= 0;
+			do_read_b_addr <= 0;
+			do_read_b_en <= 0;
+
+			sig_done <= 0;
+
+			working <= 0;
+			which <= 0;
+			pat <= 0;
+			waiting <= 0;
 		end
 		else begin
-			//initial something to avoid latch
-			perfect             =0;
-			great               =0;
-			good                =0;
-			bad                 =0;
-			miss                =0;
-			beatmap_read        =0;
-			object_read         =0;
-			time_r_en           =0;
-			object_r_en         =0;
-			addr_r_time         =0;
-			addr_r_object       =0;
-			PON_object_read     =0;
-			plus_flag           =0;
-			Comb                =2'b00;
-			disappear           =0;
-			discard             =0;
-			delta_time          =0;
-			write               =0;
-			plus_cnt            =0;
-			Sig_done            =0;
-			init                =0;
-			game_over           =0;
-			case(curr_state)
-				Idle:begin//initial something
-					init=1;
-				end
-				Read0:begin//读beatmap 和object
-					addr_r_time = visiting_time;
-                    time_r_en = 1;
-                    addr_r_object = visiting_object ;
-                    object_r_en = 1 ;
-				end
-				Read1:begin//啥都不做
-					addr_r_time = visiting_time;
-                    time_r_en = 1;
-                    addr_r_object = visiting_object ;
-                    object_r_en = 1 ;
-				end 
-				Read2:begin//啥都不做
-					addr_r_time = visiting_time;
-                    time_r_en = 1;
-                    addr_r_object = visiting_object ;
-                    object_r_en = 1 ;
-				end
-				Read3:begin//接受数据并继续读object的前或者后
-					//读完这一个
-                    beatmap_read = db_b_data_out;//注意要将其锁存到beatmap中
-                    time_r_en = 0;
-                    object_read = do_b_data_out;//注意要将其锁存到object中
-                     object_r_en = 1 ;
-					//读另一个  object
-					if( visiting_object[0] ) begin//读上一个
-						addr_r_object = visiting_object - 1 ;
-					end
-					else begin//读下一个
-						addr_r_object = visiting_object + 1 ;
-					end
-				end
-				Read4:begin
-					object_r_en = 1 ;
-				end//啥都不做
-				Read5:begin
-					object_r_en = 1 ;
-				end//啥都不做
-				Read6:begin//接受数据
-					PON_object_read = do_b_data_out;//注意要将其锁存到PON_object中
-                	time_r_en = 0;
-				end
-				Done:miss = 1;//啥都不做
-				Disappear:begin
-					plus_flag=1;
-					Comb = 2'b01;
-					disappear =1;
-					if(beatmap > current_time)
-						delta_time = beatmap - current_time ;
+			if (!working) begin
+				if (sig_on) begin
+					working <= 1;
+					if (!is_any)
+						which <= s_first;
 					else
-						delta_time = current_time - beatmap ;
-					if( delta_time < tperfect )
-						perfect = 1 ;
-					else if( delta_time < tgreat )
-						great = 1 ;
-					else if( delta_time < tgood )
-						good = 1 ;
-					else if( delta_time < tbad )
-						bad = 1 ;
-					else
-						miss = 1 ;
+						which <= step;
 				end
-				Discard:begin
-					Comb = 2'b10;
-					plus_flag=1;
-					discard = 1;
-					miss = 1;
+			end
+			else begin
+				if (pat == 0) begin
+					case (which)
+						s_first: begin
+							db_b_addr <= db_base_addr;
+							db_b_en <= 1;
+							do_read_b_addr <= do_base_addr;
+							do_read_b_en <= 1;
+						end
+						s_second: begin
+							db_b_addr <= db_base_addr + 1;
+							db_b_en <= 1;
+							do_read_b_addr <= do_base_addr + (!object_info[0][0]);
+							do_read_b_en <= 1;
+							beatmap_idx <= 2;
+							object_idx[1] <= !object_info[0][0];
+						end
+
+						s_0: begin
+							comb <= in_miss ? 2'b10 : 2'b01;
+							is_miss <= in_miss;
+							is_bad <= in_bad;
+							is_good <= in_good;
+							is_great <= in_great;
+							is_perfect <= in_perfect;
+							object_info[0][1] <= 1;
+							sig_write_on <= 1;
+						end
+						s_1: begin
+							comb <= 2'b10;
+							is_miss <= in_miss;
+							is_bad <= in_bad;
+							is_good <= in_good;
+							is_great <= in_great;
+							is_perfect <= in_perfect;
+							object_info[0][2] <= 1;
+							sig_write_on <= 1;
+						end
+						s_2: begin
+							comb <= 2'b01;
+							is_miss <= in_miss;
+							is_bad <= in_bad;
+							is_good <= in_good;
+							is_great <= in_great;
+							is_perfect <= in_perfect;
+						end
+						s_3: begin
+							comb <= 2'b10;
+							is_miss <= 0;
+							is_bad <= 0;
+							is_good <= 0;
+							is_great <= 0;
+							is_perfect <= 0;
+							object_info[0][2] <= 1;
+							sig_write_on <= 1;
+						end
+						s_4: begin
+							comb <= in_miss ? 2'b10 : 2'b01;
+							is_miss <= in_miss;
+							is_bad <= object_info[0][2] ? (is_bad || is_good || is_great || is_perfect) : in_bad;
+							is_good <= object_info[0][2] ? 0 : in_good;
+							is_great <= object_info[0][2] ? 0 : in_great;
+							is_perfect <= object_info[0][2] ? 0 : in_perfect;
+							object_info[0][1] <= 1;
+							sig_write_on <= 1;
+						end
+						s_5: begin
+							comb <= 2'b10;
+							is_miss <= 1;
+							is_bad <= 0;
+							is_good <= 0;
+							is_great <= 0;
+							is_perfect <= 0;
+							object_info[0][1] <= 1;
+							sig_write_on <= 1;
+						end
+						s_6: begin
+							comb <= 2'b10;
+							is_miss <= 1;
+							is_bad <= 0;
+							is_good <= 0;
+							is_great <= 0;
+							is_perfect <= 0;
+							object_info[0][2] <= 1;
+							sig_write_on <= 1;
+						end
+						s_7: begin
+							comb <= 2'b10;
+							is_miss <= 1;
+							is_bad <= 0;
+							is_good <= 0;
+							is_great <= 0;
+							is_perfect <= 0;
+							object_info[0][1] <= 1;
+							sig_write_on <= 1;
+						end
+
+						s_read: begin
+							object_idx[0] <= object_idx[1];
+							object_info[0] <= object_info[1];
+							beatmap_val[0] <= beatmap_val[1];
+							is_end <= beatmap_idx > db_size;
+
+							object_idx[1] <= object_idx[1] + !(object_info[1][0] && object_idx[0] != object_idx[1]);
+							beatmap_idx <= beatmap_idx + 1;
+
+							db_b_addr <= db_base_addr + beatmap_idx;
+							db_b_en <= 1;
+							do_read_b_addr <= do_base_addr + object_idx[1] + !(object_info[1][0] && object_idx[0] != object_idx[1]);
+							do_read_b_en <= 1;
+						end
+
+						s_no_update: begin
+							comb <= 0;
+							is_miss <= 0;
+							is_bad <= 0;
+							is_good <= 0;
+							is_great <= 0;
+							is_perfect <= 0;
+						end
+					endcase
 				end
-				None:begin
-						plus_flag=1;
-					Comb = 2'b01;
-					if(beatmap > current_time)
-						delta_time = beatmap - current_time ;
-					else
-						delta_time = current_time - beatmap ;
-					if( delta_time < tperfect )
-						perfect = 1 ;
-					else if( delta_time < tgreat )
-						great = 1 ;
-					else if( delta_time < tgood )
-						good = 1 ;
-					else if( delta_time < tbad )
-						bad = 1 ;
-					else
-						miss = 1 ;
+				else if (pat == 3) begin
+					case (which)
+						s_first: begin
+							beatmap_val[0] <= db_b_data_out;
+							object_info[0] <= do_b_data_out;
+							db_b_en <= 0;
+							do_read_b_en <= 0;
+							which <= s_second;
+						end
+						s_second: begin
+							beatmap_val[1] <= db_b_data_out;
+							object_info[1] <= do_b_data_out;
+							db_b_en <= 0;
+							do_read_b_en <= 0;
+							which <= step;
+							is_any <= 1;
+						end
+
+						s_2: begin
+							which <= s_read;
+						end
+						s_3: begin
+							sig_write_on <= 0;
+							waiting <= 0;
+							which <= s_w_write_only;
+						end
+						s_0, s_1, s_4, s_5, s_6, s_7: begin
+							sig_write_on <= 0;
+							waiting <= 0;
+							which <= s_w_write;
+						end
+
+						s_w_write_only: begin
+							waiting <= waiting + 1;
+							if (waiting == 3)
+								which <= s_done;
+						end
+						s_w_write: begin
+							waiting <= waiting + 1;
+							if (waiting == 3)
+								which <= s_read;
+						end
+						s_read: begin
+							beatmap_val[1] <= db_b_data_out;
+							object_info[1] <= do_b_data_out;
+							db_b_en <= 0;
+							do_read_b_en <= 0;
+							which <= s_done;
+						end
+
+						s_no_update: begin
+							which <= s_done;
+						end
+						s_done: begin
+							working <= 0;
+						end
+					endcase
 				end
-				N_Disappear:begin
-					Comb = 2'b10;
-					plus_flag=1;
-					disappear =1;
-					miss = 1;
-				end
-				Write:begin
-					write = 1;
-				end
-				Made:begin
-					plus_cnt = 1;
-					Sig_done = 1;
-				end
-				Over: begin
-					game_over = 1;
-					Sig_done = 1;
-				end
-				default:begin
-					Sig_done = 1;
-				end//啥都不做
-			endcase	
+				pat <= pat + 1;
+			end
+			sig_done <= working && which == s_done && pat == 3;
 		end
 	end
-	
+
+	// 输出方程。
+	assign is_game_over = is_end;
 
 endmodule
