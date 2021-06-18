@@ -539,13 +539,13 @@ module draw_controller_t #
 				if (is_click[0][!ping_pong])
 					ds_b_addr = base_addr_click + x_idx[0][!ping_pong] * 60 + (vga_y - 200);
 				else if (is_slide_begin[0][!ping_pong])
-					ds_b_addr = (is_discarded[0][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+					ds_b_addr = (!is_discarded[0][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
 						+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
 				else if (is_slide_end[0][!ping_pong])
-					ds_b_addr = (is_discarded[0][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+					ds_b_addr = (!is_discarded[0][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
 						+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
 				else if (is_slide_space[0][!ping_pong])
-					ds_b_addr = (is_discarded[0][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+					ds_b_addr = (!is_discarded[0][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
 						+ x_idx[0][!ping_pong] * 60 + (vga_y - 200);
 			end
 			else begin // 按键指示。
@@ -560,13 +560,13 @@ module draw_controller_t #
 				if (is_click[1][!ping_pong])
 					ds_b_addr = base_addr_click + x_idx[1][!ping_pong] * 60 + (vga_y - 260);
 				else if (is_slide_begin[1][!ping_pong])
-					ds_b_addr = (is_discarded[1][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+					ds_b_addr = (!is_discarded[1][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
 						+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
 				else if (is_slide_end[1][!ping_pong])
-					ds_b_addr = (is_discarded[1][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+					ds_b_addr = (!is_discarded[1][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
 						+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
 				else if (is_slide_space[1][!ping_pong])
-					ds_b_addr = (is_discarded[1][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+					ds_b_addr = (!is_discarded[1][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
 						+ x_idx[1][!ping_pong] * 60 + (vga_y - 260);
 			end
 			else begin // 按键指示。
@@ -581,13 +581,13 @@ module draw_controller_t #
 				if (is_click[2][!ping_pong])
 					ds_b_addr = base_addr_click + x_idx[2][!ping_pong] * 60 + (vga_y - 320);
 				else if (is_slide_begin[2][!ping_pong])
-					ds_b_addr = (is_discarded[2][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+					ds_b_addr = (!is_discarded[2][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
 						+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
 				else if (is_slide_end[2][!ping_pong])
-					ds_b_addr = (is_discarded[2][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+					ds_b_addr = (!is_discarded[2][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
 						+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
 				else if (is_slide_space[2][!ping_pong])
-					ds_b_addr = (is_discarded[2][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+					ds_b_addr = (!is_discarded[2][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
 						+ x_idx[2][!ping_pong] * 60 + (vga_y - 320);
 			end
 			else begin // 按键指示。
@@ -602,13 +602,13 @@ module draw_controller_t #
 				if (is_click[3][!ping_pong])
 					ds_b_addr = base_addr_click + x_idx[3][!ping_pong] * 60 + (vga_y - 380);
 				else if (is_slide_begin[3][!ping_pong])
-					ds_b_addr = (is_discarded[3][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
+					ds_b_addr = (!is_discarded[3][!ping_pong] ? base_addr_slide_begin : base_addr_slide_begin_discarded)
 						+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
 				else if (is_slide_end[3][!ping_pong])
-					ds_b_addr = (is_discarded[3][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
+					ds_b_addr = (!is_discarded[3][!ping_pong] ? base_addr_slide_end : base_addr_slide_end_discarded)
 						+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
 				else if (is_slide_space[3][!ping_pong])
-					ds_b_addr = (is_discarded[3][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
+					ds_b_addr = (!is_discarded[3][!ping_pong] ? base_addr_slide_space : base_addr_slide_space_discarded)
 						+ x_idx[3][!ping_pong] * 60 + (vga_y - 380);
 			end
 			else begin // 按键指示。
