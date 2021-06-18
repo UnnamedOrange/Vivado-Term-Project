@@ -85,19 +85,28 @@ module update_single_track_t #
 	reg [12:0] addr_w_object;
 	assign do_b_addr = addr_w_object;
 	reg game_over;
-	assign is_game_over = game_over;
+	assign is_game_over = Gameover;
 	reg [1:0] Comb;
-	assign comb = Comb;
+	assign comb = Combe;
 	reg miss;
-	assign is_miss = miss ;
+	assign is_miss = Miss ;
 	reg bad;
-	assign is_bad = bad;
+	assign is_bad = Bad;
 	reg good;
-	assign is_good = good;
+	assign is_good = Good;
 	reg great ;
-	assign is_great = great;
+	assign is_great = Great;
 	reg perfect;
-	assign is_perfect = perfect;
+	assign is_perfect = Perfect;
+	
+	
+	reg [1:0] Combe;
+	reg Gameover;
+	reg Miss;
+	reg Bad;
+	reg Good;
+	reg Great;
+	reg Perfect;
 
 	reg [19:0] delta_time;
 	reg [23:0] beatmap;
@@ -137,59 +146,85 @@ module update_single_track_t #
 			plus <= 0;
 			object <= 0;
 			beatmap <= 0;
-		end
-		else if(plus_cnt)begin
-			cnt_beatmap <= cnt_beatmap + plus;
-			if( object[0] == 1 & Start_End == 0)//为面条开始
-				cnt_object <= cnt_object;
-			else
-				cnt_object <= cnt_object + plus;
-			if(object[0])
-				Start_End = Start_End + 1;
-		end
-		else if(write) begin
-			if( visiting_object[0] ) begin//和上一个一起写这个做高位
-				object_write <= {object , PON_object};
-			end
-			else begin//和下一个一起写这个做低位
-				object_write <= {PON_object , object};
-			end
-			addr_w_object <= visiting_object[12:1] ;
-			object_w_en <= 1;
+			Perfect <= 0;
+			Great <= 0;
+			Good <= 0;
+			Bad <= 0;
+			Miss <= 0;
+			Combe <= 0;
+			Gameover <= 0;
 		end
 		else begin
-			object_w_en  <= 0;
-			if(plus_flag) begin
-				plus <= 1;
-			end	
-			else if(discard)
-				object[2] <= 1;
-			else if(disappear)
-				object[1] <= 1;
+			if(game_over)
+				Gameover <= 1;
+			else if(perfect)
+				Perfect <= 1;
+			else if(great)
+				Great <= 1;
+			else if(good)
+				Good <= 1;
+			else if(bad)
+				Bad <= 1;
+			else if(Miss)
+				Miss <= 1;
+			if(Comb > 0)
+				Combe <= Comb;
+			else 
+				Combe <= Combe;
+			if(plus_cnt)begin
+				cnt_beatmap <= cnt_beatmap + plus;
+				if( object[0] == 1 & Start_End == 0)//为面条开始
+					cnt_object <= cnt_object;
+				else
+					cnt_object <= cnt_object + plus;
+				if(object[0])
+					Start_End = Start_End + 1;
+			end
+			else if(write) begin
+				if( visiting_object[0] ) begin//和上一个一起写这个做高位
+					object_write <= {object , PON_object};
+				end
+				else begin//和下一个一起写这个做低位
+					object_write <= {PON_object , object};
+				end
+				addr_w_object <= visiting_object[12:1] ;
+				object_w_en <= 1;
+			end
 			else begin
-				if(beatmap_read == 0) begin
-					beatmap <= beatmap ;
-				end
+				object_w_en  <= 0;
+				if(plus_flag) begin
+					plus <= 1;
+				end	
+				else if(discard)
+					object[2] <= 1;
+				else if(disappear)
+					object[1] <= 1;
 				else begin
-					beatmap <= beatmap_read;
-				end
-				
-				if(PON_object_read == 0) begin
-					PON_object <= PON_object ;
-				end
-				else begin
-					PON_object <= PON_object_read;
-				end
-				
-				if(object_read == 0) begin
-					object <= object ;
-				end
-				else begin
-					object <= object_read;
+					if(beatmap_read == 0) begin
+						beatmap <= beatmap ;
+					end
+					else begin
+						beatmap <= beatmap_read;
+					end
+					
+					if(PON_object_read == 0) begin
+						PON_object <= PON_object ;
+					end
+					else begin
+						PON_object <= PON_object_read;
+					end
+					
+					if(object_read == 0) begin
+						object <= object ;
+					end
+					else begin
+						object <= object_read;
+					end
 				end
 			end
 		end
 	end
+
 	
     parameter tmiss=150;
     parameter tbad=80;
