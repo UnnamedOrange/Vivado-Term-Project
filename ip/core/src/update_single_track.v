@@ -9,6 +9,7 @@
 /// <version>
 /// 0.0.1 (UnnamedOrange) : 定义输入输出。
 /// 0.0.2 (Jack-Lyu) : 模块完成，待验证。
+/// 0.0.3(Jack-Lyu) : 尝试解决不输出sig_done的问题。
 
 `timescale 1ns / 1ps
 
@@ -65,7 +66,7 @@ module update_single_track_t #
 	reg reset;
 	
 	always @ (posedge CLK)
-		reset <= RESET_L;
+		reset <= ~RESET_L;
 
 	reg Sig_done;
 	assign sig_done= Sig_done;
@@ -130,6 +131,7 @@ module update_single_track_t #
 		if(reset) begin
 			cnt_beatmap <= 0;
 			cnt_object <= 0;
+			Start_End <= 0;
 		end
 		else if(init) begin
 			plus <= 0;
@@ -142,6 +144,8 @@ module update_single_track_t #
 				cnt_object <= cnt_object;
 			else
 				cnt_object <= cnt_object + plus;
+			if(object[0])
+				Start_End = Start_End + 1;
 		end
 		else if(write) begin
 			if( visiting_object[0] ) begin//和上一个一起写这个做高位
@@ -337,7 +341,7 @@ module update_single_track_t #
 					Over:
 						next_state = Over; 		
 					default:
-						next_state = Idle;
+						next_state = Made;
 				endcase
 			end
 		end
