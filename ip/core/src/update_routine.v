@@ -72,6 +72,7 @@ module update_routine_t #
 	output [15:0] perfect,
 	output [15:0] combo,
 	output [3:0] current_score,
+	output [1:0] current_score_fade,
 
 	// ∏¥Œª”Î ±÷”°£
 	input RESET_L,
@@ -320,6 +321,7 @@ module update_routine_t #
 		.perfect(perfect),
 		.combo(combo),
 		.current_score(current_score),
+		.current_score_fade(current_score_fade),
 
 		.RESET_L(RESET_L),
 		.CLK(CLK)

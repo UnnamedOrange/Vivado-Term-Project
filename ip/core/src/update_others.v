@@ -51,6 +51,7 @@ module update_others_t #
 	output reg [15:0] combo,
 
 	output reg [3:0] current_score, // 0 为空，然后依次是 perfect, great, good, bad, miss。
+	output reg [1:0] current_score_fade,
 
 	// 复位与时钟。
 	input RESET_L,
@@ -139,6 +140,7 @@ module update_others_t #
 	reg [3:0] next_current_score;
 	reg [15:0] score_counter;
 	reg [15:0] next_score_counter;
+	parameter fade_time = 350;
 	always @(posedge CLK) begin
 		if (!RESET_L) begin
 			miss <= 0;
@@ -244,30 +246,43 @@ module update_others_t #
 		for (i = 0; i < 4; i = i + 1)
 			if (is_perfect[i]) begin
 				next_current_score = 1;
-				next_score_counter = 250;
+				next_score_counter = fade_time;
 			end
 		for (i = 0; i < 4; i = i + 1)
 			if (is_great[i]) begin
 				next_current_score = 2;
-				next_score_counter = 250;
+				next_score_counter = fade_time;
 			end
 		for (i = 0; i < 4; i = i + 1)
 			if (is_good[i]) begin
 				next_current_score = 3;
-				next_score_counter = 250;
+				next_score_counter = fade_time;
 			end
 		for (i = 0; i < 4; i = i + 1)
 			if (is_bad[i]) begin
 				next_current_score = 4;
-				next_score_counter = 250;
+				next_score_counter = fade_time;
 			end
 		for (i = 0; i < 4; i = i + 1)
 			if (is_miss[i]) begin
 				next_current_score = 5;
-				next_score_counter = 250;
+				next_score_counter = fade_time;
 			end
 		if (next_score_counter == 0)
 			next_current_score = 0;
+	end
+
+	always @(*) begin
+		if (score_counter == 0)
+			current_score_fade = 0;
+		if (score_counter < 30)
+			current_score_fade = 3;
+		else if (score_counter < 60)
+			current_score_fade = 2;
+		else if (score_counter < fade_time - 30)
+			current_score_fade = 0;
+		else
+			current_score_fade = 1;
 	end
 
 	// 特征方程。

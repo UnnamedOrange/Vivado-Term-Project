@@ -70,6 +70,7 @@ module draw_controller_t #
 	input [15:0] perfect,
 	input [15:0] combo,
 	input [3:0] current_score,
+	input [1:0] current_score_fade,
 
 	// VGA。
 	output vga_reset,
@@ -535,8 +536,11 @@ module draw_controller_t #
 		y_d = y_p + cy_sign + 10,
 		y_d_interval = 3;
 
+	reg [1:0] fade;
+
 	always @(*) begin
 		ds_b_addr = 0;
+		fade = 0;
 		if (200 <= vga_y && vga_y < 260) begin // 第一列。
 			if (vga_x < 420) begin // 轨道。
 				if (is_click[0][!ping_pong])
@@ -638,6 +642,7 @@ module draw_controller_t #
 			ds_b_addr = base_addr_miss + (vga_x - x_m) * cy_sign + (vga_y - y_m); // 计分处的 miss。
 		else if (x_s <= vga_x && vga_x < x_s + cx_sign &&
 				y_s <= vga_y && vga_y < y_s + cy_sign) begin // 当前评价。
+			fade = current_score_fade;
 			case (current_score)
 				1:
 					ds_b_addr = base_addr_perfect + (vga_x - x_s) * cy_sign + (vga_y - y_s);
@@ -717,9 +722,9 @@ module draw_controller_t #
 			end
 			if (working) begin // 读取内存的后续事宜。
 				if (pat == 3) begin
-					vga_r <= ds_b_data_out[3:0];
-					vga_g <= ds_b_data_out[7:4];
-					vga_b <= ds_b_data_out[11:8];
+					vga_r <= ds_b_data_out[3:0] >> fade;
+					vga_g <= ds_b_data_out[7:4] >> fade;
+					vga_b <= ds_b_data_out[11:8] >> fade;
 					ds_b_en <= 0;
 					working <= 0;
 				end

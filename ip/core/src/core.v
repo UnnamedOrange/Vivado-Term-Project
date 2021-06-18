@@ -462,6 +462,7 @@ module core_t #
 	wire [15:0] perfect;
 	wire [15:0] combo;
 	wire [3:0] current_score;
+	wire [1:0] current_score_fade;
 	update_routine_t update_routine
 	(
 		.sig_on(sig_update_on),
@@ -515,6 +516,7 @@ module core_t #
 		.perfect(perfect),
 		.combo(combo),
 		.current_score(current_score),
+		.current_score_fade(current_score_fade),
 
 		.RESET_L(RESET_L),
 		.CLK(CLK)
@@ -577,6 +579,7 @@ module core_t #
 		.perfect(perfect),
 		.combo(combo),
 		.current_score(current_score),
+		.current_score_fade(current_score_fade),
 
 		.vga_reset(vga_reset),
 		.vga_r(vga_r),
