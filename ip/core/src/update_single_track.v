@@ -141,11 +141,6 @@ module update_single_track_t #
 			cnt_beatmap <= 0;
 			cnt_object <= 0;
 			Start_End <= 0;
-		end
-		else if(init) begin
-			plus <= 0;
-			object <= 0;
-			beatmap <= 0;
 			Perfect <= 0;
 			Great <= 0;
 			Good <= 0;
@@ -153,6 +148,11 @@ module update_single_track_t #
 			Miss <= 0;
 			Combe <= 0;
 			Gameover <= 0;
+		end
+		else if(init) begin
+			plus <= 0;
+			object <= 0;
+			beatmap <= 0;
 		end
 		else begin
 			if(game_over)
@@ -505,7 +505,7 @@ module update_single_track_t #
 					miss = 1;
 				end
 				None:begin
-					plus_flag=1;
+						plus_flag=1;
 					Comb = 2'b01;
 					if(beatmap > current_time)
 						delta_time = beatmap - current_time ;
