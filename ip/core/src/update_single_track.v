@@ -344,8 +344,6 @@ module update_single_track_t #
 							is_good <= 0;
 							is_great <= 0;
 							is_perfect <= 0;
-							object_info[0][2] <= 1;
-							sig_write_on <= 1;
 						end
 						s_7: begin
 							comb <= 2'b10;
@@ -401,7 +399,7 @@ module update_single_track_t #
 							is_any <= 1;
 						end
 
-						s_2: begin
+						s_2, s_6: begin
 							which <= s_read;
 						end
 						s_3: begin
@@ -409,7 +407,7 @@ module update_single_track_t #
 							waiting <= 0;
 							which <= s_w_write_only;
 						end
-						s_0, s_1, s_4, s_5, s_6, s_7: begin
+						s_0, s_1, s_4, s_5, s_7: begin
 							sig_write_on <= 0;
 							waiting <= 0;
 							which <= s_w_write;
