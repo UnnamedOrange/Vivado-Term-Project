@@ -320,7 +320,7 @@ module update_single_track_t #
 						s_4: begin
 							comb <= in_miss ? 2'b10 : 2'b01;
 							is_miss <= in_miss;
-							is_bad <= object_info[0][2] ? (is_bad || is_good || is_great || is_perfect) : in_bad;
+							is_bad <= object_info[0][2] ? (in_bad || in_good || in_great || in_perfect) : in_bad;
 							is_good <= object_info[0][2] ? 0 : in_good;
 							is_great <= object_info[0][2] ? 0 : in_great;
 							is_perfect <= object_info[0][2] ? 0 : in_perfect;
