@@ -113,7 +113,7 @@ module update_single_track_t #
 	reg [3:0] PON_object_read;
 	reg [3:0] object;
 	reg [3:0] object_read;
-	reg Start_End=0;//为1代表next_time为面条start,为0代表next_time为面条end
+	reg Start_End=0;//为0代表beatmap为面条start,为1代表beatmap为面条end
 
 	reg discard;
 	reg disappear;
@@ -151,32 +151,40 @@ module update_single_track_t #
 			plus <= 0;
 			object <= 0;
 			beatmap <= 0;
+
+			Perfect <= 0;
+			Great <= 0;
+			Good <= 0;
+			Bad <= 0;
+			Miss <= 0;
+			Combe <= 0;
+			Gameover <= 0;
+
 		end
 		else begin
 			if(game_over)
 				Gameover <= 1;
-			else if(perfect)
+			if(perfect)
 				Perfect <= 1;
-			else if(great)
+			if(great)
 				Great <= 1;
-			else if(good)
+			if(good)
 				Good <= 1;
-			else if(bad)
+			if(bad)
 				Bad <= 1;
-			else if(miss)
+			if(miss)
 				Miss <= 1;
 			if(Comb > 0)
 				Combe <= Comb;
-			else 
-				Combe <= Combe;
+
 			if(plus_cnt)begin
 				cnt_beatmap <= cnt_beatmap + plus;
 				if( object[0] == 1 & Start_End == 0)//为面条开始
 					cnt_object <= cnt_object;
 				else
 					cnt_object <= cnt_object + plus;
-				if(object[0])
-					Start_End = Start_End + 1;
+				if( object[0] == 1 )
+					Start_End <= Start_End + plus;
 			end
 			else if(write) begin
 				if( visiting_object[0] ) begin//和上一个一起写这个做高位
@@ -224,7 +232,7 @@ module update_single_track_t #
 	end
 
 	
-    parameter tmiss=150;
+    parameter tmiss=100;
     parameter tbad=80;
     parameter tgood=75;
     parameter tgreat=50;
@@ -240,10 +248,10 @@ module update_single_track_t #
 	parameter Read4      = 4'd5;
 	parameter Read5      = 4'd6;
 	parameter Read6      = 4'd7;//第二次读取完毕
-	parameter Over       = 4'd8;//GameOver,之后rst会复位
+	parameter Wait       = 4'd8;//Wait for Sig_on,之后Idle会部分复位
     parameter Write      = 4'd9;//等待事件发生
     parameter Done       = 4'd10;//非更新结束
-    parameter Disappear  = 4'd11;//方块或面条以消失结束，注意要在此状态改写out_object，comb，并计算评分,更新连击数
+    parameter Disappear  = 4'd11;//方块或面条以消失结束，注意要在此状态改写object，comb，并计算评分,更新连击数
     parameter Discard    = 4'd12;//面条以遗弃结束
     parameter None       = 4'd13;//面条被按住不会消失也不会遗弃，但是要更新
     parameter N_Disappear= 4'd14;//方块没有按到以消失结束
@@ -253,7 +261,7 @@ module update_single_track_t #
 	reg [3:0] next_state;
 	always @(posedge CLK) begin
 		if(reset) begin
-			curr_state <= Idle;
+			curr_state <= Wait;
 		end
 		else begin
 			curr_state <= next_state; 
@@ -262,20 +270,19 @@ module update_single_track_t #
 	
 	always @(*) begin
 		if(reset) begin
-			next_state = Idle;
+			next_state = Wait;
 		end
 		else begin
-			if( cnt_beatmap == db_size ) begin
-				next_state = Over;
-			end
-			else begin
+			// if( cnt_beatmap == db_size ) begin
+			// 	next_state = Over;
+			// end
+			// else begin
 				case(curr_state)
-					Idle:begin
-						if(sig_on) 
+					Idle:
+						if( cnt_beatmap == db_size )
+							next_state = Made;
+						else 
 							next_state = Read0;
-						else
-							next_state = Idle;
-					end
 					Read0:
 						next_state = Read1;
 					Read1:
@@ -297,7 +304,7 @@ module update_single_track_t #
     							next_state = Done;// 否则啥也不干
     					end
     					else begin// 下一个对象是面条
-    						if(Start_End) begin//下一个对象时间点是面条起始
+    						if(!Start_End) begin//下一个对象时间点是面条起始
     							if( current_time > beatmap & current_time - beatmap > tmiss )//太晚
     								next_state = Discard;
     							else 
@@ -319,7 +326,7 @@ module update_single_track_t #
     							next_state = Disappear;
     					end
     					else begin//下个对象是面条
-    						if(Start_End) begin//下一个对象时间点是面条起始
+    						if(!Start_End) begin//下一个对象时间点是面条起始
     							if( current_time < beatmap & beatmap - current_time > tmiss )
     								next_state = Done;
     							else begin
@@ -341,7 +348,7 @@ module update_single_track_t #
     						// 啥也不做。
     					end
     					else begin// 下一个对象是面条
-    						if(Start_End) begin//下一个对象时间点是面条起始
+    						if(!Start_End) begin//下一个对象时间点是面条起始
     							next_state = Done;
     							// 啥也不做。
     						end
@@ -370,13 +377,17 @@ module update_single_track_t #
 					Write:
 						next_state = Made;
 					Made://结束状态
-						next_state = Idle;
-					Over:
-						next_state = Over; 		
+						next_state = Wait;
+					Wait:begin
+						if(sig_on) 
+							next_state = Idle;
+						else
+							next_state = Wait;
+					end	
 					default:
 						next_state = Made;
 				endcase
-			end
+			// end
 		end
 	end
 	
@@ -432,7 +443,7 @@ module update_single_track_t #
 			game_over           =0;
 			case(curr_state)
 				Idle:begin//initial something
-					init=1;
+					init = 1;
 				end
 				Read0:begin//读beatmap 和object
 					addr_r_time = visiting_time;
@@ -476,23 +487,30 @@ module update_single_track_t #
 					PON_object_read = do_b_data_out;//注意要将其锁存到PON_object中
                 	time_r_en = 0;
 				end
-				Done:miss = 1;//啥都不做
+				Done:;//啥都不做
 				Disappear:begin
 					plus_flag=1;
-					Comb = 2'b01;
 					disappear =1;
 					if(beatmap > current_time)
 						delta_time = beatmap - current_time ;
 					else
 						delta_time = current_time - beatmap ;
-					if( delta_time < tperfect )
+					if( delta_time < tperfect )begin
 						perfect = 1 ;
-					else if( delta_time < tgreat )
+						Comb = 2'b01;
+					end
+					else if( delta_time < tgreat )begin
 						great = 1 ;
-					else if( delta_time < tgood )
+						Comb = 2'b01;
+					end		
+					else if( delta_time < tgood )begin
 						good = 1 ;
-					else if( delta_time < tbad )
+						Comb = 2'b01;
+					end						
+					else if( delta_time < tbad )begin
 						bad = 1 ;
+						Comb = 2'b01;
+					end
 					else
 						miss = 1 ;
 				end
@@ -503,20 +521,27 @@ module update_single_track_t #
 					miss = 1;
 				end
 				None:begin
-						plus_flag=1;
-					Comb = 2'b01;
+					plus_flag=1;
 					if(beatmap > current_time)
 						delta_time = beatmap - current_time ;
 					else
 						delta_time = current_time - beatmap ;
-					if( delta_time < tperfect )
+					if( delta_time < tperfect )begin
 						perfect = 1 ;
-					else if( delta_time < tgreat )
+						Comb = 2'b01;
+					end
+					else if( delta_time < tgreat )begin
 						great = 1 ;
-					else if( delta_time < tgood )
+						Comb = 2'b01;
+					end		
+					else if( delta_time < tgood )begin
 						good = 1 ;
-					else if( delta_time < tbad )
+						Comb = 2'b01;
+					end						
+					else if( delta_time < tbad )begin
 						bad = 1 ;
+						Comb = 2'b01;
+					end
 					else
 						miss = 1 ;
 				end
@@ -533,9 +558,8 @@ module update_single_track_t #
 					plus_cnt = 1;
 					Sig_done = 1;
 				end
-				Over: begin
-					game_over = 1;
-					Sig_done = 1;
+				Wait: begin//do nothing
+
 				end
 				default:begin
 					Sig_done = 1;
