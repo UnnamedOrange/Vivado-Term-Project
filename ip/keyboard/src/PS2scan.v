@@ -15,6 +15,7 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
+// Revision 0.02 - (UnnamedOrange) Ôö¼Ó watchdog¡£
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +52,26 @@ debouncer #(
     .O(kdataf)
 );
     
+parameter count_threshold = 20000;
+parameter standby_threshold = 2400000;
+reg [31:0] counter;
+reg [3:0] pre_cnt;
+reg standby;
+always @(posedge clk) begin
+    pre_cnt <= cnt;
+    if (pre_cnt == cnt)
+        counter <= counter + 1;
+    else
+        counter <= 0;
+end
+
 always@(negedge(kclkf))begin
+    if (cnt && counter > count_threshold) begin
+        cnt <= 0;
+        standby <= 1;
+    end
+    else if (!standby || counter > standby_threshold) begin
+        standby <= 0;
     case(cnt)
     0:;//Start bit
     1:datacur[0]<=kdataf;
@@ -68,6 +88,7 @@ always@(negedge(kclkf))begin
     endcase
         if(cnt<=9) cnt<=cnt+1;
         else if(cnt==10) cnt<=0;
+    end
 end
 
 reg pflag;
