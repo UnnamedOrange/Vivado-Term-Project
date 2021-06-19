@@ -906,7 +906,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e27481cd</spirit:value>
+            <spirit:value>0aff5efb</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -922,7 +922,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e27481cd</spirit:value>
+            <spirit:value>0aff5efb</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -944,23 +944,6 @@
       </spirit:view>
     </spirit:views>
     <spirit:ports>
-      <spirit:port>
-        <spirit:name>DEBUG_CURRENT_STATE</spirit:name>
-        <spirit:wire>
-          <spirit:direction>out</spirit:direction>
-          <spirit:vector>
-            <spirit:left spirit:format="long">15</spirit:left>
-            <spirit:right spirit:format="long">0</spirit:right>
-          </spirit:vector>
-          <spirit:wireTypeDefs>
-            <spirit:wireTypeDef>
-              <spirit:typeName>std_logic_vector</spirit:typeName>
-              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
-              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
-            </spirit:wireTypeDef>
-          </spirit:wireTypeDefs>
-        </spirit:wire>
-      </spirit:port>
       <spirit:port>
         <spirit:name>db_a_addr</spirit:name>
         <spirit:wire>
@@ -2166,6 +2149,19 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
+        <spirit:name>no_suppress</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>std_logic</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
         <spirit:name>vga_reset</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
@@ -2414,7 +2410,7 @@
       <spirit:file>
         <spirit:name>src/core.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_40456ba6</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_bec5bb3c</spirit:userFileType>
         <spirit:userFileType>USED_IN_ipstatic</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -2544,13 +2540,13 @@
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:core_t:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2021-06-18T12:00:15Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2021-06-19T01:05:17Z</xilinx:coreCreationDateTime>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2018.3</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="fb1165d7"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="b3f0d1b1"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="be0443da"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="0134cafc"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="322b9f55"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="c7906ffe"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="c3070462"/>
     </xilinx:packagingInfo>

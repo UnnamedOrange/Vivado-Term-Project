@@ -26,9 +26,6 @@ module core_t #
 	parameter state_width = 16
 )
 (
-	// 调试。
-	output [15:0] DEBUG_CURRENT_STATE,
-
 	// 直连的 BRAM。
 	// .beatmap (db) 对应 BRAM。
 	output reg [12:0] db_a_addr,
@@ -138,6 +135,7 @@ module core_t #
 	output AUX_AUDIO_EN,
 	output [4:0] AUX_AUDIO_VOLUMN,
 	output AUDIO_EN,
+	input no_suppress,
 
 	// VGA 模块。
 	output vga_reset,
@@ -993,14 +991,11 @@ module core_t #
 	end
 
 	assign MAIN_AUDIO_EN = 1;
-	assign MAIN_AUDIO_VOLUMN = 12;
+	assign MAIN_AUDIO_VOLUMN = no_suppress ? 4 : 12;
 	assign AUX_AUDIO_OUT = 0;
 	assign AUX_AUDIO_EN = 0;
 	assign AUX_AUDIO_VOLUMN = 0;
 	assign AUDIO_EN = state == s_system_clock_on;
-
-	/* 调试输出。*/
-	assign DEBUG_CURRENT_STATE = state;
 
 	/* 控制。*/
 
