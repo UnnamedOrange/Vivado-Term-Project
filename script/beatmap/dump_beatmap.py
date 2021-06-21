@@ -104,7 +104,8 @@ if __name__ == '__main__':
         idx = int(original_object[i][0]) * 4 // 512
         st = round(float(original_object[i][2]))
         is_hit = original_object[i][3] == '1'
-        et = round(float(original_object[i][5].split(':')[0]))
+        et = round(float(original_object[i][5].split(':')[0])) if (
+            int(original_object[i][3]) & (1 << 7)) else 0
         g_original_object[idx].append([st, et])  # [起始, 结束（没有就是空）]
 
     # 为 original_object 延时。
